@@ -1,0 +1,32 @@
+# Unity specific ignores
+Library/
+Temp/
+Logs/
+Obj/
+MemoryCaptures/
+
+UserSettings/
+
+
+# Ignore the editor settings
+.vscode/
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.opendb
+
+
+# ビルド結果
+Build/
+Builds/
+UserSettings/EditorUserSettings.asset
+ProjectSettings/SceneTemplateSettings.json
