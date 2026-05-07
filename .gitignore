@@ -15,6 +15,7 @@ UserSettings/
 
 # Visual Studio / Rider
 *.csproj
+*.vsconfig
 *.unityproj
 *.sln
 *.suo
