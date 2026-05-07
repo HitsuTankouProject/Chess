@@ -5,12 +5,15 @@ Logs/
 Obj/
 MemoryCaptures/
 
+# User settings
 UserSettings/
 
-
-# Ignore the editor settings
+# IDE
 .vscode/
 .vs/
+.idea/
+
+# Visual Studio / Rider
 *.csproj
 *.unityproj
 *.sln
@@ -24,9 +27,21 @@ UserSettings/
 *.pdb
 *.opendb
 
-
-# ビルド結果
+# Build results
 Build/
 Builds/
+
+# Android
+.gradle/
+*.apk
+*.aab
+
+# Unity package
+*.unitypackage
+
+# Mac
+.DS_Store
+
+# Unity settings
 UserSettings/EditorUserSettings.asset
 ProjectSettings/SceneTemplateSettings.json
