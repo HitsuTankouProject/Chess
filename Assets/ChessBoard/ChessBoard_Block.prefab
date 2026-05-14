@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 47fb6011726d6674dab52e6e9be4f10d, type: 2}
+  - {fileID: 2100000, guid: 467be1afed9221c4f95f9f603561c59a, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -138,8 +138,8 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
-  m_Black: {fileID: 0}
-  m_White: {fileID: 0}
-  m_CanGo: {fileID: 0}
+  m_Black: {fileID: 2100000, guid: 467be1afed9221c4f95f9f603561c59a, type: 2}
+  m_White: {fileID: 2100000, guid: d79e907371ab7004692d10b8a43af673, type: 2}
+  m_CanGo: {fileID: 2100000, guid: 2f15a097bbf1f9f41951b7105c188d27, type: 2}
   isCanGo: 0
   test: 0

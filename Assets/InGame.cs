@@ -74,6 +74,9 @@ public class InGame : MonoBehaviour
 {
     private PoolManager _poolManager => PoolManager.Instance;
     private Camera _camera => Camera.main;
+    private ChessBoard _chessBoard => ChessBoard.Instance;
+
+
     public static InGame Instance { get; private set; }
     private void Awake()
     {
@@ -88,16 +91,25 @@ public class InGame : MonoBehaviour
     }
     public InGameStage inGameStage { get; private set; } = InGameStage.Init;
 
-    
-
-
-    public ChessColor nowTurn {  get; private set; } = ChessColor.White;
+    #region Camera Turn
     private readonly CameraView whiteView = new CameraView(new Vector3(0, 70, -54), new Vector3(55, 0, 0));
     private readonly CameraView blackView = new CameraView(new Vector3(0, 70, 54), new Vector3(55, 180, 0));
+    private float radius => Math.Abs(whiteView.position.z - blackView.position.z) / 2;
+    private readonly Vector3 center = new Vector3(0, 70, 0);
+
     private readonly Dictionary<ChessColor, CameraView> turnView = new Dictionary<ChessColor, CameraView>();
     private CameraView nowCameraView => turnView[nowTurn];
 
-    private IEnumerator CameraChange()
+    #endregion
+
+
+    public ChessColor nowTurn {  get; private set; } = ChessColor.White;
+
+
+
+    private const float cameraTurnTime = 2.0f;
+
+    private IEnumerator CameraTurn()
     {
         if (turnView.Count == 0)
         {
@@ -105,26 +117,80 @@ public class InGame : MonoBehaviour
             turnView[ChessColor.Black] = blackView;
         }
 
+        float timer = 0;
+        CameraView basicView = nowTurn == ChessColor.White ? blackView: whiteView;
+
+
+        while (timer < cameraTurnTime)
+        {
+            timer += Time.deltaTime;
+
+            float turnAngle = 180 * (timer / cameraTurnTime);
+            turnAngle += basicView.angle.y;
+            _camera.transform.rotation = Quaternion.Euler(55, turnAngle, 0);
+
+            float radian = turnAngle * Mathf.Deg2Rad;
+            float targetX = center.x + 54 * Mathf.Sin(radian);
+            float targetZ = center.z - 54 * Mathf.Cos(radian);
+
+            _camera.transform.position = new Vector3(targetX, basicView.position.y, targetZ);
+
+            yield return null;
+        }
+
         _camera.transform.position = nowCameraView.position;
         _camera.transform.rotation = Quaternion.Euler(nowCameraView.angle);
-
-
-        yield return null;
-
     }
 
-    public void TurnChange()
+    public IEnumerator TurnChange()
     {
         inGameStage = InGameStage.TurnChanging;
+
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
-        CameraChange();
+
+        yield return StartCoroutine(CameraTurn());
+
+
+
+
+        inGameStage = InGameStage.TurnStart;
+
+
     }
 
 
+
+
+
+
+    private void InGameInit()
+    {
+        inGameStage = InGameStage.Init;
+
+        _chessBoard.ChessBoard_Init();
+
+        inGameStage = InGameStage.TurnStart;
+    }
 
     private void Start()
     {
+        InGameInit();
+
     }
+
+    public bool test = false;
+    private void Update()
+    {
+        if (test)
+        {
+            test = false;
+
+            StartCoroutine(CameraTurn());
+        }
+
+
+    }
+
 
 
 }

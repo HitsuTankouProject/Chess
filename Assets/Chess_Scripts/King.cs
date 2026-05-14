@@ -39,4 +39,41 @@ public class King : ChessBasic
         _chessBoard.ShowCanGo(possibleMoveList);
     }
 
+    public override void GotEaten()
+    {
+       base.GotEaten();
+       ChessBlock targetSpawn = color == ChessColor.White ? _chessBoard.white_KingChessSpawn : _chessBoard.black_KingChessSpawn;
+       if (targetSpawn == null)
+        {
+            Debug.LogError("No Spawn Location");
+            return;
+        }
+
+
+        bool isSpawnHaveChess = _chessBoard.board.ContainsKey(targetSpawn.position);
+        if (!isSpawnHaveChess)
+        {
+            _chessBoard.GenChess(targetSpawn.position, new Pair<ChessColor, ChessType>(color, ChessType.King));
+        }
+        else
+        {
+            ChessBasic spawnChess = _chessBoard.board[targetSpawn.position];
+            bool sameColor = _chessBoard.board[targetSpawn.position].color == color;
+            bool isPawn = _chessBoard.board[targetSpawn.position].type == ChessType.Pawn;
+
+            if (!isPawn && !sameColor)
+            {
+                spawnChess.GotEaten();
+                _chessBoard.GenChess(targetSpawn.position, new Pair<ChessColor, ChessType>(color, ChessType.King));
+            }
+
+
+
+
+
+        }
+
+    }
+
+
 }

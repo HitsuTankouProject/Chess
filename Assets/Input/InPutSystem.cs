@@ -63,13 +63,14 @@ public class InPutSystem : MonoBehaviour
         {
             pickIngChess.Move(result);
 
-            _inGame.TurnChange();
+            StartCoroutine(_inGame.TurnChange());
+           
         }
         else if (chessCanGo && posHaveChess)
         {
             _chessBoard.board[result].GotEaten();
             pickIngChess.Move(result);
-            _inGame.TurnChange();
+            StartCoroutine(_inGame.TurnChange());
         }
 
         pickIngChess = null;
@@ -78,7 +79,7 @@ public class InPutSystem : MonoBehaviour
     }
     public void InPutSystem_Update()
     {
-        if (!inPutDevice.mouse.rightButton.wasPressedThisFrame)
+        if (!inPutDevice.mouse.rightButton.wasPressedThisFrame || InGame.Instance.inGameStage != InGameStage.TurnStart) 
             return;
         Vector2 mouse = inPutDevice.mouse.position.ReadValue();
         Vector3 mouseWorldPos;
