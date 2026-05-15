@@ -1,6 +1,79 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
+
+class Rusher : BuffBasic
+{
+    public override ChessType buffChess => ChessType.Rook;
+    public override string buffName => "Rusher";
+
+    public bool canThroughSameColor = true;
+    public bool canThroughNonSameColor = true;
+    public bool canEatThroughNonSameColorChess = false;
+
+    public override void BuffInit()
+    {
+        canThroughSameColor = false;
+        canThroughNonSameColor = false;
+        canEatThroughNonSameColorChess = false;
+    }
+
+    public override void FirstLevel()
+    {
+        canThroughSameColor = true;
+    }
+    public override void SecondLevel()
+    {
+        canThroughNonSameColor = true;
+    }
+    public override void ThirdLevel()
+    {
+        canEatThroughNonSameColorChess = true;
+    }
+}
+
+class Guardian : BuffBasic
+{
+    public override ChessType buffChess => ChessType.Rook;
+    public override string buffName => "Guardian";
+
+    public HashSet<Vector2Int> protectArea = new HashSet<Vector2Int>();
+    private readonly HashSet<Vector2Int> firstProtectArea = new HashSet<Vector2Int>() 
+    {
+        Vector2Int.left, Vector2Int.right
+    };
+    private readonly HashSet<Vector2Int> secondProtectArea = new HashSet<Vector2Int>()
+    {
+        Vector2Int.up, Vector2Int.down
+    };
+    private readonly HashSet<Vector2Int> thridProtectArea = new HashSet<Vector2Int>() 
+    {
+        new Vector2Int(-1, 1), 
+        new Vector2Int(1, 1) , 
+        new Vector2Int(-1, 1), 
+        new Vector2Int(-1, -1) 
+    
+    };
+
+    public override void BuffInit()
+    {
+        protectArea = new HashSet<Vector2Int>();
+    }
+
+    public override void FirstLevel()
+    {
+        protectArea.AddRange(firstProtectArea);
+    }
+    public override void SecondLevel()
+    {
+        protectArea.AddRange(secondProtectArea);
+    }
+    public override void ThirdLevel()
+    {
+        protectArea.AddRange(thridProtectArea);
+    }
+}
+
 
 public class Rook : ChessBasic
 {
@@ -8,11 +81,33 @@ public class Rook : ChessBasic
 
     public override string ChessName() { return "Rook"; }
 
-    private List<Vector2Int> directions = new List<Vector2Int>
+    private readonly List<Vector2Int> directions = new List<Vector2Int>
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+
+    private Rusher rusherBuff = new Rusher();
+    private Guardian guardianBuff = new Guardian();
+
+    private enum MoveJudgment
+    {
+        Stop, KeepGoOn, CanEatAndStop,CanEatAndThrough, Error
+    }
+    MoveJudgment MoveJudgmentResult(ChessBasic chess)
+    {
+        if(!rusherBuff.canThroughSameColor)return MoveJudgment.Stop;
+        bool sameColor = chess.color == color;
+        if (sameColor) return MoveJudgment.KeepGoOn;
+        else if (!sameColor && !rusherBuff.canThroughNonSameColor) return MoveJudgment.CanEatAndStop;
+        else if(!sameColor && rusherBuff.canThroughNonSameColor) return MoveJudgment.CanEatAndThrough;
+
+        return MoveJudgment.Error;
+
+    }
+
     public override void FindPossibleMove()
     {
         possibleMoveList.Clear();
+        canEatChessPosition.Clear();
+
 
         foreach (var dir in directions)
         {
@@ -26,12 +121,23 @@ public class Rook : ChessBasic
 
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
-                    if (chess.color != this.color)
+                    MoveJudgment judgment = MoveJudgmentResult(chess);
+
+                    if (judgment == MoveJudgment.Stop) break;
+                    else if(judgment == MoveJudgment.KeepGoOn) continue;
+                    else if (judgment == MoveJudgment.CanEatAndStop)
                     {
                         possibleMoveList.Add(targetPos);
+                        canEatChessPosition.Add(targetPos);
+                        break;
+                    }
+                    else if (judgment == MoveJudgment.CanEatAndThrough)
+                    {
+                        possibleMoveList.Add(targetPos);
+                        canEatChessPosition.Add(targetPos);
+                        continue;
                     }
 
-                    break;
                 }
                 else
                 {
@@ -40,10 +146,25 @@ public class Rook : ChessBasic
             }
         }
 
-        _chessBoard.ShowCanGo(possibleMoveList);
+    _chessBoard.ShowCanGo(possibleMoveList);
+
     }
 
+    public bool GuardianBuff(ChessBasic gotEatenChess)
+    {
+        if (guardianBuff.protectArea.Count == 0) return false;
+        foreach(Vector2Int protectSpot in guardianBuff.protectArea)
+        {
+            Vector2Int target = position + protectSpot;
+            if(gotEatenChess.position== target)
+            {
+                return true;
+            }
 
+        }
+
+        return false;
+    }
 
 
 

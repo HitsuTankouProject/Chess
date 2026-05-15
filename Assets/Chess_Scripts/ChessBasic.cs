@@ -43,6 +43,8 @@ public abstract class ChessBasic : MonoBehaviour
     public virtual string ChessName() { return "ChessBasic"; }
     /// <summary>　 移動可能マス一覧　</summary>
     public HashSet<Vector2Int> possibleMoveList = new HashSet<Vector2Int>();
+
+    public HashSet<Vector2Int> canEatChessPosition = new HashSet<Vector2Int>();
     /// <summary>　移動可能位置探索 派生クラスでオーバーライドして使用 </summary>
     public virtual void FindPossibleMove() { }
 
