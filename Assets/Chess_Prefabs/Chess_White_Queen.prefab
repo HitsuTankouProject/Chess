@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 255922750423743688}
-  - component: {fileID: 1095067259030717550}
   - component: {fileID: 4518577378307079178}
+  - component: {fileID: -4293889364283292236}
   m_Layer: 7
   m_Name: Chess_White_Queen
   m_TagString: Untagged
@@ -34,19 +34,6 @@ Transform:
   - {fileID: 4750479015651370871}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1095067259030717550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6422178441675632176}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a546cd8a9742fd54bbbc8db2ba7c7c86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Queen
-  color: 0
 --- !u!65 &4518577378307079178
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -68,6 +55,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 5, y: 17.088455, z: 5}
   m_Center: {x: 0, y: 8.582199, z: 0}
+--- !u!114 &-4293889364283292236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6422178441675632176}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a546cd8a9742fd54bbbc8db2ba7c7c86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Queen
+  color: 0
+  m_Black: {fileID: 2100000, guid: 3f43eb9169b3c5d448cb05118c395b4f, type: 2}
+  m_White: {fileID: 2100000, guid: 03b949b15cde60c4ebcb14deba8e63c0, type: 2}
 --- !u!1 &7800455675289101389
 GameObject:
   m_ObjectHideFlags: 0

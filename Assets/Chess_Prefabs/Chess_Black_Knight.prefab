@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3040636703967237591}
-  - component: {fileID: 5325591691505790024}
   - component: {fileID: 806191377679814414}
+  - component: {fileID: -9130164132303295612}
   m_Layer: 7
   m_Name: Chess_Black_Knight
   m_TagString: Untagged
@@ -34,19 +34,6 @@ Transform:
   - {fileID: 2844619927222202901}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -180, z: 0}
---- !u!114 &5325591691505790024
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3351022430218971031}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2277c40c65b63d9448ff48a075e5464c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Knight
-  color: 1
 --- !u!65 &806191377679814414
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -68,6 +55,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 5, y: 14.674181, z: 5}
   m_Center: {x: -0, y: 7.375062, z: -0}
+--- !u!114 &-9130164132303295612
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3351022430218971031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2277c40c65b63d9448ff48a075e5464c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Knight
+  color: 1
+  m_Black: {fileID: 2100000, guid: 01cf40037a1b86c44a63d06c71650589, type: 2}
+  m_White: {fileID: 2100000, guid: 5b6451ab7d2dae94fa0acf415098eb64, type: 2}
 --- !u!1 &4725419759336782406
 GameObject:
   m_ObjectHideFlags: 0

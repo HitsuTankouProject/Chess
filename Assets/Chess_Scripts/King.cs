@@ -1,11 +1,99 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
+
+
+public class SageKing : BuffBasic
+{
+    public override ChessType buffChess => ChessType.King;
+    public override string buffName => "SageKing";
+
+    public bool canChangeSpawnWithWhiteBlock = false;
+    public bool canCorrodeChess = false;
+    public bool winWentPosIsOthersKingStartingPoint = false;
+
+   
+    public override void ResetBuff()
+    {
+        canChangeSpawnWithWhiteBlock = false;
+        canCorrodeChess = false;
+        winWentPosIsOthersKingStartingPoint = false;
+    }
+    public override void FirstLevel()
+    {
+        canChangeSpawnWithWhiteBlock = true;
+    }
+    public override void SecondLevel()
+    {
+        canCorrodeChess = true;
+    }
+    public override void ThirdLevel()
+    {
+        winWentPosIsOthersKingStartingPoint = true;
+    }
+
+}
+
+
+public class MadKing : BuffBasic
+{
+    public override ChessType buffChess => ChessType.King;
+    public override string buffName => "MadKing";
+
+    public const int extraFindRange = 3;
+    public Sorcerer sorcerer = new Sorcerer();
+    public Charger charger = new Charger();
+
+    public override void ResetBuff()
+    {
+        _buffChess.findRange = 1;
+        sorcerer.LevelUpToTargetLevel(0, out bool successSorcerer);
+        charger.LevelUpToTargetLevel(0, out bool successCharger);
+
+    }
+
+    public override void FirstLevel()
+    {
+        _buffChess.findRange = extraFindRange;
+    }
+    public override void SecondLevel()
+    {
+        sorcerer.LevelUpToTargetLevel(3, out bool success);
+
+    }
+    public override void ThirdLevel()
+    {
+        charger.LevelUpToTargetLevel(3, out bool success);
+
+    }
+
+}
+
+
+
 
 public class King : ChessBasic
 {
     public override ChessType type => ChessType.King;
 
     public override string ChessName() { return "King"; }
+
+    public bool haveBarrier { get; private set; } = false;
+    public void AddBarrier()
+    {
+        if (haveBarrier) return;
+        haveBarrier = true;
+    }
+
+    public SageKing sageKing = new SageKing();
+    public MadKing madKing = new MadKing();
+
+
+    public override void ChessInit()
+    {
+
+    }
+
 
     private List<Vector2Int> directions = new List<Vector2Int>
     {Vector2Int.up,Vector2Int.down,Vector2Int.left,Vector2Int.right,
@@ -41,6 +129,7 @@ public class King : ChessBasic
 
     public override void GotEaten()
     {
+
        base.GotEaten();
        ChessBlock targetSpawn = color == ChessColor.White ? _chessBoard.white_KingChessSpawn : _chessBoard.black_KingChessSpawn;
        if (targetSpawn == null)

@@ -2,7 +2,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-class Rusher : BuffBasic
+public class Rusher : BuffBasic
 {
     public override ChessType buffChess => ChessType.Rook;
     public override string buffName => "Rusher";
@@ -11,13 +11,12 @@ class Rusher : BuffBasic
     public bool canThroughNonSameColor = true;
     public bool canEatThroughNonSameColorChess = false;
 
-    public override void BuffInit()
+    public override void ResetBuff()
     {
         canThroughSameColor = false;
         canThroughNonSameColor = false;
         canEatThroughNonSameColorChess = false;
     }
-
     public override void FirstLevel()
     {
         canThroughSameColor = true;
@@ -32,7 +31,7 @@ class Rusher : BuffBasic
     }
 }
 
-class Guardian : BuffBasic
+public class Guardian : BuffBasic
 {
     public override ChessType buffChess => ChessType.Rook;
     public override string buffName => "Guardian";
@@ -55,7 +54,12 @@ class Guardian : BuffBasic
     
     };
 
-    public override void BuffInit()
+    public override void BuffInit(ChessBasic target)
+    {
+        base.BuffInit(target);
+    }
+
+    public override void ResetBuff()
     {
         protectArea = new HashSet<Vector2Int>();
     }
@@ -86,6 +90,13 @@ public class Rook : ChessBasic
 
     private Rusher rusherBuff = new Rusher();
     private Guardian guardianBuff = new Guardian();
+
+    public override void ChessInit()
+    {
+        rusherBuff.BuffInit(this);
+        guardianBuff.BuffInit(this);
+    }
+
 
     private enum MoveJudgment
     {

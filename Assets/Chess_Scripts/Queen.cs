@@ -1,10 +1,96 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Witcher : BuffBasic
+{
+    public override ChessType buffChess => ChessType.Queen;
+    public override string buffName => "Witcher";
+
+    public bool canChangeToKing = false;
+    public bool canCallKingToProtect = false;
+    public King king;
+
+    public override void ResetBuff()
+    {
+        canChangeToKing = false;
+        canCallKingToProtect = false;
+        Pair<ChessColor, ChessType> kingInform = new Pair<ChessColor, ChessType>(_buffChess.color, ChessType.King);
+        foreach (ChessBasic target in ChessBoard.Instance.board.Values)
+        {
+            if (target.chessInfo == kingInform)
+            {
+                king = target.GetComponent<King>();
+                return;
+            }
+        }
+    }
+
+    public override void FirstLevel()
+    {
+        king.findRange = 2;
+    }
+    public override void SecondLevel()
+    {
+        canChangeToKing = true;
+    }
+
+    public override void ThirdLevel()
+    {
+        canCallKingToProtect = true;
+    }
+
+}
+
+public class Beauty : BuffBasic
+{
+    public override ChessType buffChess => ChessType.Queen;
+    public override string buffName => "Beauty";
+
+    public bool canProtectByKnight = false;
+    public bool removeTheAreaLimit = false;
+    public bool canCharmChess = false;
+
+    public override void ResetBuff()
+    {
+
+        canProtectByKnight = false;
+        removeTheAreaLimit = false;
+        canCharmChess = false;
+    }
+
+
+    public override void FirstLevel()
+    {
+        canProtectByKnight = true;
+
+    }
+    public override void SecondLevel()
+    {
+        removeTheAreaLimit = true;
+
+    }
+
+    public override void ThirdLevel()
+    {
+        canCharmChess = true;
+    }
+
+}
+
+
 public class Queen : ChessBasic
 {
     public override ChessType type => ChessType.Queen;
     public override string ChessName() { return "Queen"; }
+    
+    public Witcher witcher = new Witcher();
+    public Beauty beauty = new Beauty();
+
+    public override void ChessInit()
+    {
+        witcher.BuffInit(this);
+        beauty.BuffInit(this);
+    }
 
     private List<Vector2Int> directions = new List<Vector2Int>
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right, 

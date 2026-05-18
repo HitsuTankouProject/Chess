@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6181162895341708826}
-  - component: {fileID: 469281546387767665}
   - component: {fileID: 8406786642565054608}
+  - component: {fileID: 5699348654973864166}
   m_Layer: 7
   m_Name: Chess_Black_Rook
   m_TagString: Untagged
@@ -34,19 +34,6 @@ Transform:
   - {fileID: 5376025736075665299}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &469281546387767665
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1465986773397141253}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e661f28fa0cfbef4eb5277444ae91fc8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Rook
-  color: 1
 --- !u!65 &8406786642565054608
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -68,6 +55,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 5, y: 12.150356, z: 5}
   m_Center: {x: 0, y: 6.1131496, z: 0}
+--- !u!114 &5699348654973864166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465986773397141253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e661f28fa0cfbef4eb5277444ae91fc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Rook
+  color: 1
+  m_Black: {fileID: 2100000, guid: 64c76bd802afea64aa92b185bce4a398, type: 2}
+  m_White: {fileID: 2100000, guid: 6eebf98b34495b54899f213d5dad6547, type: 2}
 --- !u!1 &2809950126666236101
 GameObject:
   m_ObjectHideFlags: 0

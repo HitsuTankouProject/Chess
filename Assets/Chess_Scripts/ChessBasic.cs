@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -31,6 +32,11 @@ public abstract class ChessBasic : MonoBehaviour
     private PoolObject poolObject => this.gameObject.GetComponent< PoolObject>();
     /// <summary>　駒の色 </summary>
     public ChessColor color;
+
+    public Material m_Black;
+    public Material m_White;
+
+
     /// <summary>　駒タイプ　派生クラス側で定義　</summary>
     public abstract ChessType type { get;}
     /// <summary>　駒の色と種類情報　</summary>
@@ -41,10 +47,25 @@ public abstract class ChessBasic : MonoBehaviour
     public void SetPosition(Vector2Int pos) => position = pos;
     /// <summary>　 駒名取得　</summary>
     public virtual string ChessName() { return "ChessBasic"; }
+
+    public virtual void ChessInit(){return;}
+
+    public bool haveBuffed = false;
+
+
+    public bool gotCurse{get;private set;} = false;
+    public void CurceThisChess()=>gotCurse = true;
+    public void PurificationThisChess()
+    {
+        gotCurse = false;
+    }
+
     /// <summary>　 移動可能マス一覧　</summary>
     public HashSet<Vector2Int> possibleMoveList = new HashSet<Vector2Int>();
-
     public HashSet<Vector2Int> canEatChessPosition = new HashSet<Vector2Int>();
+    public int findRange = 1;
+
+
     /// <summary>　移動可能位置探索 派生クラスでオーバーライドして使用 </summary>
     public virtual void FindPossibleMove() { }
 
@@ -69,5 +90,9 @@ public abstract class ChessBasic : MonoBehaviour
         if (poolObject != null) poolObject.pool.Return(this.gameObject);
         else Debug.LogError("Not In Pool");
     }
+
+
+
+
 
 }

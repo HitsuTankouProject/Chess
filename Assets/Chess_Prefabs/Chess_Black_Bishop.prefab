@@ -9,8 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7368941337268547363}
-  - component: {fileID: 2549521145698068687}
   - component: {fileID: 493038264089421120}
+  - component: {fileID: -2171590353182449986}
   m_Layer: 7
   m_Name: Chess_Black_Bishop
   m_TagString: Untagged
@@ -34,19 +34,6 @@ Transform:
   - {fileID: 5332366032237350067}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2549521145698068687
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2641475303949423855}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 31a1bbf3cac516e468a3f0adeb6a8459, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Bishop
-  color: 1
 --- !u!65 &493038264089421120
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -68,6 +55,21 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 5, y: 14, z: 5}
   m_Center: {x: 0, y: 8.243294, z: 0}
+--- !u!114 &-2171590353182449986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2641475303949423855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a1bbf3cac516e468a3f0adeb6a8459, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Bishop
+  color: 1
+  m_Black: {fileID: 2100000, guid: 6894a376e36faaa43a78130ff2227e36, type: 2}
+  m_White: {fileID: 2100000, guid: 4146f39730ed5d5438197f11a0f3bb09, type: 2}
 --- !u!1 &9035581520455180010
 GameObject:
   m_ObjectHideFlags: 0
