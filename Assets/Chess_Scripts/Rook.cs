@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static Player;
 
 public class Rusher : BuffBasic
 {
@@ -88,27 +89,17 @@ public class Rook : ChessBasic
     private readonly List<Vector2Int> directions = new List<Vector2Int>
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-    private Rusher rusherBuff = new Rusher();
-    private Guardian guardianBuff = new Guardian();
-
-    public override void ChessInit()
-    {
-        rusherBuff.BuffInit(this);
-        guardianBuff.BuffInit(this);
-    }
-
-
     private enum MoveJudgment
     {
         Stop, KeepGoOn, CanEatAndStop,CanEatAndThrough, Error
     }
     MoveJudgment MoveJudgmentResult(ChessBasic chess)
     {
-        if(!rusherBuff.canThroughSameColor)return MoveJudgment.Stop;
+        if(_player.rookBuffType!= RookBuff.Rusher) return MoveJudgment.Stop;
         bool sameColor = chess.color == color;
         if (sameColor) return MoveJudgment.KeepGoOn;
-        else if (!sameColor && !rusherBuff.canThroughNonSameColor) return MoveJudgment.CanEatAndStop;
-        else if(!sameColor && rusherBuff.canThroughNonSameColor) return MoveJudgment.CanEatAndThrough;
+        else if (!sameColor && !_player.rusher.canThroughNonSameColor) return MoveJudgment.CanEatAndStop;
+        else if (!sameColor && _player.rusher.canThroughNonSameColor) return MoveJudgment.CanEatAndThrough;
 
         return MoveJudgment.Error;
 
@@ -135,7 +126,7 @@ public class Rook : ChessBasic
                     MoveJudgment judgment = MoveJudgmentResult(chess);
 
                     if (judgment == MoveJudgment.Stop) break;
-                    else if(judgment == MoveJudgment.KeepGoOn) continue;
+                    else if (judgment == MoveJudgment.KeepGoOn) continue;
                     else if (judgment == MoveJudgment.CanEatAndStop)
                     {
                         possibleMoveList.Add(targetPos);
@@ -157,17 +148,17 @@ public class Rook : ChessBasic
             }
         }
 
-    _chessBoard.ShowCanGo(possibleMoveList);
+        _chessBoard.ShowCanGo(possibleMoveList);
 
     }
 
     public bool GuardianBuff(ChessBasic gotEatenChess)
     {
-        if (guardianBuff.protectArea.Count == 0) return false;
-        foreach(Vector2Int protectSpot in guardianBuff.protectArea)
+        if (_player.rookBuffType != RookBuff.Guardian) return false;
+        foreach (Vector2Int protectSpot in _player.guardian.protectArea)
         {
             Vector2Int target = position + protectSpot;
-            if(gotEatenChess.position== target)
+            if (gotEatenChess.position == target)
             {
                 return true;
             }

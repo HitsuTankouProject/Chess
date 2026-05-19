@@ -51,41 +51,41 @@ public class ChessBoard : MonoBehaviour
 
     private readonly Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = new()
     {
-            //{ new Vector2Int(0,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
+            { new Vector2Int(0,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
             { new Vector2Int(1,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Knight )},
-            //{ new Vector2Int(2,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Bishop)},
-            //{ new Vector2Int(3,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Queen)},
+            { new Vector2Int(2,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Bishop)},
+            { new Vector2Int(3,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Queen)},
             { new Vector2Int(4,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.King)},
-            //{ new Vector2Int(5,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Bishop)},
-            //{ new Vector2Int(6,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Knight)},
-            //{ new Vector2Int(7,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
+            { new Vector2Int(5,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Bishop)},
+            { new Vector2Int(6,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Knight)},
+            { new Vector2Int(7,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
 
             { new Vector2Int(0,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            //{ new Vector2Int(1,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn  )},
-            //{ new Vector2Int(2,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            //{ new Vector2Int(3,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            //{ new Vector2Int(4,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            //{ new Vector2Int(5,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            { new Vector2Int(1,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn  )},
+            { new Vector2Int(2,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            { new Vector2Int(3,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            { new Vector2Int(4,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            { new Vector2Int(5,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
             { new Vector2Int(6,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            //{ new Vector2Int(7,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            { new Vector2Int(7,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
 
-            //{ new Vector2Int(0,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            //{ new Vector2Int(1,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn  )},
-            //{ new Vector2Int(2,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            //{ new Vector2Int(3,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            //{ new Vector2Int(4,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            //{ new Vector2Int(5,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            //{ new Vector2Int(6,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            //{ new Vector2Int(7,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            { new Vector2Int(0,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            { new Vector2Int(1,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn  )},
+            { new Vector2Int(2,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            { new Vector2Int(3,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            { new Vector2Int(4,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            { new Vector2Int(5,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            { new Vector2Int(6,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            { new Vector2Int(7,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
 
-            //{ new Vector2Int(0,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
-            //{ new Vector2Int(1,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Knight )},
-            //{ new Vector2Int(2,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Bishop)},
-            //{ new Vector2Int(3,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Queen)},
+            { new Vector2Int(0,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
+            { new Vector2Int(1,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Knight )},
+            { new Vector2Int(2,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Bishop)},
+            { new Vector2Int(3,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Queen)},
             { new Vector2Int(4,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.King)},
-            //{ new Vector2Int(5,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Bishop)},
-            //{ new Vector2Int(6,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Knight)},
-            //{ new Vector2Int(7,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
+            { new Vector2Int(5,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Bishop)},
+            { new Vector2Int(6,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Knight)},
+            { new Vector2Int(7,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
 
     };
 
@@ -276,8 +276,10 @@ public class ChessBoard : MonoBehaviour
         CheckChessBoardError();
         _poolManager.AllPoolInit();
         ChessBlockInit();
+    }
 
-
+    public void ChessBoard_TurnInit()
+    {
         PrefabDictionaryInit();
         GenChessAtStart();
         FindRandomKingChessSpawn();

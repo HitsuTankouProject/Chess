@@ -32,7 +32,6 @@ public abstract class ChessBasic : MonoBehaviour
     private PoolObject poolObject => this.gameObject.GetComponent< PoolObject>();
     /// <summary>　駒の色 </summary>
     public ChessColor color;
-
     public Material m_Black;
     public Material m_White;
 
@@ -48,7 +47,11 @@ public abstract class ChessBasic : MonoBehaviour
     /// <summary>　 駒名取得　</summary>
     public virtual string ChessName() { return "ChessBasic"; }
 
-    public virtual void ChessInit(){return;}
+    public Player _player;
+    public virtual void ChessInit(Player player)
+    {
+        _player = player;
+    }
 
     public bool haveBuffed = false;
 

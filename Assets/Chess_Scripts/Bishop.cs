@@ -114,14 +114,6 @@ public class Bishop : ChessBasic
     public Sorcerer sorcerer = new Sorcerer();
     public Monk monk = new Monk();
 
-
-    public override void ChessInit()
-    {
-        sorcerer.BuffInit(this);
-        monk.BuffInit(this);
-    }
-
-
     private List<Vector2Int> directions = new List<Vector2Int>
      { new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
 

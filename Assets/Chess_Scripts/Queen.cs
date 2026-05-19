@@ -86,11 +86,6 @@ public class Queen : ChessBasic
     public Witcher witcher = new Witcher();
     public Beauty beauty = new Beauty();
 
-    public override void ChessInit()
-    {
-        witcher.BuffInit(this);
-        beauty.BuffInit(this);
-    }
 
     private List<Vector2Int> directions = new List<Vector2Int>
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right, 

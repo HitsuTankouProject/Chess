@@ -76,8 +76,14 @@ public class InGame : MonoBehaviour
     private Camera _camera => Camera.main;
     private ChessBoard _chessBoard => ChessBoard.Instance;
 
+    public Player whiteChessPlayer;
+    public Player blackChessPlayer;
 
     public static InGame Instance { get; private set; }
+
+
+
+
     private void Awake()
     {
         if (Instance == null)
@@ -104,8 +110,6 @@ public class InGame : MonoBehaviour
 
 
     public ChessColor nowTurn {  get; private set; } = ChessColor.White;
-
-
 
     private const float cameraTurnTime = 2.0f;
 
@@ -157,20 +161,35 @@ public class InGame : MonoBehaviour
 
 
     }
-
-
-
-
-
-
     private void InGameInit()
     {
         inGameStage = InGameStage.Init;
 
         _chessBoard.ChessBoard_Init();
+        whiteChessPlayer.Player_Init(ChessColor.White);
+        blackChessPlayer.Player_Init(ChessColor.Black);
 
         inGameStage = InGameStage.TurnStart;
+
+        TurnInit();
     }
+
+    private void TurnInit()
+    {
+        _chessBoard.ChessBoard_TurnInit();
+
+        List<ChessBasic> whiteChess = new List<ChessBasic>();
+        List<ChessBasic> blackChess = new List<ChessBasic>();
+
+        foreach (ChessBasic chess in _chessBoard.board.Values)
+        {
+            if(chess.color == ChessColor.White) whiteChess.Add(chess);
+            else blackChess.Add(chess);
+        }
+        whiteChessPlayer.Player_TurnInit(whiteChess);
+        blackChessPlayer.Player_TurnInit(blackChess);
+    }
+
 
     private void Start()
     {

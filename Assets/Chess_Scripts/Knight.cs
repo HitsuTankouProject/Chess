@@ -83,13 +83,6 @@ public class Knight : ChessBasic
     public Charger charger = new Charger();
     public Skirmisher skirmisher = new Skirmisher();
 
-    public override void ChessInit()
-    {
-        charger.BuffInit(this);
-        skirmisher.BuffInit(this);
-
-    }
-
     private List<Vector2Int> directions = new List<Vector2Int>
     {
         new Vector2Int(2, 1),
