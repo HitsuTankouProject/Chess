@@ -89,17 +89,17 @@ public class Monk : BuffBasic
 
     public void AddBarrierToKing()
     {
-        King king;
-        Pair<ChessColor, ChessType> kingInform = new Pair<ChessColor, ChessType>(_buffChess.color, ChessType.King);
-        foreach (ChessBasic target in ChessBoard.Instance.board.Values)
-        {
-            if (target.chessInfo == kingInform)
-            {
-                king = target.GetComponent<King>();
-                king.AddBarrier();
-                return;
-            }
-        }
+        //King king;
+        //Pair<ChessColor, ChessType> kingInform = new Pair<ChessColor, ChessType>(_buffChess.color, ChessType.King);
+        //foreach (ChessBasic target in ChessBoard.Instance.board.Values)
+        //{
+        //    if (target.chessInfo == kingInform)
+        //    {
+        //        king = target.GetComponent<King>();
+        //        king.AddBarrier();
+        //        return;
+        //    }
+        //}
 
     }
 
@@ -110,12 +110,55 @@ public class Bishop : ChessBasic
 {
     public override ChessType type => ChessType.Bishop;
     public override string ChessName() { return "Bishop"; }
-
-    public Sorcerer sorcerer = new Sorcerer();
-    public Monk monk = new Monk();
+    public override int findRange { get; protected set; } = 8;
 
     private List<Vector2Int> directions = new List<Vector2Int>
      { new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
+
+    private void ExtraFindPossibleMove()
+    {
+        if (_player.bishopBuffType == Player.BishopBuff.None) return;
+        HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
+        int extraCanGoRange;
+
+        if (_player.bishopBuffType == Player.BishopBuff.Sorcerer)
+        {
+            extraCanGoArea = _player.sorcerer.extraCanGoArea;
+            extraCanGoRange = _player.sorcerer.extraCanGoRange;
+        }
+        else
+        {
+            extraCanGoArea = _player.monk.extraCanGoArea;
+            extraCanGoRange = _player.monk.extraCanGoRange;
+        }
+
+        foreach (var dir in extraCanGoArea)
+        {
+            for (int i = 1; i <= extraCanGoRange; i++)
+            {
+                Vector2Int targetPos = position + dir * i;
+
+                if (targetPos.x < 0 || targetPos.x >= 8 ||
+                    targetPos.y < 0 || targetPos.y >= 8)
+                    break;
+
+
+                if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
+                {
+                    if (chess.color != this.color)
+                    {
+                        possibleMoveList.Add(targetPos);
+                        canEatChessPosition.Add(targetPos);
+                    }
+                    break;
+                }
+                else
+                {
+                    possibleMoveList.Add(targetPos);
+                }
+            }
+        }
+    }
 
     public override void FindPossibleMove()
     {
@@ -147,69 +190,7 @@ public class Bishop : ChessBasic
             }
         }
 
-        if (sorcerer.extraCanGoArea.Count > 0)
-        {
-            foreach (var dir in sorcerer.extraCanGoArea)
-            {
-                for (int i = 1;i <= sorcerer.extraCanGoRange; i++)
-                {
-                    Vector2Int targetPos = position + dir * i;
-
-                    if (targetPos.x < 0 || targetPos.x >= 8 ||
-                        targetPos.y < 0 || targetPos.y >= 8)
-                        break;
-
-
-                    if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
-                    {
-                        if (chess.color != this.color)
-                        {
-                            possibleMoveList.Add(targetPos);
-                            canEatChessPosition.Add(targetPos);
-                        }
-                        break;
-                    }
-                    else
-                    {
-                        possibleMoveList.Add(targetPos);
-                    }
-                }
-
-                    
-            }
-        }
-
-        if (monk.extraCanGoArea.Count > 0)
-        {
-            foreach (var dir in monk.extraCanGoArea)
-            {
-                for (int i = 1; i <= monk.extraCanGoRange; i++)
-                {
-                    Vector2Int targetPos = position + dir * i;
-
-                    if (targetPos.x < 0 || targetPos.x >= 8 ||
-                        targetPos.y < 0 || targetPos.y >= 8)
-                        break;
-
-
-                    if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
-                    {
-                        if (chess.color != this.color)
-                        {
-                            possibleMoveList.Add(targetPos);
-                            canEatChessPosition.Add(targetPos);
-                        }
-                        break;
-                    }
-                    else
-                    {
-                        possibleMoveList.Add(targetPos);
-                    }
-                }
-
-
-            }
-        }
+        ExtraFindPossibleMove();
 
         _chessBoard.ShowCanGo(possibleMoveList);
     }

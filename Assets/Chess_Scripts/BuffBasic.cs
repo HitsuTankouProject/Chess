@@ -6,7 +6,7 @@ using System.Diagnostics;
 public abstract class BuffBasic
 {
     public abstract ChessType buffChess { get; }
-    public ChessBasic _buffChess { get; private set; }
+    public Player _player {  get; private set; }  
 
     public abstract string buffName { get; }
 
@@ -70,11 +70,11 @@ public abstract class BuffBasic
 
     }
 
-    public virtual void BuffInit(ChessBasic target)
+    public virtual void BuffInit(Player player)
     {
         nowBuffLevel = 0;
         ResetBuff();
-        _buffChess = target;
+        _player = player;
     }
 
 }

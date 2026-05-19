@@ -16,7 +16,7 @@ public class Scout : BuffBasic
         cantPromotion = false;
         canReceiveMoveAreaFromYouAteChess = false;
         extraMoveArea.Clear();
-        _buffChess.findRange = 1;
+        //_buffChess.findRange = 1;
 
     }
 
@@ -30,15 +30,15 @@ public class Scout : BuffBasic
     }
     public override void ThirdLevel()
     {
-        _buffChess.findRange = 3;
+        //_buffChess.findRange = 3;
     }
 }
 
 
-public class Shapeshifter : BuffBasic
+public class Substitute : BuffBasic
 {
     public override ChessType buffChess => ChessType.Pawn;
-    public override string buffName => "Shapeshifter";
+    public override string buffName => "Substitute";
     public bool cantPromotion = false;
     public bool cantKillChessExceptKing = false;
     public bool cantKillKingWhenPawnExist = false;
@@ -71,6 +71,9 @@ public class Pawn : ChessBasic
     public override ChessType type => ChessType.Pawn;
     private bool isFirstMove = true;
     public override string ChessName() { return "Pawn"; }
+    public override int findRange { get; protected set; } = 1;
+
+
 
     private List<Vector2Int> attackDirs = new List<Vector2Int>
     { new Vector2Int(1, 1), new Vector2Int(-1, 1) };

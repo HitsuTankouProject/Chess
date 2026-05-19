@@ -80,6 +80,8 @@ public class Knight : ChessBasic
 {
     public override ChessType type => ChessType.Knight;
     public override string ChessName() { return "Knight"; }
+    public override int findRange { get; protected set; } = 1;
+
     public Charger charger = new Charger();
     public Skirmisher skirmisher = new Skirmisher();
 

@@ -41,7 +41,7 @@ public abstract class ChessBasic : MonoBehaviour
     /// <summary>　駒の色と種類情報　</summary>
     public Pair<ChessColor, ChessType> chessInfo => new Pair<ChessColor, ChessType>(color, type);
     /// <summary>　現在の盤面座標　</summary>
-    public Vector2Int position { get; private set; }
+    public Vector2Int position { get; private set; } = new Vector2Int(-1,-1);
     /// <summary>　駒座標更新　</summary>
     public void SetPosition(Vector2Int pos) => position = pos;
     /// <summary>　 駒名取得　</summary>
@@ -66,8 +66,7 @@ public abstract class ChessBasic : MonoBehaviour
     /// <summary>　 移動可能マス一覧　</summary>
     public HashSet<Vector2Int> possibleMoveList = new HashSet<Vector2Int>();
     public HashSet<Vector2Int> canEatChessPosition = new HashSet<Vector2Int>();
-    public int findRange = 1;
-
+    public abstract int findRange { get; protected set; }
 
     /// <summary>　移動可能位置探索 派生クラスでオーバーライドして使用 </summary>
     public virtual void FindPossibleMove() { }

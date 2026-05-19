@@ -171,12 +171,12 @@ public class InGame : MonoBehaviour
 
         inGameStage = InGameStage.TurnStart;
 
-        TurnInit();
+        StartCoroutine(TurnInit());
     }
 
-    private void TurnInit()
+    private IEnumerator TurnInit()
     {
-        _chessBoard.ChessBoard_TurnInit();
+        yield return StartCoroutine(_chessBoard.ChessBoard_TurnInit());
 
         List<ChessBasic> whiteChess = new List<ChessBasic>();
         List<ChessBasic> blackChess = new List<ChessBasic>();
@@ -186,7 +186,9 @@ public class InGame : MonoBehaviour
             if(chess.color == ChessColor.White) whiteChess.Add(chess);
             else blackChess.Add(chess);
         }
+
         whiteChessPlayer.Player_TurnInit(whiteChess);
+        Debug.Log(blackChess.Count);
         blackChessPlayer.Player_TurnInit(blackChess);
     }
 

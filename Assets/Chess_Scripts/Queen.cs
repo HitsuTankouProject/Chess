@@ -12,22 +12,22 @@ public class Witcher : BuffBasic
 
     public override void ResetBuff()
     {
-        canChangeToKing = false;
-        canCallKingToProtect = false;
-        Pair<ChessColor, ChessType> kingInform = new Pair<ChessColor, ChessType>(_buffChess.color, ChessType.King);
-        foreach (ChessBasic target in ChessBoard.Instance.board.Values)
-        {
-            if (target.chessInfo == kingInform)
-            {
-                king = target.GetComponent<King>();
-                return;
-            }
-        }
+        //canChangeToKing = false;
+        //canCallKingToProtect = false;
+        //Pair<ChessColor, ChessType> kingInform = new Pair<ChessColor, ChessType>(_buffChess.color, ChessType.King);
+        //foreach (ChessBasic target in ChessBoard.Instance.board.Values)
+        //{
+        //    if (target.chessInfo == kingInform)
+        //    {
+        //        king = target.GetComponent<King>();
+        //        return;
+        //    }
+        //}
     }
 
     public override void FirstLevel()
     {
-        king.findRange = 2;
+        //king.findRange = 2;
     }
     public override void SecondLevel()
     {
@@ -82,7 +82,8 @@ public class Queen : ChessBasic
 {
     public override ChessType type => ChessType.Queen;
     public override string ChessName() { return "Queen"; }
-    
+    public override int findRange { get; protected set; } = 8;
+
     public Witcher witcher = new Witcher();
     public Beauty beauty = new Beauty();
 

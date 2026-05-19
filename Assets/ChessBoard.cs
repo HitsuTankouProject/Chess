@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
-using UnityEngine.Rendering;
 using static ChessBlock;
 
 [Serializable]
@@ -61,21 +61,21 @@ public class ChessBoard : MonoBehaviour
             { new Vector2Int(7,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
 
             { new Vector2Int(0,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(1,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn  )},
-            { new Vector2Int(2,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(3,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(4,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(5,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(6,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            //{ new Vector2Int(1,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn  )},
+            //{ new Vector2Int(2,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            //{ new Vector2Int(3,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            //{ new Vector2Int(4,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            //{ new Vector2Int(5,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            //{ new Vector2Int(6,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
             { new Vector2Int(7,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
 
             { new Vector2Int(0,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(1,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn  )},
-            { new Vector2Int(2,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(3,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(4,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(5,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(6,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            //{ new Vector2Int(1,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn  )},
+            //{ new Vector2Int(2,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            //{ new Vector2Int(3,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            //{ new Vector2Int(4,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            //{ new Vector2Int(5,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            //{ new Vector2Int(6,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
             { new Vector2Int(7,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
 
             { new Vector2Int(0,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
@@ -94,7 +94,7 @@ public class ChessBoard : MonoBehaviour
     public Dictionary<Pair<ChessColor, ChessType>, GameObject> chessPrefabDictionary { get; private set; }
 
     #region Game Initialization
-    private void PrefabDictionaryInit()
+    private bool PrefabDictionaryInit()
     {
         chessPrefabDictionary = new Dictionary<Pair<ChessColor, ChessType>, GameObject>();
         foreach (ChessColor chessColor in Enum.GetValues(typeof(ChessColor)))
@@ -110,9 +110,12 @@ public class ChessBoard : MonoBehaviour
                 else
                 {
                     Debug.LogError($"Prefab not found for {prefabName}");
+                    return false;
                 }
             }
         }
+
+        return true;
     }
 
     private void ChessBlockInit()
@@ -156,22 +159,29 @@ public class ChessBoard : MonoBehaviour
     #endregion
 
     #region Turn Initialization
-    private void GenChessAtStart()
+    private bool GenChessAtStart()
     {
         board.Clear();
         foreach (var entry in chessStartMap)
         {
             GenChess(entry.Key, entry.Value);
         }
+
+        foreach(Vector2Int pos in board.Keys)
+        {
+            if (board[pos].chessInfo != chessStartMap[pos]) return false;
+        }
+
+        return true;
     }
-    private void FindRandomKingChessSpawn()
+
+    private bool FindRandomKingChessSpawn()
     {
         List<ChessBlock> blackChessBlocks = new List<ChessBlock>();
         List<ChessBlock> whiteChessBlocks = new List<ChessBlock>();
 
         foreach (var col in cols)
         {
-
             foreach (var block in col.chessBlocks)
             {
                 if (block.color == ChessBoardColor.Black) blackChessBlocks.Add(block);
@@ -181,6 +191,10 @@ public class ChessBoard : MonoBehaviour
 
         black_KingChessSpawn = blackChessBlocks[UnityEngine.Random.Range(0, blackChessBlocks.Count)];
         white_KingChessSpawn = whiteChessBlocks[UnityEngine.Random.Range(0, whiteChessBlocks.Count)];
+
+        if (black_KingChessSpawn.color != ChessBoardColor.Black || white_KingChessSpawn.color != ChessBoardColor.White) return false;
+
+        return true;
 
         // For Debug
         //black_KingChessSpawn.gameObject.SetActive(false);
@@ -236,7 +250,7 @@ public class ChessBoard : MonoBehaviour
         switch (chessAction)
         {
             case ChessAction.Move:
-                board.Remove(chessBasic.position);
+                if (board.ContainsKey(chessBasic.position)) board.Remove(chessBasic.position);
                 board[position] = chessBasic;
                 chessBasic.SetPosition(position);
                 break;
@@ -278,11 +292,24 @@ public class ChessBoard : MonoBehaviour
         ChessBlockInit();
     }
 
-    public void ChessBoard_TurnInit()
+    public IEnumerator ChessBoard_TurnInit()
     {
-        PrefabDictionaryInit();
-        GenChessAtStart();
-        FindRandomKingChessSpawn();
+        bool prefabDictionaryInitSeccess =  PrefabDictionaryInit();
+        yield return null;
+        bool genChessAtStartSeccess =  GenChessAtStart();
+        yield return null;
+        bool findRandomKingChessSpawnSeccess = FindRandomKingChessSpawn();
+        yield return null;
+
+        if (!prefabDictionaryInitSeccess||!genChessAtStartSeccess||!findRandomKingChessSpawnSeccess)
+        {
+            Debug.LogError(
+                $"PrefabDictionaryInit : {prefabDictionaryInitSeccess}, " +
+                $"GenChessAtStart : {genChessAtStartSeccess}, " +
+                $"FindRandomKingChessSpawn : {findRandomKingChessSpawnSeccess}");
+        }
+        
+
     }
 
 

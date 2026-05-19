@@ -55,10 +55,6 @@ public class Guardian : BuffBasic
     
     };
 
-    public override void BuffInit(ChessBasic target)
-    {
-        base.BuffInit(target);
-    }
 
     public override void ResetBuff()
     {
@@ -85,6 +81,7 @@ public class Rook : ChessBasic
     public override ChessType type => ChessType.Rook;
 
     public override string ChessName() { return "Rook"; }
+    public override int findRange { get; protected set; } = 8;
 
     private readonly List<Vector2Int> directions = new List<Vector2Int>
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };

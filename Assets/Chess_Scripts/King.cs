@@ -46,7 +46,7 @@ public class MadKing : BuffBasic
 
     public override void ResetBuff()
     {
-        _buffChess.findRange = 1;
+        //_buffChess.findRange = 1;
         sorcerer.LevelUpToTargetLevel(0, out bool successSorcerer);
         charger.LevelUpToTargetLevel(0, out bool successCharger);
 
@@ -54,7 +54,7 @@ public class MadKing : BuffBasic
 
     public override void FirstLevel()
     {
-        _buffChess.findRange = extraFindRange;
+        //_buffChess.findRange = extraFindRange;
     }
     public override void SecondLevel()
     {
@@ -75,6 +75,7 @@ public class MadKing : BuffBasic
 public class King : ChessBasic
 {
     public override ChessType type => ChessType.King;
+    public override int findRange { get; protected set; } = 1;
 
     public override string ChessName() { return "King"; }
 
