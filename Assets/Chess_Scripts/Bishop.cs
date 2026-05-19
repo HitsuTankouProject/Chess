@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,6 +14,7 @@ public class Sorcerer : BuffBasic
     public readonly int extraCanGoRange = 2;
 
     public bool canCurseChess;
+    private Player _enemy;
 
     public override void ResetBuff()
     {
@@ -35,24 +35,37 @@ public class Sorcerer : BuffBasic
     public override void ThirdLevel()
     {
         canCurseChess = true;
+
+        _enemy = _player != InGame.Instance.whiteChessPlayer ? 
+            InGame.Instance.whiteChessPlayer : InGame.Instance.blackChessPlayer;
     }
 
     public void CurseChess()
     {
         if (!canCurseChess) return;
-        List<ChessBasic> curseList = new List<ChessBasic>();
 
-        foreach(ChessBasic target in ChessBoard.Instance.board.Values)
+        if (_enemy == null)
         {
-            if (target.color != _buffChess.color)
-            {
-                curseList.Add(target);
-            }
+            Debug.LogError("[Sorcerer] _enemy == null");
+            return;
         }
 
-        int random_Chess_Index = Random.Range(0, curseList.Count);
 
-        curseList[random_Chess_Index].CurceThisChess();
+        List<ChessType> canCurseTypes = new List<ChessType>();
+        foreach (var pair in _enemy.allTheChess)
+        {
+            if (pair.Value == null || pair.Value.Count == 0) continue;
+
+            canCurseTypes.Add(pair.Key); 
+        }
+        if (canCurseTypes.Count == 0) return;
+
+        ChessType chessType = canCurseTypes[Random.Range(0, canCurseTypes.Count)];
+        List<ChessBasic> targetChessList = _enemy.allTheChess[chessType];
+
+
+        int randomIndex = Random.Range(0, targetChessList.Count);
+        targetChessList[randomIndex].CurseThisChess();
     }
 
 }
@@ -89,17 +102,10 @@ public class Monk : BuffBasic
 
     public void AddBarrierToKing()
     {
-        //King king;
-        //Pair<ChessColor, ChessType> kingInform = new Pair<ChessColor, ChessType>(_buffChess.color, ChessType.King);
-        //foreach (ChessBasic target in ChessBoard.Instance.board.Values)
-        //{
-        //    if (target.chessInfo == kingInform)
-        //    {
-        //        king = target.GetComponent<King>();
-        //        king.AddBarrier();
-        //        return;
-        //    }
-        //}
+        foreach(ChessBasic king in _player.allTheChess[ChessType.King])
+        {
+            king.haveExtraLife = true;
+        }
 
     }
 
@@ -163,10 +169,11 @@ public class Bishop : ChessBasic
     public override void FindPossibleMove()
     {
         possibleMoveList.Clear();
+        canEatChessPosition.Clear();
 
         foreach (var dir in directions)
         {
-            for (int i = 1; i < 8; i++)
+            for (int i = 1; i < findRange; i++)
             {
                 Vector2Int targetPos = position + dir * i;
 
@@ -194,5 +201,15 @@ public class Bishop : ChessBasic
 
         _chessBoard.ShowCanGo(possibleMoveList);
     }
+    public override void Move(Vector2Int moveTo)
+    {
+        base.Move(moveTo);
+        if(_player.bishopBuffType == Player.BishopBuff.Sorcerer)
+        {
+            _player.sorcerer.CurseChess();
+        }
+
+    }
+
 
 }

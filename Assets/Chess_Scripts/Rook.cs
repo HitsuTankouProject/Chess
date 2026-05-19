@@ -8,8 +8,8 @@ public class Rusher : BuffBasic
     public override ChessType buffChess => ChessType.Rook;
     public override string buffName => "Rusher";
 
-    public bool canThroughSameColor = true;
-    public bool canThroughNonSameColor = true;
+    public bool canThroughSameColor = false;
+    public bool canThroughNonSameColor = false;
     public bool canEatThroughNonSameColorChess = false;
 
     public override void ResetBuff()
@@ -46,13 +46,13 @@ public class Guardian : BuffBasic
     {
         Vector2Int.up, Vector2Int.down
     };
-    private readonly HashSet<Vector2Int> thridProtectArea = new HashSet<Vector2Int>() 
+    private readonly HashSet<Vector2Int> thirdProtectArea = new HashSet<Vector2Int>() 
     {
-        new Vector2Int(-1, 1), 
-        new Vector2Int(1, 1) , 
-        new Vector2Int(-1, 1), 
-        new Vector2Int(-1, -1) 
-    
+        new Vector2Int(-1, 1),
+        new Vector2Int(1, 1),
+        new Vector2Int(-1, -1),
+        new Vector2Int(1, -1)
+
     };
 
 
@@ -63,16 +63,40 @@ public class Guardian : BuffBasic
 
     public override void FirstLevel()
     {
-        protectArea.AddRange(firstProtectArea);
+        protectArea.UnionWith(firstProtectArea);
     }
     public override void SecondLevel()
     {
-        protectArea.AddRange(secondProtectArea);
+        protectArea.UnionWith(secondProtectArea);
     }
     public override void ThirdLevel()
     {
-        protectArea.AddRange(thridProtectArea);
+        protectArea.UnionWith(thirdProtectArea);
     }
+
+    public bool InProtectArea(Vector2Int targetPos)
+    {
+        if (_player.rookBuffType != RookBuff.Guardian) return false;
+        if (!_player.allTheChess.TryGetValue(ChessType.Rook, out List<ChessBasic> rooks)) return false;
+        if (rooks.Count == 0) return false;
+
+        for (int i = 0; i < rooks.Count; i++)
+        {
+            foreach (Vector2Int direction in protectArea)
+            {
+                Vector2Int protectPos = rooks[i].position + direction;
+
+                if (targetPos == protectPos)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
 }
 
 
@@ -110,7 +134,7 @@ public class Rook : ChessBasic
 
         foreach (var dir in directions)
         {
-            for (int i = 1; i < 8; i++)
+            for (int i = 1; i < findRange; i++)
             {
                 Vector2Int targetPos = position + dir * i;
 

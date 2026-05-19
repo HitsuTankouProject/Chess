@@ -9,14 +9,14 @@ public class SageKing : BuffBasic
     public override string buffName => "SageKing";
 
     public bool canChangeSpawnWithWhiteBlock = false;
-    public bool canCorrodeChess = false;
+    public bool canPurifyChess = false;
     public bool winWentPosIsOthersKingStartingPoint = false;
 
    
     public override void ResetBuff()
     {
         canChangeSpawnWithWhiteBlock = false;
-        canCorrodeChess = false;
+        canPurifyChess = false;
         winWentPosIsOthersKingStartingPoint = false;
     }
     public override void FirstLevel()
@@ -25,7 +25,7 @@ public class SageKing : BuffBasic
     }
     public override void SecondLevel()
     {
-        canCorrodeChess = true;
+        canPurifyChess = true;
     }
     public override void ThirdLevel()
     {

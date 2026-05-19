@@ -178,8 +178,8 @@ public class InGame : MonoBehaviour
     {
         yield return StartCoroutine(_chessBoard.ChessBoard_TurnInit());
 
-        List<ChessBasic> whiteChess = new List<ChessBasic>();
-        List<ChessBasic> blackChess = new List<ChessBasic>();
+        HashSet<ChessBasic> whiteChess = new HashSet<ChessBasic>();
+        HashSet<ChessBasic> blackChess = new HashSet<ChessBasic>();
 
         foreach (ChessBasic chess in _chessBoard.board.Values)
         {

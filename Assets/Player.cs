@@ -9,21 +9,18 @@ public class Player : MonoBehaviour
 {
     public ChessColor usingChess;
 
-    public Dictionary<ChessType, HashSet<ChessBasic>> allTheChess { get; private set; };
+    public Dictionary<ChessType, List<ChessBasic>> allTheChess { get; private set; }
     public void AllChessInit(HashSet<ChessBasic> chess)
     {
         foreach(ChessBasic target in chess)
         {
             if (!allTheChess.ContainsKey(target.type))
             {
-                allTheChess[target.type] = new HashSet<ChessBasic>();
+                allTheChess[target.type] = new List<ChessBasic>();
             }
 
             allTheChess[target.type].Add(target);
-
         }
-
-
     }
 
 
@@ -196,13 +193,9 @@ public class Player : MonoBehaviour
         usingChess = targetChess;
     }
 
-    public void Player_TurnInit(List<ChessBasic> targetList)
+    public void Player_TurnInit(HashSet<ChessBasic> targetList)
     {
-        allTheChess = targetList;
-        foreach (ChessBasic chess in allTheChess)
-        {
-            chess.ChessInit(this);
-        }
+        AllChessInit(targetList);
 
         rookBuffType = RookBuff.Rusher;
         rusher.LevelUpToTargetLevel(3, out bool a);

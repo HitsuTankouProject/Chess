@@ -54,11 +54,11 @@ public abstract class ChessBasic : MonoBehaviour
     }
 
     public bool haveBuffed = false;
-
+    public bool haveExtraLife = false;
 
     public bool gotCurse{get;private set;} = false;
-    public void CurceThisChess()=>gotCurse = true;
-    public void PurificationThisChess()
+    public void CurseThisChess()=>gotCurse = true;
+    public void PurifyThisChess()
     {
         gotCurse = false;
     }
@@ -76,6 +76,7 @@ public abstract class ChessBasic : MonoBehaviour
     /// </summary>
     public virtual void Move(Vector2Int moveTo) 
     {
+        if(gotCurse)PurifyThisChess();
         // ワールド座標へ移動
         this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
         // 盤面情報更新
