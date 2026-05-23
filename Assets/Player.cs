@@ -3,16 +3,23 @@ using System.Collections.Generic;
 using System.Collections;
 
 using static Player;
+using NUnit.Framework;
+using Unity.VisualScripting;
 
+
+public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,ReadytoEnd,End}
 
 public class Player : MonoBehaviour
 {
     public ChessColor usingChess;
+    public PlayerStage nowPlayerStage;
 
-    public Dictionary<ChessType, List<ChessBasic>> allTheChess { get; private set; }
+    public PlayerInPut playerInPut;
+
+    public Dictionary<ChessType, List<ChessBasic>> allTheChess { get; private set; } = new Dictionary<ChessType, List<ChessBasic>>();
     public void AllChessInit(HashSet<ChessBasic> chess)
     {
-        foreach(ChessBasic target in chess)
+        foreach (ChessBasic target in chess)
         {
             if (!allTheChess.ContainsKey(target.type))
             {
@@ -20,6 +27,7 @@ public class Player : MonoBehaviour
             }
 
             allTheChess[target.type].Add(target);
+            target.ChessInit(this);
         }
     }
 
@@ -130,6 +138,23 @@ public class Player : MonoBehaviour
         }
     }
 
+    public bool IsProtectedByRook_Guardian(Vector2Int targetChess)
+    {
+        if (rookBuffType != RookBuff.Guardian|| allTheChess[ChessType.Rook].Count == 0) return false;
+        
+        foreach (ChessBasic chess in allTheChess[ChessType.Rook])
+        {
+            if (chess == null) continue;
+            chess.TryGetComponent<Rook>(out Rook rook);
+            if (rook != null)
+            {
+                if (rook.GuardianBuff(targetChess)) return true;
+            }
+        }
+
+        return false;
+    }
+
     [Header("Pawn Buff")]
     public PawnBuff pawnBuffType;
     public enum PawnBuff { None, Scout, Substitute }
@@ -153,21 +178,27 @@ public class Player : MonoBehaviour
     }
     private void AllTheBuffInit()
     {
+        kingBuffType = KingBuff.None;
         madKing.BuffInit(this);
         sageKing.BuffInit(this);
 
+        queenBuffType = QueenBuff.None;
         witcher.BuffInit(this);
         beauty.BuffInit(this);
 
+        knightBuffType = KnightBuff.None;
         charger.BuffInit(this);
         skirmisher.BuffInit(this);
 
+        bishopBuffType = BishopBuff.None;
         sorcerer.BuffInit(this);
         monk.BuffInit(this);
 
+        rookBuffType = RookBuff.None;
         rusher.BuffInit(this);
         guardian.BuffInit(this);
 
+        pawnBuffType = PawnBuff.None;
         scout.BuffInit(this);
         substitute.BuffInit(this);
     }
@@ -185,23 +216,86 @@ public class Player : MonoBehaviour
     #endregion
 
 
-
-
-
     public void Player_Init(ChessColor targetChess)
     {
         usingChess = targetChess;
+        AllTheBuffInit();
+
     }
 
-    public void Player_TurnInit(HashSet<ChessBasic> targetList)
+    public void Player_ChessInit(HashSet<ChessBasic> targetList)
     {
         AllChessInit(targetList);
 
         rookBuffType = RookBuff.Rusher;
         rusher.LevelUpToTargetLevel(3, out bool a);
 
-        bishopBuffType = BishopBuff.Monk;
-        monk.LevelUpToTargetLevel(3, out bool b);
+        //bishopBuffType = BishopBuff.Monk;
+        //monk.LevelUpToTargetLevel(3, out bool b);
+
+        //knightBuffType = KnightBuff.Charger;
+        //charger.LevelUpToTargetLevel(2, out bool c);
+
     }
+
+
+    public Coroutine turnStart;
+    
+    private bool turnCanEnd = false;
+    private IEnumerator TurnStart()
+    {
+        List<ChessType> removeKeys = new List<ChessType>();
+        foreach (var pair in allTheChess)
+        {
+            pair.Value.RemoveAll(chess => chess == null);
+
+            if (pair.Value.Count == 0)
+            {
+                removeKeys.Add(pair.Key);
+            }
+        }
+        foreach (ChessType key in removeKeys)
+        {
+            allTheChess.Remove(key);
+        }
+        yield return null;
+        nowPlayerStage = PlayerStage.Ready;
+        turnCanEnd = false;
+        while (!turnCanEnd)
+        {
+            switch (nowPlayerStage)
+            {
+                case PlayerStage.Ready:
+                    playerInPut.InPutSystem_Update();
+                    break;
+                case PlayerStage.ReadytoEnd:
+                    turnCanEnd = true;
+                    break;
+
+                default:break;
+            }
+
+            yield return null;
+
+        }
+
+        nowPlayerStage = PlayerStage.End;
+
+        InGame.Instance.StartTurnChange();
+    }
+
+    public void Player_TurnStart()
+    {
+        nowPlayerStage = PlayerStage.TurnInit;
+        turnStart = StartCoroutine(TurnStart());
+
+    }
+
+
+    private void Update()
+    {
+        
+    }
+
 
 }

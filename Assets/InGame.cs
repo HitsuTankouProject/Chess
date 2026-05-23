@@ -80,10 +80,6 @@ public class InGame : MonoBehaviour
     public Player blackChessPlayer;
 
     public static InGame Instance { get; private set; }
-
-
-
-
     private void Awake()
     {
         if (Instance == null)
@@ -95,7 +91,9 @@ public class InGame : MonoBehaviour
             Destroy(this);
         }
     }
+
     public InGameStage inGameStage { get; private set; } = InGameStage.Init;
+    public ChessColor nowTurn { get; private set; } = ChessColor.White;
 
     #region Camera Turn
     private readonly CameraView whiteView = new CameraView(new Vector3(0, 70, -54), new Vector3(55, 0, 0));
@@ -105,11 +103,6 @@ public class InGame : MonoBehaviour
 
     private readonly Dictionary<ChessColor, CameraView> turnView = new Dictionary<ChessColor, CameraView>();
     private CameraView nowCameraView => turnView[nowTurn];
-
-    #endregion
-
-
-    public ChessColor nowTurn {  get; private set; } = ChessColor.White;
 
     private const float cameraTurnTime = 2.0f;
 
@@ -122,7 +115,7 @@ public class InGame : MonoBehaviour
         }
 
         float timer = 0;
-        CameraView basicView = nowTurn == ChessColor.White ? blackView: whiteView;
+        CameraView basicView = nowTurn == ChessColor.White ? blackView : whiteView;
 
 
         while (timer < cameraTurnTime)
@@ -145,19 +138,57 @@ public class InGame : MonoBehaviour
         _camera.transform.position = nowCameraView.position;
         _camera.transform.rotation = Quaternion.Euler(nowCameraView.angle);
     }
+    #endregion
 
-    public IEnumerator TurnChange()
+
+    private Coroutine turnChange;
+
+    public void StartTurnChange()
     {
+        if (turnChange != null) return;
+        turnChange = StartCoroutine(TurnChange());
+    }
+
+    private IEnumerator TurnChange()
+    {
+        if (inGameStage == InGameStage.TurnChanging)
+        {
+            yield break;
+        } 
         inGameStage = InGameStage.TurnChanging;
+        whiteChessPlayer.nowPlayerStage = PlayerStage.NoMyTurn;
+        blackChessPlayer.nowPlayerStage = PlayerStage.NoMyTurn;
+
+        if (whiteChessPlayer.turnStart != null)
+        {
+            StopCoroutine(whiteChessPlayer.turnStart);
+            whiteChessPlayer.turnStart = null;
+        }
+
+        if (blackChessPlayer.turnStart != null)
+        {
+            StopCoroutine(blackChessPlayer.turnStart);
+            blackChessPlayer.turnStart = null;
+        }
 
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
 
         yield return StartCoroutine(CameraTurn());
 
+        switch (nowTurn)
+        {
+            case ChessColor.White:
+                whiteChessPlayer.Player_TurnStart();
+                break;
 
-
+            case ChessColor.Black:
+                blackChessPlayer.Player_TurnStart();
+                break;
+        }
 
         inGameStage = InGameStage.TurnStart;
+
+        turnChange = null;
 
 
     }
@@ -183,14 +214,33 @@ public class InGame : MonoBehaviour
 
         foreach (ChessBasic chess in _chessBoard.board.Values)
         {
-            if(chess.color == ChessColor.White) whiteChess.Add(chess);
-            else blackChess.Add(chess);
-        }
+            if(chess.color == ChessColor.White)
+            {
+                whiteChess.Add(chess);
+            }
+            else
+            {
+                blackChess.Add(chess);
+            }
 
-        whiteChessPlayer.Player_TurnInit(whiteChess);
+        }
+        yield return null;
+
+        whiteChessPlayer.Player_ChessInit(whiteChess);
         Debug.Log(blackChess.Count);
-        blackChessPlayer.Player_TurnInit(blackChess);
+        blackChessPlayer.Player_ChessInit(blackChess);
+
+        yield return null;
+        whiteChessPlayer.Player_TurnStart();
+
     }
+
+    #region Turn
+
+
+
+    #endregion
+
 
 
     private void Start()
@@ -200,6 +250,7 @@ public class InGame : MonoBehaviour
     }
 
     public bool test = false;
+
     private void Update()
     {
         if (test)

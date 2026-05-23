@@ -71,16 +71,58 @@ public abstract class ChessBasic : MonoBehaviour
     /// <summary>　移動可能位置探索 派生クラスでオーバーライドして使用 </summary>
     public virtual void FindPossibleMove() { }
 
+    public virtual void ExtraFindPossibleMove(){}
+
+    private Vector3 pickAngle
+    {
+        get
+        {
+            float angleX = color==ChessColor.White?-15.0f:15.0f;
+            return new Vector3 (angleX,0,0);
+        }
+    }
+    private Vector3 pickPosition
+    {
+        get
+        {
+            return new Vector3(transform.position.x, 5, transform.position.z);
+        }
+    }
+
+    public virtual void GotPick()
+    {
+        transform.position = pickPosition;
+        transform.rotation = Quaternion.Euler(pickAngle);
+    }
+
+    public virtual void ReturnPick()
+    {
+        transform.position = _chessBoard.ReturnChessBlockPosition(position);
+        transform.rotation = Quaternion.Euler(Vector3.zero);
+    }
+
+
     /// <summary>
     /// 駒移動処理
     /// </summary>
     public virtual void Move(Vector2Int moveTo) 
     {
-        if(gotCurse)PurifyThisChess();
+        _player.nowPlayerStage = PlayerStage.MovingChess;
+        ReturnPick();
+
+        bool posHaveChess = _chessBoard.board.ContainsKey(moveTo);
+        if(posHaveChess)
+        {
+            _player.nowPlayerStage = PlayerStage.EatingChess;
+            _chessBoard.board[moveTo].GotEaten();
+        }
+
         // ワールド座標へ移動
         this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
         // 盤面情報更新
         _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
+        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+
     }
 
     /// <summary>

@@ -121,7 +121,7 @@ public class Bishop : ChessBasic
     private List<Vector2Int> directions = new List<Vector2Int>
      { new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
 
-    private void ExtraFindPossibleMove()
+    public override void ExtraFindPossibleMove()
     {
         if (_player.bishopBuffType == Player.BishopBuff.None) return;
         HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();

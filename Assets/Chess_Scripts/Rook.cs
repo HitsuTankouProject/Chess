@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Player;
@@ -173,13 +174,13 @@ public class Rook : ChessBasic
 
     }
 
-    public bool GuardianBuff(ChessBasic gotEatenChess)
+    public bool GuardianBuff(Vector2Int gotEatenChessPos)
     {
         if (_player.rookBuffType != RookBuff.Guardian) return false;
         foreach (Vector2Int protectSpot in _player.guardian.protectArea)
         {
             Vector2Int target = position + protectSpot;
-            if (gotEatenChess.position == target)
+            if (gotEatenChessPos == target)
             {
                 return true;
             }
@@ -189,6 +190,45 @@ public class Rook : ChessBasic
         return false;
     }
 
+    private void SkilEat(Vector2Int moveTo)
+    {
+        _player.nowPlayerStage = PlayerStage.MovingChess;
+        ReturnPick();
 
+        Queue<ChessBasic> eatqueue = new Queue<ChessBasic>();
+        Vector2Int dir = new Vector2Int(Math.Sign(moveTo.x - position.x), Math.Sign(moveTo.y - position.y));
+        Vector2Int targetPos = position;
+
+        for (int i = 1; targetPos != moveTo; i++)
+        {
+            targetPos = position + dir * i;
+            bool posHaveChess = _chessBoard.board.TryGetValue(targetPos, out ChessBasic chess);
+
+            if (posHaveChess && chess != null && chess.color != color)
+            {
+                eatqueue.Enqueue(chess);
+            }
+        }
+        while (eatqueue.Count > 0) eatqueue.Dequeue().GotEaten();
+
+        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
+        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
+
+        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+    }
+
+    public override void Move(Vector2Int moveTo)
+    {
+        if(_player.rookBuffType != RookBuff.Rusher|| !_player.rusher.canThroughNonSameColor)
+        {
+            base.Move(moveTo);
+            return;
+        }
+
+        if (_player.rookBuffType == RookBuff.Rusher&& _player.rusher.canThroughNonSameColor)
+        {
+            SkilEat(moveTo);
+        }
+    }
 
 }

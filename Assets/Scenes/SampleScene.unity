@@ -952,7 +952,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 12
   m_Type: 1
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.6666667, g: 0.6666667, b: 0.6666667, a: 1}
   m_Intensity: 2
   m_Range: 10
   m_SpotAngle: 30
@@ -1207,6 +1207,7 @@ GameObject:
   m_Component:
   - component: {fileID: 479907454}
   - component: {fileID: 479907453}
+  - component: {fileID: 479907455}
   m_Layer: 0
   m_Name: InGame
   m_TagString: Untagged
@@ -1228,6 +1229,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InGame
   whiteChessPlayer: {fileID: 593378777}
   blackChessPlayer: {fileID: 1059311079}
+  a: []
+  b: []
   test: 0
 --- !u!4 &479907454
 Transform:
@@ -1244,6 +1247,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &479907455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 479907452}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b47bac56c8486634d84f48a1edc22548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InPutManager
+  nowUsingGamePad: 0
 --- !u!1001 &542626342
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1415,6 +1431,7 @@ GameObject:
   m_Component:
   - component: {fileID: 593378778}
   - component: {fileID: 593378777}
+  - component: {fileID: 593378779}
   m_Layer: 0
   m_Name: WhiteChessPlayer
   m_TagString: Untagged
@@ -1435,11 +1452,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   usingChess: 0
-  allTheChess: []
+  playerInPut: {fileID: 593378779}
   kingBuffType: 0
   queenBuffType: 0
   knightBuffType: 0
-  bisHopBuffType: 0
+  bishopBuffType: 0
   rookBuffType: 0
   pawnBuffType: 0
 --- !u!4 &593378778
@@ -1457,6 +1474,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &593378779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 593378776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f83bd6e8d1ec674f89f0924c9bc217f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInPut
+  pickStage: 0
+  pickIngChess: {fileID: 0}
 --- !u!4 &599565955 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4027291793668599519, guid: 6619a26528679d94c979cc64f962d9cb, type: 3}
@@ -1696,6 +1727,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37ea66aa4041ca418a85b3c2683093c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InPutSystem
+  mouseStage: 0
   pickIngChess: {fileID: 0}
 --- !u!4 &938894055
 Transform:
@@ -1829,6 +1861,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1059311080}
   - component: {fileID: 1059311079}
+  - component: {fileID: 1059311081}
   m_Layer: 0
   m_Name: BlackChessPlayer
   m_TagString: Untagged
@@ -1849,11 +1882,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   usingChess: 1
-  allTheChess: []
+  playerInPut: {fileID: 1059311081}
   kingBuffType: 0
   queenBuffType: 0
   knightBuffType: 0
-  bisHopBuffType: 0
+  bishopBuffType: 0
   rookBuffType: 0
   pawnBuffType: 0
 --- !u!4 &1059311080
@@ -1871,6 +1904,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1059311081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059311078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f83bd6e8d1ec674f89f0924c9bc217f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInPut
+  pickStage: 0
+  pickIngChess: {fileID: 0}
 --- !u!1001 &1065396198
 PrefabInstance:
   m_ObjectHideFlags: 0
