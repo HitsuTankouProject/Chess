@@ -220,21 +220,21 @@ public class Player : MonoBehaviour
     {
         usingChess = targetChess;
         AllTheBuffInit();
-
+        playerInPut = new PlayerInPut(this);
     }
 
     public void Player_ChessInit(HashSet<ChessBasic> targetList)
     {
         AllChessInit(targetList);
 
-        rookBuffType = RookBuff.Rusher;
-        rusher.LevelUpToTargetLevel(3, out bool a);
+        //rookBuffType = RookBuff.Rusher;
+        //rusher.LevelUpToTargetLevel(3, out bool a);
 
         //bishopBuffType = BishopBuff.Monk;
         //monk.LevelUpToTargetLevel(3, out bool b);
 
-        //knightBuffType = KnightBuff.Charger;
-        //charger.LevelUpToTargetLevel(2, out bool c);
+        knightBuffType = KnightBuff.Charger;
+        charger.LevelUpToTargetLevel(3, out bool c);
 
     }
 
@@ -261,6 +261,7 @@ public class Player : MonoBehaviour
         yield return null;
         nowPlayerStage = PlayerStage.Ready;
         turnCanEnd = false;
+        playerInPut.StartInPutSystem();
         while (!turnCanEnd)
         {
             switch (nowPlayerStage)
@@ -287,6 +288,7 @@ public class Player : MonoBehaviour
     public void Player_TurnStart()
     {
         nowPlayerStage = PlayerStage.TurnInit;
+
         turnStart = StartCoroutine(TurnStart());
 
     }

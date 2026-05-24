@@ -227,7 +227,6 @@ public class InGame : MonoBehaviour
         yield return null;
 
         whiteChessPlayer.Player_ChessInit(whiteChess);
-        Debug.Log(blackChess.Count);
         blackChessPlayer.Player_ChessInit(blackChess);
 
         yield return null;

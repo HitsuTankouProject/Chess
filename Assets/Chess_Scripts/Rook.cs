@@ -117,12 +117,20 @@ public class Rook : ChessBasic
     }
     MoveJudgment MoveJudgmentResult(ChessBasic chess)
     {
-        if(_player.rookBuffType!= RookBuff.Rusher) return MoveJudgment.Stop;
         bool sameColor = chess.color == color;
-        if (sameColor) return MoveJudgment.KeepGoOn;
-        else if (!sameColor && !_player.rusher.canThroughNonSameColor) return MoveJudgment.CanEatAndStop;
-        else if (!sameColor && _player.rusher.canThroughNonSameColor) return MoveJudgment.CanEatAndThrough;
+        bool isRusher = _player.rookBuffType == RookBuff.Rusher;
+        if (!isRusher)
+        {
+            if (sameColor) return MoveJudgment.Stop;
+            else return MoveJudgment.CanEatAndStop;
+        }
 
+        bool canThroughSameColor = _player.rusher.canThroughSameColor;
+        bool canThroughNonSameColor = _player.rusher.canThroughNonSameColor;
+
+        if (sameColor&&canThroughSameColor) return MoveJudgment.KeepGoOn;
+        else if (!sameColor && !canThroughNonSameColor) return MoveJudgment.CanEatAndStop;
+        else if (!sameColor && canThroughNonSameColor) return MoveJudgment.CanEatAndThrough;
         return MoveJudgment.Error;
 
     }
@@ -190,7 +198,7 @@ public class Rook : ChessBasic
         return false;
     }
 
-    private void SkilEat(Vector2Int moveTo)
+    private void SkillEat(Vector2Int moveTo)
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
@@ -222,12 +230,14 @@ public class Rook : ChessBasic
         if(_player.rookBuffType != RookBuff.Rusher|| !_player.rusher.canThroughNonSameColor)
         {
             base.Move(moveTo);
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
             return;
         }
 
         if (_player.rookBuffType == RookBuff.Rusher&& _player.rusher.canThroughNonSameColor)
         {
-            SkilEat(moveTo);
+            SkillEat(moveTo);
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
         }
     }
 

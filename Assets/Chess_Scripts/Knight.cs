@@ -82,6 +82,7 @@ public class Knight : ChessBasic
 {
     public override ChessType type => ChessType.Knight;
     public override string ChessName() { return "Knight"; }
+    private bool isMoveAgain = false;
     public override int findRange { get; protected set; } = 1;
 
     private List<Vector2Int> directions = new List<Vector2Int>
@@ -165,23 +166,49 @@ public class Knight : ChessBasic
         _chessBoard.ShowCanGo(possibleMoveList);
     }
 
-    public void ChargerFinalBuff()
+    public override void Move(Vector2Int moveTo)
     {
-        if (_player.knightBuffType != Player.KnightBuff.Charger) return;
-        if (_player.charger.nowBuffLevel != 3) return;
+        _player.nowPlayerStage = PlayerStage.MovingChess;
+        ReturnPick();
+        bool posHaveChess = _chessBoard.board.ContainsKey(moveTo);
 
+        if (posHaveChess)
+        {
+            _player.nowPlayerStage = PlayerStage.EatingChess;
+            _chessBoard.board[moveTo].GotEaten();
+        }
 
+        // ワールド座標へ移動
+        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
+        // 盤面情報更新
+        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
 
+        SkirmisherFinalBuff();
 
-
-
+        if (HaveChargerFinalBuff()&& posHaveChess&& !isMoveAgain)
+        {
+            isMoveAgain = true;
+            StartCoroutine(_player.playerInPut.OneMoreMove(this));
+        }
+        else
+        {
+            isMoveAgain = false;
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+        }
     }
-    public void ChargerSkirmisherBuff()
+
+
+
+    public bool HaveChargerFinalBuff()
+    {
+        return _player.knightBuffType == Player.KnightBuff.Charger && _player.charger.canMoveItAgain;
+    }
+    public void SkirmisherFinalBuff()
     {
         if (_player.knightBuffType != Player.KnightBuff.Skirmisher) return;
         if (_player.skirmisher.nowBuffLevel != 3) return;
 
-        Queue<ChessBasic> eatqueue = new Queue<ChessBasic>();
+        Queue<ChessBasic> eatQueue = new Queue<ChessBasic>();
 
         foreach(Vector2Int dir in _player.skirmisher.extraCanGoArea)
         {
@@ -190,13 +217,13 @@ public class Knight : ChessBasic
             {
                 if (chess.color != this.color)
                 {
-                    eatqueue.Enqueue(chess);
+                    eatQueue.Enqueue(chess);
                 }
             }
 
         }
 
-        while (eatqueue.Count>0) eatqueue.Dequeue().GotEaten();
+        while (eatQueue.Count>0) eatQueue.Dequeue().GotEaten();
 
     }
 
