@@ -51,12 +51,15 @@ public class MadKing : BuffBasic
 
     public const int extraFindRange = 3;
     public bool cantReSpawn = false;
+
+    public bool canThroughAndEatChess { get; private set; } = false;
     public bool canMoveItAgain { get; private set; } = false;
 
 
     public override void ResetBuff()
     {
         cantReSpawn = false;
+        canThroughAndEatChess = false;
         canMoveItAgain = false;
     }
 
@@ -66,6 +69,7 @@ public class MadKing : BuffBasic
     }
     public override void SecondLevel()
     {
+        canThroughAndEatChess = true;
     }
     public override void ThirdLevel()
     {
