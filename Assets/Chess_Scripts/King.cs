@@ -86,12 +86,7 @@ public class King : ChessBasic
         haveBarrier = true;
     }
 
-    public SageKing sageKing = new SageKing();
-    public MadKing madKing = new MadKing();
-
-
-
-    private List<Vector2Int> directions = new List<Vector2Int>
+    public override List<Vector2Int> directions => new List<Vector2Int>
     {Vector2Int.up,Vector2Int.down,Vector2Int.left,Vector2Int.right,
         new Vector2Int(1, 1),new Vector2Int(1, -1),new Vector2Int(-1, 1),new Vector2Int(-1, -1) };
 

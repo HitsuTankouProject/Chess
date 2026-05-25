@@ -5,6 +5,7 @@ using System.Collections;
 using static Player;
 using NUnit.Framework;
 using Unity.VisualScripting;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 
 public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,ReadytoEnd,End}
@@ -138,22 +139,26 @@ public class Player : MonoBehaviour
         }
     }
 
-    public bool IsProtectedByRook_Guardian(Vector2Int targetChess)
+    public bool IsProTectedByRook_Guardian(Vector2Int targetChessPos)
     {
-        if (rookBuffType != RookBuff.Guardian|| allTheChess[ChessType.Rook].Count == 0) return false;
-        
-        foreach (ChessBasic chess in allTheChess[ChessType.Rook])
+        if (rookBuffType != RookBuff.Guardian ||guardian.protectArea.Count == 0) return false;
+
+        foreach(ChessBasic chess in allTheChess[ChessType.Rook])
         {
-            if (chess == null) continue;
-            chess.TryGetComponent<Rook>(out Rook rook);
-            if (rook != null)
+            chess.gameObject.TryGetComponent<Rook>(out Rook rook);
+            if (rook == null)
             {
-                if (rook.GuardianBuff(targetChess)) return true;
+                Debug.Log($"Have An Non Rook in a Rook List : {chess.gameObject.name}");
+                return false;
             }
+
+            if (rook.IsProtectedByGuardian(targetChessPos)) return true;
         }
 
         return false;
     }
+
+
 
     [Header("Pawn Buff")]
     public PawnBuff pawnBuffType;
@@ -235,6 +240,10 @@ public class Player : MonoBehaviour
 
         knightBuffType = KnightBuff.Charger;
         charger.LevelUpToTargetLevel(3, out bool c);
+
+        pawnBuffType = PawnBuff.Scout;
+        scout.LevelUpToTargetLevel(3, out bool d);
+
 
     }
 

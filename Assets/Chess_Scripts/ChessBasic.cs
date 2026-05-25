@@ -3,14 +3,14 @@ using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-/// <summary>@‹î‚ÌF’è‹`@</summary>
+/// <summary>ã€€é§’ã®è‰²å®šç¾©ã€€</summary>
 public enum ChessColor
 {
     White,
     Black
 }
 
-/// <summary>@ƒ`ƒFƒX‹î‚Ìí—Ş’è‹`@</summary>
+/// <summary>ã€€ãƒã‚§ã‚¹é§’ã®ç¨®é¡å®šç¾©ã€€</summary>
 public enum ChessType
 {
     King,
@@ -22,30 +22,33 @@ public enum ChessType
 }
 
 /// <summary>
-/// ‘Sƒ`ƒFƒX‹î‹¤’Ê‚ÌŠî’êƒNƒ‰ƒX
-/// ‹îî•ñEÀ•WEˆÚ“®ˆ—EŒ‚”jˆ—‚ğŠÇ—
+/// å…¨ãƒã‚§ã‚¹é§’å…±é€šã®åŸºåº•ã‚¯ãƒ©ã‚¹
+/// é§’æƒ…å ±ãƒ»åº§æ¨™ãƒ»ç§»å‹•å‡¦ç†ãƒ»æ’ƒç ´å‡¦ç†ã‚’ç®¡ç†
 /// </summary>
 public abstract class ChessBasic : MonoBehaviour
 {
-    /// <summary>@ChessBoard ƒVƒ“ƒOƒ‹ƒgƒ“QÆ@</summary>
+    /// <summary>ã€€ChessBoard ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³å‚ç…§ã€€</summary>
     public ChessBoard _chessBoard => ChessBoard.Instance;
     private PoolObject poolObject => this.gameObject.GetComponent< PoolObject>();
-    /// <summary>@‹î‚ÌF </summary>
+    /// <summary>ã€€é§’ã®è‰² </summary>
     public ChessColor color;
     public Material m_Black;
     public Material m_White;
 
 
-    /// <summary>@‹îƒ^ƒCƒv@”h¶ƒNƒ‰ƒX‘¤‚Å’è‹`@</summary>
+    /// <summary>ã€€é§’ã‚¿ã‚¤ãƒ—ã€€æ´¾ç”Ÿã‚¯ãƒ©ã‚¹å´ã§å®šç¾©ã€€</summary>
     public abstract ChessType type { get;}
-    /// <summary>@‹î‚ÌF‚Æí—Şî•ñ@</summary>
+    /// <summary>ã€€é§’ã®è‰²ã¨ç¨®é¡æƒ…å ±ã€€</summary>
     public Pair<ChessColor, ChessType> chessInfo => new Pair<ChessColor, ChessType>(color, type);
-    /// <summary>@Œ»İ‚Ì”Õ–ÊÀ•W@</summary>
+    /// <summary>ã€€ç¾åœ¨ã®ç›¤é¢åº§æ¨™ã€€</summary>
     public Vector2Int position { get; private set; } = new Vector2Int(-1,-1);
-    /// <summary>@‹îÀ•WXV@</summary>
+    /// <summary>ã€€é§’åº§æ¨™æ›´æ–°ã€€</summary>
     public void SetPosition(Vector2Int pos) => position = pos;
-    /// <summary>@ ‹î–¼æ“¾@</summary>
+    /// <summary>ã€€ é§’åå–å¾—ã€€</summary>
     public virtual string ChessName() { return "ChessBasic"; }
+
+    public abstract List<Vector2Int> directions { get;}
+
 
     public Player _player;
     public virtual void ChessInit(Player player)
@@ -63,12 +66,12 @@ public abstract class ChessBasic : MonoBehaviour
         gotCurse = false;
     }
 
-    /// <summary>@ ˆÚ“®‰Â”\ƒ}ƒXˆê——@</summary>
+    /// <summary>ã€€ ç§»å‹•å¯èƒ½ãƒã‚¹ä¸€è¦§ã€€</summary>
     public HashSet<Vector2Int> possibleMoveList = new HashSet<Vector2Int>();
     public HashSet<Vector2Int> canEatChessPosition = new HashSet<Vector2Int>();
     public abstract int findRange { get; protected set; }
 
-    /// <summary>@ˆÚ“®‰Â”\ˆÊ’u’Tõ ”h¶ƒNƒ‰ƒX‚ÅƒI[ƒo[ƒ‰ƒCƒh‚µ‚Äg—p </summary>
+    /// <summary>ã€€ç§»å‹•å¯èƒ½ä½ç½®æ¢ç´¢ æ´¾ç”Ÿã‚¯ãƒ©ã‚¹ã§ã‚ªãƒ¼ãƒãƒ¼ãƒ©ã‚¤ãƒ‰ã—ã¦ä½¿ç”¨ </summary>
     public virtual void FindPossibleMove() { }
 
     public virtual void ExtraFindPossibleMove(){}
@@ -101,36 +104,54 @@ public abstract class ChessBasic : MonoBehaviour
         transform.rotation = Quaternion.Euler(Vector3.zero);
     }
 
+    public virtual bool CanEatChess(ChessBasic chess)
+    {
+        if (chess.haveExtraLife)return false;
+        bool isKing = chess.type == ChessType.King;
+        if(!isKing) return true;
+        bool haveBarrier =chess.TryGetComponent<King>(out King king)&& king.haveBarrier;
+        return !haveBarrier;
+    }
 
     /// <summary>
-    /// ‹îˆÚ“®ˆ—
+    /// é§’ç§»å‹•å‡¦ç†
     /// </summary>
     public virtual void Move(Vector2Int moveTo) 
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
-
-        bool posHaveChess = _chessBoard.board.ContainsKey(moveTo);
+        bool posHaveChess = _chessBoard.board.TryGetValue(moveTo, out ChessBasic chess);
         if(posHaveChess)
         {
+            if(!CanEatChess(chess))
+            {
+                _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+                return;
+            }
             _player.nowPlayerStage = PlayerStage.EatingChess;
             _chessBoard.board[moveTo].GotEaten();
         }
 
-        // ƒ[ƒ‹ƒhÀ•W‚ÖˆÚ“®
+        // ãƒ¯ãƒ¼ãƒ«ãƒ‰åº§æ¨™ã¸ç§»å‹•
         this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        // ”Õ–Êî•ñXV
+        // ç›¤é¢æƒ…å ±æ›´æ–°
         _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
+
+        if (_player.IsProTectedByRook_Guardian(position))
+        {
+            haveExtraLife = true;
+        }
+        else haveExtraLife = false;
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
     }
 
     /// <summary>
-    /// ‹îŒ‚”jˆ—
+    /// é§’æ’ƒç ´å‡¦ç†
     /// </summary>
     public virtual void GotEaten()
     {
-        // ”Õ–Ê‚©‚çíœ
+        // ç›¤é¢ã‹ã‚‰å‰Šé™¤
         _chessBoard.BoardUpdate(this, this.position, ChessAction.GotEat);
         if (poolObject != null) poolObject.pool.Return(this.gameObject);
         else Debug.LogError("Not In Pool");

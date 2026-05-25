@@ -85,7 +85,7 @@ public class Knight : ChessBasic
     private bool isMoveAgain = false;
     public override int findRange { get; protected set; } = 1;
 
-    private List<Vector2Int> directions = new List<Vector2Int>
+    public override List<Vector2Int> directions => new List<Vector2Int>()
     {
         new Vector2Int(2, 1),
         new Vector2Int(2, -1),
@@ -96,6 +96,7 @@ public class Knight : ChessBasic
         new Vector2Int(-1, 2),
         new Vector2Int(-1, -2)
     };
+
 
     public override void ExtraFindPossibleMove()
     {
@@ -170,18 +171,28 @@ public class Knight : ChessBasic
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
-        bool posHaveChess = _chessBoard.board.ContainsKey(moveTo);
+        bool posHaveChess = _chessBoard.board.TryGetValue(moveTo, out ChessBasic chess);
 
         if (posHaveChess)
         {
+            if (!CanEatChess( chess))
+            {
+                _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+                return;
+            }
+
             _player.nowPlayerStage = PlayerStage.EatingChess;
             _chessBoard.board[moveTo].GotEaten();
         }
 
-        // ワールド座標へ移動
         this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        // 盤面情報更新
         _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
+        if (_player.IsProTectedByRook_Guardian(position))
+        {
+            haveExtraLife = true;
+        }
+        else haveExtraLife = false;
+
 
         SkirmisherFinalBuff();
 

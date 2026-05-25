@@ -104,7 +104,7 @@ public class Monk : BuffBasic
     {
         foreach(ChessBasic king in _player.allTheChess[ChessType.King])
         {
-            king.haveExtraLife = true;
+            king.haveBuffed = true;
         }
 
     }
@@ -118,8 +118,10 @@ public class Bishop : ChessBasic
     public override string ChessName() { return "Bishop"; }
     public override int findRange { get; protected set; } = 8;
 
-    private List<Vector2Int> directions = new List<Vector2Int>
-     { new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
+    public override List<Vector2Int> directions => new List<Vector2Int>()
+    {
+         new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1)
+    };
 
     public override void ExtraFindPossibleMove()
     {
@@ -165,7 +167,6 @@ public class Bishop : ChessBasic
             }
         }
     }
-
     public override void FindPossibleMove()
     {
         possibleMoveList.Clear();
