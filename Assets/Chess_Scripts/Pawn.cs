@@ -12,7 +12,7 @@ public class Scout : BuffBasic
 
     public bool cantPromotion = false;
     public bool canReceiveMoveAreaFromYouAteChess = false;
-    public List<Vector2Int> extraMoveArea = new List<Vector2Int>();
+    public HashSet<Vector2Int> extraMoveArea = new HashSet<Vector2Int>();
     public int extraMoveRange { get; private set; } = 1;
 
     public override void ResetBuff()
@@ -88,10 +88,9 @@ public class Pawn : ChessBasic
     public override string ChessName() { return "Pawn"; }
     public override int findRange { get; protected set; } = 1;
 
-    public override List<Vector2Int> directions => new List<Vector2Int>()
-    {
-        Vector2Int.up
-    };
+    public override List<Vector2Int> directions => new List<Vector2Int>() { Vector2Int.up };
+    public HashSet<ChessType> canPromotionChessType = new HashSet<ChessType>() { ChessType.Queen, ChessType.Rook, ChessType.Bishop, ChessType.Knight };
+
     private List<Vector2Int> attackDirs = new List<Vector2Int>
     { new Vector2Int(1, 1), new Vector2Int(-1, 1) };
 
@@ -105,6 +104,11 @@ public class Pawn : ChessBasic
             for (int i = 1; i <= _player.scout.extraMoveRange; i++)
             {
                 Vector2Int targetPosition = position + direction * i;
+
+                if (targetPosition.x < 0 || targetPosition.x >= 8 ||
+                targetPosition.y < 0 || targetPosition.y >= 8)
+                    break;
+
                 bool haveChess = _chessBoard.board.TryGetValue(targetPosition, out ChessBasic chess);
                 if (!haveChess)
                 {
@@ -139,6 +143,11 @@ public class Pawn : ChessBasic
             for (int distance = 1; distance <= findRange; distance++)
             {
                 Vector2Int targetPosition = position + moveOffset * distance;
+
+                if (targetPosition.x < 0 || targetPosition.x >= 8 ||
+                targetPosition.y < 0 || targetPosition.y >= 8)
+                    break;
+
                 bool haveChess = _chessBoard.board.ContainsKey(targetPosition);
 
                 if (!haveChess) possibleMoveList.Add(targetPosition);
@@ -149,6 +158,11 @@ public class Pawn : ChessBasic
         foreach (Vector2Int attackDirection in attackDirs)
         {
             Vector2Int targetPosition = position + attackDirection * moveDirectionValue;
+
+            if (targetPosition.x < 0 || targetPosition.x >= 8 ||
+            targetPosition.y < 0 || targetPosition.y >= 8)
+                break;
+
             bool haveChess = _chessBoard.board.TryGetValue(targetPosition, out ChessBasic targetChess);
             if (!haveChess) continue;
 
@@ -214,9 +228,27 @@ public class Pawn : ChessBasic
             haveExtraLife = true;
         }
         else haveExtraLife = false;
+        Promotion();
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
     }
+
+    private void Promotion()
+    {
+        if (_player.pawnBuffType != Player.PawnBuff.None) return;
+        int targetY = (color == ChessColor.White) ? 7 : 0;
+        if (position.y != targetY) return;
+        ChessType promotionType = ChessType.Queen;
+        Pair<ChessColor, ChessType> promotionInfo = new Pair<ChessColor, ChessType>(color, promotionType);
+        _chessBoard.GenChess(position, promotionInfo,out ChessBasic genChess);
+        if(genChess!=null) genChess.ChessInit(_player);
+
+
+        if (poolObject != null) poolObject.pool.Return(this.gameObject);
+        else Debug.LogError("Not In Pool");
+    }
+
+
 
 
 }

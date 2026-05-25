@@ -241,23 +241,18 @@ public class Player : MonoBehaviour
         knightBuffType = KnightBuff.Charger;
         charger.LevelUpToTargetLevel(3, out bool c);
 
-        pawnBuffType = PawnBuff.Scout;
-        scout.LevelUpToTargetLevel(3, out bool d);
+        //pawnBuffType = PawnBuff.Scout;
+        //scout.LevelUpToTargetLevel(3, out bool d);
 
 
     }
 
-
-    public Coroutine turnStart;
-    
-    private bool turnCanEnd = false;
-    private IEnumerator TurnStart()
+    private void Player_ChessDictUpdate()
     {
         List<ChessType> removeKeys = new List<ChessType>();
         foreach (var pair in allTheChess)
         {
-            pair.Value.RemoveAll(chess => chess == null);
-
+            pair.Value.RemoveAll(chess => !chess.gameObject.activeSelf);
             if (pair.Value.Count == 0)
             {
                 removeKeys.Add(pair.Key);
@@ -267,6 +262,14 @@ public class Player : MonoBehaviour
         {
             allTheChess.Remove(key);
         }
+    }
+
+    public Coroutine turnStart;
+    
+    private bool turnCanEnd = false;
+    private IEnumerator TurnStart()
+    {
+        Player_ChessDictUpdate();
         yield return null;
         nowPlayerStage = PlayerStage.Ready;
         turnCanEnd = false;

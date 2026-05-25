@@ -29,7 +29,7 @@ public abstract class ChessBasic : MonoBehaviour
 {
     /// <summary>　ChessBoard シングルトン参照　</summary>
     public ChessBoard _chessBoard => ChessBoard.Instance;
-    private PoolObject poolObject => this.gameObject.GetComponent< PoolObject>();
+    public PoolObject poolObject => this.gameObject.GetComponent< PoolObject>();
     /// <summary>　駒の色 </summary>
     public ChessColor color;
     public Material m_Black;
@@ -156,9 +156,5 @@ public abstract class ChessBasic : MonoBehaviour
         if (poolObject != null) poolObject.pool.Return(this.gameObject);
         else Debug.LogError("Not In Pool");
     }
-
-
-
-
 
 }

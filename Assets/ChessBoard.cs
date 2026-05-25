@@ -60,7 +60,7 @@ public class ChessBoard : MonoBehaviour
             { new Vector2Int(6,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Knight)},
             { new Vector2Int(7,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
 
-            { new Vector2Int(0,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            //{ new Vector2Int(0,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
             //{ new Vector2Int(1,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn  )},
             //{ new Vector2Int(2,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
             //{ new Vector2Int(3,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
@@ -68,6 +68,7 @@ public class ChessBoard : MonoBehaviour
             //{ new Vector2Int(5,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
             //{ new Vector2Int(6,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
             { new Vector2Int(7,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+            { new Vector2Int(1,6), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
 
             { new Vector2Int(0,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
             //{ new Vector2Int(1,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn  )},
@@ -233,7 +234,22 @@ public class ChessBoard : MonoBehaviour
 
         //Debug.Log(target.ChessName() + $"___{target.position}");
     }
+    public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair, out ChessBasic genChess)
+    {
+        if (chessPrefabDictionary[pair] == null)
+        {
+            Debug.LogError($"Prefab not found for {pair.first}_{pair.second}");
+            genChess = null;
+            return;
+        }
 
+        GameObject chess = _poolManager.Release(chessPrefabDictionary[pair]);
+        chess.transform.position = ReturnChessBlockPosition(position); // Example position, replace with actual logic
+        ChessBasic target = chess.GetComponent<ChessBasic>();
+        BoardUpdate(target, position, ChessAction.Move);
+        genChess = target;
+        //Debug.Log(target.ChessName() + $"___{target.position}");
+    }
 
     public Vector3 ReturnChessBlockPosition(Vector2Int position)
     {

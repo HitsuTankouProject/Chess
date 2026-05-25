@@ -8,7 +8,6 @@ public class Witcher : BuffBasic
 
     public bool canChangeToKing = false;
     public bool canCallKingToProtect = false;
-    public King king;
 
     public override void ResetBuff()
     {
@@ -31,12 +30,12 @@ public class Witcher : BuffBasic
     }
     public override void SecondLevel()
     {
-        canChangeToKing = true;
+        canCallKingToProtect = true;
     }
 
     public override void ThirdLevel()
     {
-        canCallKingToProtect = true;
+        canChangeToKing = true;
     }
 
 }
@@ -84,15 +83,13 @@ public class Queen : ChessBasic
     public override string ChessName() { return "Queen"; }
     public override int findRange { get; protected set; } = 8;
 
-    public Witcher witcher = new Witcher();
-    public Beauty beauty = new Beauty();
-
     public override List<Vector2Int> directions => new List<Vector2Int>()
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
         new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
 
     public override void FindPossibleMove()
     {
+
         possibleMoveList.Clear();
 
         foreach (var dir in directions)

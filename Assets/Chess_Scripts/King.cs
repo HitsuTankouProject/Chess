@@ -8,28 +8,37 @@ public class SageKing : BuffBasic
     public override ChessType buffChess => ChessType.King;
     public override string buffName => "SageKing";
 
-    public bool canChangeSpawnWithWhiteBlock = false;
-    public bool canPurifyChess = false;
-    public bool winWentPosIsOthersKingStartingPoint = false;
+    public bool cantReSpawn = false;
+    public bool canAddBarrierInPercent = false;
+    private float addBarrierPercent = 30.0f;
+    public bool winWentKingCrossTheBoard = false;
 
    
     public override void ResetBuff()
     {
-        canChangeSpawnWithWhiteBlock = false;
-        canPurifyChess = false;
-        winWentPosIsOthersKingStartingPoint = false;
+        cantReSpawn = false;
+        canAddBarrierInPercent = false;
+        winWentKingCrossTheBoard = false;
     }
     public override void FirstLevel()
     {
-        canChangeSpawnWithWhiteBlock = true;
+        cantReSpawn = true;
     }
     public override void SecondLevel()
     {
-        canPurifyChess = true;
+        canAddBarrierInPercent = true;
     }
+
+    public bool TryAddBarrier()
+    {
+        if (!canAddBarrierInPercent) return false;
+        float randomValue = Random.Range(0f, 100f);
+        return randomValue < addBarrierPercent;
+    }
+
     public override void ThirdLevel()
     {
-        winWentPosIsOthersKingStartingPoint = true;
+        winWentKingCrossTheBoard = true;
     }
 
 }
@@ -41,35 +50,29 @@ public class MadKing : BuffBasic
     public override string buffName => "MadKing";
 
     public const int extraFindRange = 3;
-    public Sorcerer sorcerer = new Sorcerer();
-    public Charger charger = new Charger();
+    public bool cantReSpawn = false;
+    public bool canMoveItAgain { get; private set; } = false;
+
 
     public override void ResetBuff()
     {
-        //_buffChess.findRange = 1;
-        sorcerer.LevelUpToTargetLevel(0, out bool successSorcerer);
-        charger.LevelUpToTargetLevel(0, out bool successCharger);
-
+        cantReSpawn = false;
+        canMoveItAgain = false;
     }
 
     public override void FirstLevel()
     {
-        //_buffChess.findRange = extraFindRange;
+        cantReSpawn = true;
     }
     public override void SecondLevel()
     {
-        sorcerer.LevelUpToTargetLevel(3, out bool success);
-
     }
     public override void ThirdLevel()
     {
-        charger.LevelUpToTargetLevel(3, out bool success);
-
+        canMoveItAgain = true;
     }
 
 }
-
-
 
 
 public class King : ChessBasic
@@ -89,6 +92,47 @@ public class King : ChessBasic
     public override List<Vector2Int> directions => new List<Vector2Int>
     {Vector2Int.up,Vector2Int.down,Vector2Int.left,Vector2Int.right,
         new Vector2Int(1, 1),new Vector2Int(1, -1),new Vector2Int(-1, 1),new Vector2Int(-1, -1) };
+
+    private void MadKing_SorcererBuff()
+    {
+
+    }
+
+    private void MadKing_FindPossibleMove()
+    {
+        bool haveSorcerer = _player.madKing.nowBuffLevel >= 2;
+
+        foreach (var dir in directions)
+        {
+            for (int i = 1; i <= MadKing.extraFindRange; i++)
+            {
+                Vector2Int targetPos = position + dir * i;
+
+                if (targetPos.x < 0 || targetPos.x >= 8 ||
+                    targetPos.y < 0 || targetPos.y >= 8)
+                    break;
+
+                if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
+                {
+                    if (chess.color != this.color)
+                    {
+                        possibleMoveList.Add(targetPos);
+                    }
+                    break;
+                }
+                else
+                {
+                    possibleMoveList.Add(targetPos);
+                }
+                if (!haveSorcerer) break;
+            }
+
+        }
+
+
+
+    }
+
 
     public override void FindPossibleMove()
     {
