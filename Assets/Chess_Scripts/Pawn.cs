@@ -105,9 +105,7 @@ public class Pawn : ChessBasic
             {
                 Vector2Int targetPosition = position + direction * i;
 
-                if (targetPosition.x < 0 || targetPosition.x >= 8 ||
-                targetPosition.y < 0 || targetPosition.y >= 8)
-                    break;
+                if (!IsOutOfBoard(targetPosition)) break;
 
                 bool haveChess = _chessBoard.board.TryGetValue(targetPosition, out ChessBasic chess);
                 if (!haveChess)
@@ -119,7 +117,7 @@ public class Pawn : ChessBasic
                 if (chess.color != this.color)
                 {
                     possibleMoveList.Add(targetPosition);
-                    canEatChessPosition.Add(targetPosition);
+                    possibleEatList.Add(targetPosition);
                 }
 
                 break;
@@ -132,7 +130,7 @@ public class Pawn : ChessBasic
     public override void FindPossibleMove()
     {
         possibleMoveList.Clear();
-        canEatChessPosition.Clear();
+        possibleEatList.Clear();
 
         int moveDirectionValue =(color == ChessColor.White) ? 1 : -1;
         findRange = isFirstMove ? 2 : 1;
@@ -144,9 +142,7 @@ public class Pawn : ChessBasic
             {
                 Vector2Int targetPosition = position + moveOffset * distance;
 
-                if (targetPosition.x < 0 || targetPosition.x >= 8 ||
-                targetPosition.y < 0 || targetPosition.y >= 8)
-                    break;
+                if (!IsOutOfBoard(targetPosition)) break;
 
                 bool haveChess = _chessBoard.board.ContainsKey(targetPosition);
 
@@ -159,9 +155,7 @@ public class Pawn : ChessBasic
         {
             Vector2Int targetPosition = position + attackDirection * moveDirectionValue;
 
-            if (targetPosition.x < 0 || targetPosition.x >= 8 ||
-            targetPosition.y < 0 || targetPosition.y >= 8)
-                break;
+            if (IsOutOfBoard(targetPosition)) break;
 
             bool haveChess = _chessBoard.board.TryGetValue(targetPosition, out ChessBasic targetChess);
             if (!haveChess) continue;
@@ -169,14 +163,15 @@ public class Pawn : ChessBasic
             if (targetChess.color != color)
             {
                 possibleMoveList.Add(targetPosition);
-                canEatChessPosition.Add(targetPosition);
+                possibleEatList.Add(targetPosition);
+
             }
         }
 
         ExtraFindPossibleMove();
 
-        _chessBoard.ShowCanGo(possibleMoveList);
-
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
     }
 
     private void ScoutSecondBuff(ChessBasic chess)
@@ -205,17 +200,20 @@ public class Pawn : ChessBasic
 
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
-        bool posHaveChess = _chessBoard.board.TryGetValue(moveTo, out ChessBasic chess);
-        if (posHaveChess)
+
+        if (!CanMoveTo(moveTo, out ChessBasic chess))
         {
-            if (!CanEatChess(chess))
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
+        }
+        else
+        {
+            if (chess != null)
             {
-                _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-                return;
+                _player.nowPlayerStage = PlayerStage.EatingChess;
+                ScoutSecondBuff(chess);
+                chess.GotEaten();
             }
-            _player.nowPlayerStage = PlayerStage.EatingChess;
-            ScoutSecondBuff(chess);
-            _chessBoard.board[moveTo].GotEaten();
         }
 
         // ワールド座標へ移動

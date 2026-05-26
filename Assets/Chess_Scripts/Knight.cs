@@ -114,15 +114,12 @@ public class Knight : ChessBasic
             {
                 Vector2Int targetPos = position + dir * i;
 
-                if (targetPos.x < 0 || targetPos.x >= 8 ||
-                        targetPos.y < 0 || targetPos.y >= 8)
-                    break;
+                if (IsOutOfBoard(targetPos)) break;
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
                     if (chess.color != this.color)
                     {
                         possibleMoveList.Add(targetPos);
-                        canEatChessPosition.Add(targetPos);
                     }
                     break;
                 }
@@ -139,21 +136,21 @@ public class Knight : ChessBasic
     public override void FindPossibleMove()
     {
         possibleMoveList.Clear();
+        possibleEatList.Clear();
 
         foreach (var move in directions)
         {
             Vector2Int targetPos = position + move;
 
-            if (targetPos.x < 0 || targetPos.x >= 8 ||
-                targetPos.y < 0 || targetPos.y >= 8)
-                continue;
+            if (IsOutOfBoard(targetPos)) continue;
 
             if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
             {
                 if (chess.color != this.color)
                 {
                     possibleMoveList.Add(targetPos);
-                    canEatChessPosition.Add(targetPos);
+                    possibleEatList.Add(targetPos);
+
                 }
             }
             else
@@ -164,7 +161,9 @@ public class Knight : ChessBasic
 
         ExtraFindPossibleMove();
 
-        _chessBoard.ShowCanGo(possibleMoveList);
+
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
     }
 
     public override void Move(Vector2Int moveTo)
@@ -210,11 +209,11 @@ public class Knight : ChessBasic
 
 
 
-    public bool HaveChargerFinalBuff()
+    private bool HaveChargerFinalBuff()
     {
         return _player.knightBuffType == Player.KnightBuff.Charger && _player.charger.canMoveItAgain;
     }
-    public void SkirmisherFinalBuff()
+    private void SkirmisherFinalBuff()
     {
         if (_player.knightBuffType != Player.KnightBuff.Skirmisher) return;
         if (_player.skirmisher.nowBuffLevel != 3) return;

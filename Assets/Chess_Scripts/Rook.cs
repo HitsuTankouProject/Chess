@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using static Player;
@@ -149,7 +150,7 @@ public class Rook : ChessBasic
     public override void FindPossibleMove()
     {
         possibleMoveList.Clear();
-        canEatChessPosition.Clear();
+        possibleEatList.Clear();
 
 
         foreach (var dir in directions)
@@ -157,10 +158,7 @@ public class Rook : ChessBasic
             for (int i = 1; i < findRange; i++)
             {
                 Vector2Int targetPos = position + dir * i;
-
-                if (targetPos.x < 0 || targetPos.x >= 8 ||
-                    targetPos.y < 0 || targetPos.y >= 8)
-                    break;
+                if (IsOutOfBoard(targetPos)) break;
 
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
@@ -171,13 +169,15 @@ public class Rook : ChessBasic
                     else if (judgment == MoveJudgment.CanEatAndStop)
                     {
                         possibleMoveList.Add(targetPos);
-                        canEatChessPosition.Add(targetPos);
+                        possibleEatList.Add(targetPos);
+
                         break;
                     }
                     else if (judgment == MoveJudgment.CanEatAndThrough)
                     {
                         possibleMoveList.Add(targetPos);
-                        canEatChessPosition.Add(targetPos);
+                        possibleEatList.Add(targetPos);
+
                         continue;
                     }
 
@@ -189,7 +189,8 @@ public class Rook : ChessBasic
             }
         }
 
-        _chessBoard.ShowCanGo(possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
 
     }
 
@@ -264,7 +265,11 @@ public class Rook : ChessBasic
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
-
+        if (!CanMoveTo(moveTo, out ChessBasic chessCanMoveTo))
+        {
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
+        }
         Queue<ChessBasic> eatqueue = new Queue<ChessBasic>();
         Vector2Int dir = new Vector2Int(Math.Sign(moveTo.x - position.x), Math.Sign(moveTo.y - position.y));
         Vector2Int targetPos = position;
@@ -298,19 +303,20 @@ public class Rook : ChessBasic
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
 
-        bool posHaveChess = _chessBoard.board.TryGetValue(moveTo, out ChessBasic chess);
-
-        if (posHaveChess)
+        if (!CanMoveTo(moveTo, out ChessBasic chess))
         {
-            if (!CanEatChess(chess))
-            {
-                _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-                return;
-            }
-
-            _player.nowPlayerStage = PlayerStage.EatingChess;
-            _chessBoard.board[moveTo].GotEaten();
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
         }
+        else
+        {
+            if (chess != null)
+            {
+                _player.nowPlayerStage = PlayerStage.EatingChess;
+                chess.GotEaten();
+            }
+        }
+
         ReMoveGuardianBuff(position);
         // ワールド座標へ移動
         this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
@@ -338,4 +344,9 @@ public class Rook : ChessBasic
 
     }
 
+    public override void GotEaten()
+    {
+        ReMoveGuardianBuff(position);
+        base.GotEaten();
+    }
 }

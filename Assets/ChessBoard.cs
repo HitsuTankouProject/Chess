@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using static ChessBlock;
+using Unity.VisualScripting;
 
 [Serializable]
 public class Col
@@ -39,11 +40,20 @@ public class ChessBoard : MonoBehaviour
         }
     }
 
+    [Header("Chess Board")]
     public List<Col> cols;
     public ChessObject chessPrefab;
     private readonly Vector2Int chessBoard_max = new Vector2Int(8, 8);
     private HashSet<Vector2Int> nowShowing = new HashSet<Vector2Int>();
 
+    public Material m_Black;
+    public Material m_White;
+    public Material m_CanGo;
+    public Material m_CanEat;
+    public Material m_GotCurse;
+
+
+    [Header("Players")]
 
     public ChessBlock black_KingChessSpawn { get; private set; }
     public ChessBlock white_KingChessSpawn { get; private set; }
@@ -278,26 +288,35 @@ public class ChessBoard : MonoBehaviour
 
     }
 
-    public void ShowCanGo(HashSet<Vector2Int> canGoPos)
+    public void ShowActive(ChessBlockStage activeStage,HashSet<Vector2Int> canGoPos)
     {
         if (canGoPos.Count == 0) return;
-        nowShowing = canGoPos;
+        nowShowing.AddRange(canGoPos);
         foreach (var pos in canGoPos)
         {
-            cols[pos.x].chessBlocks[pos.y].ShowCanGo();
+            cols[pos.x].chessBlocks[pos.y].Active(activeStage);
         }
     }
 
-    public void ReSetCanGo()
+
+    public void ReSetActive()
     {
         if (nowShowing.Count == 0) return;
         foreach (var pos in nowShowing)
         {
-            cols[pos.x].chessBlocks[pos.y].ResetNormal();
+            cols[pos.x].chessBlocks[pos.y].Active(ChessBlockStage.Normal);
         }
         nowShowing.Clear();
     }
 
+    public bool IsOutOfBoard(Vector2Int position)
+    {
+        if (position.x < 0 || position.x >= chessBoard_max.x ||
+                   position.y < 0 || position.y >= chessBoard_max.y)
+            return true;
+
+        return false;
+    }
     #endregion
 
 

@@ -1,8 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
+public enum ChessBlockStage {Normal, CanGo, CanEat };
 public class ChessBlock : MonoBehaviour
 {
     public enum ChessBoardColor
@@ -12,52 +15,58 @@ public class ChessBlock : MonoBehaviour
     }
     public ChessBoardColor color;
 
+    private Material normalMaterial => color == ChessBoardColor.Black ? ChessBoard.Instance.m_Black : ChessBoard.Instance.m_White;
+    private Material GetStageMaterial(ChessBlockStage chessBlockStage)
+    {
+        switch (chessBlockStage)
+        {
+            case ChessBlockStage.Normal:    return normalMaterial;
+            case ChessBlockStage.CanGo:     return ChessBoard.Instance.m_CanGo;
+            case ChessBlockStage.CanEat:    return ChessBoard.Instance.m_CanEat;
+            default:
+                Debug.LogError("Wrong ChessBlockStage");
+                return null;
+        }
+
+
+    }
+
     public bool isKingChessSpawn;
+    public bool isGotCurse { get; private set; } = false;
+    private ChessBasic curseChess;
     public Vector2Int position;
-    private Vector3 canGoPos => new Vector3(0, -2, 0);
+    private Vector3 activePos => new Vector3(0, -2, 0);
     private Vector3 normalPos => new Vector3(0, -5, 0);
 
-    public Material m_Black;
-    public Material m_White;
-    public Material m_CanGo;
     private MeshRenderer meshRenderer => transform.GetChild(0).GetComponent<MeshRenderer>();
 
-    public bool isCanGo;
-    private IEnumerator CanGo()
+    public void Active(ChessBlockStage chessBlockStage)
     {
-        meshRenderer.material = m_CanGo;
-        transform.GetChild(0).localPosition = canGoPos;
+        if (curseChess != null) return;
+        meshRenderer.material = GetStageMaterial(chessBlockStage);
+        Vector3 targetPos = chessBlockStage == ChessBlockStage.Normal ? normalPos : activePos;
+        transform.GetChild(0).localPosition = targetPos;
+    }
 
-        while (isCanGo)
+    private IEnumerator GotCurse()
+    {
+        meshRenderer.material = ChessBoard.Instance.m_GotCurse;
+
+        while (curseChess != null && curseChess.gameObject.activeSelf)
         {
             yield return null;
         }
-        meshRenderer.material = color == ChessBoardColor.Black ? m_Black : m_White;
+        curseChess = null;
 
-        transform.GetChild(0).localPosition = normalPos;
+        Active(ChessBlockStage.Normal);
+
     }
-
-    public void ShowCanGo()
+    public void CurseTheBlock(ChessBasic chess)
     {
-        isCanGo = true;
-        StartCoroutine(CanGo());
+        if (curseChess != null) return;
+        curseChess = chess;
+        StartCoroutine(GotCurse());
+
     }
-    public void ResetNormal()
-    {
-        isCanGo = false;
-    }
-
-
-    public bool test;
-    private void Update()
-    {
-        if(test)
-        {
-            test = false;
-            StartCoroutine(CanGo());
-        }
-    }
-
-
 
 }

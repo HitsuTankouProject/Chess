@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -42,6 +43,8 @@ public abstract class ChessBasic : MonoBehaviour
     public Pair<ChessColor, ChessType> chessInfo => new Pair<ChessColor, ChessType>(color, type);
     /// <summary>　現在の盤面座標　</summary>
     public Vector2Int position { get; private set; } = new Vector2Int(-1,-1);
+    public bool IsOutOfBoard(Vector2Int position) =>_chessBoard.IsOutOfBoard(position);
+
     /// <summary>　駒座標更新　</summary>
     public void SetPosition(Vector2Int pos) => position = pos;
     /// <summary>　 駒名取得　</summary>
@@ -68,7 +71,8 @@ public abstract class ChessBasic : MonoBehaviour
 
     /// <summary>　 移動可能マス一覧　</summary>
     public HashSet<Vector2Int> possibleMoveList = new HashSet<Vector2Int>();
-    public HashSet<Vector2Int> canEatChessPosition = new HashSet<Vector2Int>();
+    public HashSet<Vector2Int> possibleEatList = new HashSet<Vector2Int>();
+
     public abstract int findRange { get; protected set; }
 
     /// <summary>　移動可能位置探索 派生クラスでオーバーライドして使用 </summary>
@@ -109,9 +113,17 @@ public abstract class ChessBasic : MonoBehaviour
         if (chess.haveExtraLife)return false;
         bool isKing = chess.type == ChessType.King;
         if(!isKing) return true;
-        bool haveBarrier =chess.TryGetComponent<King>(out King king)&& king.haveBarrier;
+        bool haveBarrier = chess.TryGetComponent<King>(out King king)&& king.haveBarrier;
         return !haveBarrier;
     }
+    public bool CanMoveTo(Vector2Int moveTo, out ChessBasic chess)
+    {
+        bool posHaveChess = _chessBoard.board.TryGetValue(moveTo, out chess);
+        if(!posHaveChess) return true;
+        return CanEatChess(chess);
+    }
+
+
 
     /// <summary>
     /// 駒移動処理
@@ -120,18 +132,19 @@ public abstract class ChessBasic : MonoBehaviour
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
-        bool posHaveChess = _chessBoard.board.TryGetValue(moveTo, out ChessBasic chess);
-        if(posHaveChess)
+        if(!CanMoveTo(moveTo, out ChessBasic chess))
         {
-            if(!CanEatChess(chess))
-            {
-                _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-                return;
-            }
-            _player.nowPlayerStage = PlayerStage.EatingChess;
-            _chessBoard.board[moveTo].GotEaten();
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
         }
-
+        else
+        {
+            if (chess != null)
+            {
+                _player.nowPlayerStage = PlayerStage.EatingChess;
+                chess.GotEaten();
+            }
+        }
         // ワールド座標へ移動
         this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
         // 盤面情報更新

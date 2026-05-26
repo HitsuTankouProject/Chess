@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Witcher : BuffBasic
@@ -6,37 +7,42 @@ public class Witcher : BuffBasic
     public override ChessType buffChess => ChessType.Queen;
     public override string buffName => "Witcher";
 
-    public bool canChangeToKing = false;
-    public bool canCallKingToProtect = false;
+    public int canGoRange { get; private set; } = 3;
+    public bool cantGotCurse { get; private set; } = false;
+    public bool canCurseBlock { get; private set; } = false;
+    public bool canCurseAllTheBlockCanGo { get; private set; } = false;
+    private HashSet<Vector2Int> curseAllTheBlockCanGoPos = new HashSet<Vector2Int>();
 
     public override void ResetBuff()
     {
-        //canChangeToKing = false;
-        //canCallKingToProtect = false;
-        //Pair<ChessColor, ChessType> kingInform = new Pair<ChessColor, ChessType>(_buffChess.color, ChessType.King);
-        //foreach (ChessBasic target in ChessBoard.Instance.board.Values)
-        //{
-        //    if (target.chessInfo == kingInform)
-        //    {
-        //        king = target.GetComponent<King>();
-        //        return;
-        //    }
-        //}
+        cantGotCurse = false;
+        canCurseBlock = false;
+        canCurseAllTheBlockCanGo = false;
     }
 
     public override void FirstLevel()
     {
-        //king.findRange = 2;
+        cantGotCurse = true;
     }
     public override void SecondLevel()
     {
-        canCallKingToProtect = true;
+        canCurseBlock = true;
     }
 
     public override void ThirdLevel()
     {
-        canChangeToKing = true;
+        canCurseAllTheBlockCanGo = true;
     }
+
+    public void CurseAllTheBlockCanGo()
+    {
+        curseAllTheBlockCanGoPos.Clear();
+
+
+
+    }
+
+
 
 }
 
@@ -51,7 +57,6 @@ public class Beauty : BuffBasic
 
     public override void ResetBuff()
     {
-
         canProtectByKnight = false;
         removeTheAreaLimit = false;
         canCharmChess = false;
@@ -91,22 +96,22 @@ public class Queen : ChessBasic
     {
 
         possibleMoveList.Clear();
-
+        possibleEatList.Clear();
         foreach (var dir in directions)
         {
             for (int i = 1; i < 8; i++)
             {
                 Vector2Int targetPos = position + dir * i;
 
-                if (targetPos.x < 0 || targetPos.x >= 8 ||
-                    targetPos.y < 0 || targetPos.y >= 8)
-                    break;
+                if (IsOutOfBoard(targetPos)) break;
+
 
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
                     if (chess.color != this.color)
                     {
                         possibleMoveList.Add(targetPos);
+                        possibleEatList.Add(targetPos);
                     }
 
                     break;
@@ -118,6 +123,7 @@ public class Queen : ChessBasic
             }
         }
 
-        _chessBoard.ShowCanGo(possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
     }
 }

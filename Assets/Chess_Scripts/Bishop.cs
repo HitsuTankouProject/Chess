@@ -146,9 +146,7 @@ public class Bishop : ChessBasic
             {
                 Vector2Int targetPos = position + dir * i;
 
-                if (targetPos.x < 0 || targetPos.x >= 8 ||
-                    targetPos.y < 0 || targetPos.y >= 8)
-                    break;
+                if (!_chessBoard.IsOutOfBoard(targetPos)) break;
 
 
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
@@ -156,7 +154,6 @@ public class Bishop : ChessBasic
                     if (chess.color != this.color)
                     {
                         possibleMoveList.Add(targetPos);
-                        canEatChessPosition.Add(targetPos);
                     }
                     break;
                 }
@@ -170,24 +167,21 @@ public class Bishop : ChessBasic
     public override void FindPossibleMove()
     {
         possibleMoveList.Clear();
-        canEatChessPosition.Clear();
-
+        possibleEatList.Clear();
         foreach (var dir in directions)
         {
             for (int i = 1; i < findRange; i++)
             {
                 Vector2Int targetPos = position + dir * i;
 
-                if (targetPos.x < 0 || targetPos.x >= 8 ||
-                    targetPos.y < 0 || targetPos.y >= 8)
-                    break;
+                if (IsOutOfBoard(targetPos)) break;
 
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
                     if (chess.color != this.color)
                     {
                         possibleMoveList.Add(targetPos);
-                        canEatChessPosition.Add(targetPos);
+                        possibleEatList.Add(targetPos);
                     }
                     break;
                 }
@@ -200,7 +194,9 @@ public class Bishop : ChessBasic
 
         ExtraFindPossibleMove();
 
-        _chessBoard.ShowCanGo(possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
+
     }
     public override void Move(Vector2Int moveTo)
     {

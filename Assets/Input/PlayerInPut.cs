@@ -80,7 +80,7 @@ public class PlayerInPut
     {
         bool chessCanGo = pickIngChess.possibleMoveList.Contains(result);
 
-        _chessBoard.ReSetCanGo();
+        _chessBoard.ReSetActive();
         if (!chessCanGo)
         {
             pickIngChess.ReturnPick();
@@ -195,7 +195,7 @@ public class PlayerInPut
             bool chessCanGo = pickIngChess.possibleMoveList.Contains(target);
             if (!chessCanGo) continue;
             pickIngChess.Move(target);
-            _chessBoard.ReSetCanGo();
+            _chessBoard.ReSetActive();
 
             break;
         }
