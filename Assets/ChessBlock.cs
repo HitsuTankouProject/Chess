@@ -16,6 +16,7 @@ public class ChessBlock : MonoBehaviour
     public ChessBoardColor color;
 
     private Material normalMaterial => color == ChessBoardColor.Black ? ChessBoard.Instance.m_Black : ChessBoard.Instance.m_White;
+    private Material m_GotCurse =>ChessBoard.Instance.m_GotCurse;
     private Material GetStageMaterial(ChessBlockStage chessBlockStage)
     {
         switch (chessBlockStage)

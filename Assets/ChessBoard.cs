@@ -46,6 +46,7 @@ public class ChessBoard : MonoBehaviour
     private readonly Vector2Int chessBoard_max = new Vector2Int(8, 8);
     private HashSet<Vector2Int> nowShowing = new HashSet<Vector2Int>();
 
+    [Header("Board Block Material")]
     public Material m_Black;
     public Material m_White;
     public Material m_CanGo;

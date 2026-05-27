@@ -166,32 +166,9 @@ public class Knight : ChessBasic
         _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
     }
 
-    public override void Move(Vector2Int moveTo)
+    public override void Move(Vector2Int moveTo, bool isTurnEnd)
     {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
-        ReturnPick();
-        bool posHaveChess = _chessBoard.board.TryGetValue(moveTo, out ChessBasic chess);
-
-        if (posHaveChess)
-        {
-            if (!CanEatChess( chess))
-            {
-                _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-                return;
-            }
-
-            _player.nowPlayerStage = PlayerStage.EatingChess;
-            _chessBoard.board[moveTo].GotEaten();
-        }
-
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
-        if (_player.IsProTectedByRook_Guardian(position))
-        {
-            haveExtraLife = true;
-        }
-        else haveExtraLife = false;
-
+        base.Move(moveTo, false);
 
         SkirmisherFinalBuff();
 

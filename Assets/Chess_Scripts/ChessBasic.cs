@@ -123,12 +123,40 @@ public abstract class ChessBasic : MonoBehaviour
         return CanEatChess(chess);
     }
 
+    public void MoveOnly(Vector2Int moveTo)
+    {
+        _player.nowPlayerStage = PlayerStage.MovingChess;
+        ReturnPick();
+        if (!CanMoveTo(moveTo, out ChessBasic chess))
+        {
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
+        }
+        else
+        {
+            if (chess != null)
+            {
+                _player.nowPlayerStage = PlayerStage.EatingChess;
+                chess.GotEaten();
+            }
+        }
+        // ワールド座標へ移動
+        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
+        // 盤面情報更新
+        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
+
+        if (_player.IsProTectedByRook_Guardian(position))
+        {
+            haveExtraLife = true;
+        }
+        else haveExtraLife = false;
+    }
 
 
     /// <summary>
     /// 駒移動処理
     /// </summary>
-    public virtual void Move(Vector2Int moveTo) 
+    public virtual void Move(Vector2Int moveTo, bool isTurnEnd) 
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
@@ -155,7 +183,7 @@ public abstract class ChessBasic : MonoBehaviour
             haveExtraLife = true;
         }
         else haveExtraLife = false;
-        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+        if(isTurnEnd) _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
     }
 

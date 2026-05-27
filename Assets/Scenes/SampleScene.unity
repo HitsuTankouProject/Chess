@@ -2630,6 +2630,26 @@ PrefabInstance:
       propertyPath: m_White
       value: 
       objectReference: {fileID: 2100000, guid: d79e907371ab7004692d10b8a43af673, type: 2}
+    - target: {fileID: 3210875984459453822, guid: 01c9a6ee02c459c45ac7ca2c69841541, type: 3}
+      propertyPath: m_Black
+      value: 
+      objectReference: {fileID: 2100000, guid: 467be1afed9221c4f95f9f603561c59a, type: 2}
+    - target: {fileID: 3210875984459453822, guid: 01c9a6ee02c459c45ac7ca2c69841541, type: 3}
+      propertyPath: m_CanGo
+      value: 
+      objectReference: {fileID: 2100000, guid: 2f15a097bbf1f9f41951b7105c188d27, type: 2}
+    - target: {fileID: 3210875984459453822, guid: 01c9a6ee02c459c45ac7ca2c69841541, type: 3}
+      propertyPath: m_White
+      value: 
+      objectReference: {fileID: 2100000, guid: d79e907371ab7004692d10b8a43af673, type: 2}
+    - target: {fileID: 3210875984459453822, guid: 01c9a6ee02c459c45ac7ca2c69841541, type: 3}
+      propertyPath: m_CanEat
+      value: 
+      objectReference: {fileID: 2100000, guid: 9b0779f8492d49741992c5509f0bbf98, type: 2}
+    - target: {fileID: 3210875984459453822, guid: 01c9a6ee02c459c45ac7ca2c69841541, type: 3}
+      propertyPath: m_GotCurse
+      value: 
+      objectReference: {fileID: 2100000, guid: 5859b28fd1fbcd74a97f21397ac85116, type: 2}
     - target: {fileID: 3316335156170818542, guid: 01c9a6ee02c459c45ac7ca2c69841541, type: 3}
       propertyPath: m_Black
       value: 
