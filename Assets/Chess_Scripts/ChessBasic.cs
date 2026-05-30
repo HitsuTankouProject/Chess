@@ -50,7 +50,7 @@ public abstract class ChessBasic : MonoBehaviour
     /// <summary>　 駒名取得　</summary>
     public virtual string ChessName() { return "ChessBasic"; }
 
-    public abstract List<Vector2Int> directions { get;}
+    public abstract HashSet<Vector2Int> directions { get;}
 
 
     public Player _player;
@@ -62,7 +62,7 @@ public abstract class ChessBasic : MonoBehaviour
     public bool haveBuffed = false;
     public bool haveExtraLife = false;
 
-    public bool gotCurse{get;private set;} = false;
+    public bool gotCurse { get; private set; } = false;
     public void CurseThisChess()=>gotCurse = true;
     public void PurifyThisChess()
     {
@@ -73,12 +73,51 @@ public abstract class ChessBasic : MonoBehaviour
     public HashSet<Vector2Int> possibleMoveList = new HashSet<Vector2Int>();
     public HashSet<Vector2Int> possibleEatList = new HashSet<Vector2Int>();
 
-    public abstract int findRange { get; protected set; }
+    public abstract int findRange { get;}
 
     /// <summary>　移動可能位置探索 派生クラスでオーバーライドして使用 </summary>
-    public virtual void FindPossibleMove() { }
+    public virtual void FindCanMove(bool isThrougt)
+    {
+        foreach (var dir in directions)
+        {
+            for (int i = 1; i <= findRange; i++)
+            {
+                Vector2Int targetPos = position + dir * i;
 
-    public virtual void ExtraFindPossibleMove(){}
+                if (IsOutOfBoard(targetPos)) break;
+
+                if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
+                {
+                    if (chess.color != this.color)
+                    {
+                        possibleMoveList.Add(targetPos);
+                        possibleEatList.Add(targetPos);
+                    }
+                    if (!isThrougt) break;
+                }
+                else
+                {
+                    possibleMoveList.Add(targetPos);
+                }
+            }
+        }
+
+    }
+    public virtual void ExtraFindPossibleMove(bool isThrougt) { }
+    public virtual void FindPossibleMove()
+    {
+        possibleMoveList.Clear();
+        possibleEatList.Clear();
+
+        FindCanMove(false);
+        ExtraFindPossibleMove(false);
+
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
+
+    }
+
+   
 
     private Vector3 pickAngle
     {
@@ -110,11 +149,19 @@ public abstract class ChessBasic : MonoBehaviour
 
     public virtual bool CanEatChess(ChessBasic chess)
     {
-        if (chess.haveExtraLife)return false;
+        if (chess.haveExtraLife)
+        {
+            chess.haveExtraLife = false;
+            return false;
+        }
         bool isKing = chess.type == ChessType.King;
         if(!isKing) return true;
-        bool haveBarrier = chess.TryGetComponent<King>(out King king)&& king.haveBarrier;
-        return !haveBarrier;
+        if (chess is King king && king.haveBarrier)
+        {
+            king.haveBarrier = false;
+            return false;
+        }
+        return true;
     }
     public bool CanMoveTo(Vector2Int moveTo, out ChessBasic chess)
     {
@@ -156,7 +203,7 @@ public abstract class ChessBasic : MonoBehaviour
     /// <summary>
     /// 駒移動処理
     /// </summary>
-    public virtual void Move(Vector2Int moveTo, bool isTurnEnd) 
+    public virtual void Move(Vector2Int moveTo) 
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
@@ -183,7 +230,7 @@ public abstract class ChessBasic : MonoBehaviour
             haveExtraLife = true;
         }
         else haveExtraLife = false;
-        if(isTurnEnd) _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
     }
 

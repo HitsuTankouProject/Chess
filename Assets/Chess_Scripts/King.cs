@@ -3,17 +3,16 @@ using System;
 using UnityEngine;
 using static Player;
 
-
 public class SageKing : BuffBasic
 {
     public override ChessType buffChess => ChessType.King;
     public override string buffName => "SageKing";
+    public override void Choose() => _player.kingBuffType = Player.KingBuff.SageKing;
+
 
     public bool cantReSpawn = false;
     public bool canAddBarrierInPercent = false;
     private float addBarrierPercent;
-
-
 
     public bool winWentKingCrossTheBoard = false;
 
@@ -34,7 +33,7 @@ public class SageKing : BuffBasic
 
         Player others = _player == InGame.Instance.whiteChessPlayer ? 
             InGame.Instance.blackChessPlayer : InGame.Instance.whiteChessPlayer;
-        addBarrierPercent = others.kingBuffType == Player.KingBuff.MadKing ? 30.0f : 60.0f;
+        addBarrierPercent = others.kingBuffType == Player.KingBuff.MadKing ? 60.0f : 30.0f;
     }
 
     public bool TryAddBarrier()
@@ -51,11 +50,11 @@ public class SageKing : BuffBasic
 
 }
 
-
 public class MadKing : BuffBasic
 {
     public override ChessType buffChess => ChessType.King;
     public override string buffName => "MadKing";
+    public override void Choose() => _player.kingBuffType = Player.KingBuff.MadKing;
 
     public int extraFindRange = 2;
     public bool cantReSpawn = false;
@@ -78,12 +77,12 @@ public class MadKing : BuffBasic
     }
     public override void SecondLevel()
     {
-        canThroughAndEatAllChess = true;
+        canMoveItAgain = true;
     }
     public override void ThirdLevel()
     {
         extraFindRange = 3;
-        canMoveItAgain = true;
+        canThroughAndEatAllChess = true;
     }
 
 }
@@ -92,23 +91,21 @@ public class MadKing : BuffBasic
 public class King : ChessBasic
 {
     public override ChessType type => ChessType.King;
-    public override int findRange { get; protected set; } = 1;
+    public override int findRange { get;} = 1;
     private bool isMoveAgain = false;
 
     public override string ChessName() { return "King"; }
 
-    public bool haveBarrier { get; private set; } = false;
+    public bool haveBarrier = false;
     public void AddBarrier()
     {
         if (haveBarrier) return;
         haveBarrier = true;
     }
 
-    public override List<Vector2Int> directions => new List<Vector2Int>
+    public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>
     {Vector2Int.up,Vector2Int.down,Vector2Int.left,Vector2Int.right,
         new Vector2Int(1, 1),new Vector2Int(1, -1),new Vector2Int(-1, 1),new Vector2Int(-1, -1) };
-
-
 
     private void MadKing_FindPossibleMove()
     {
@@ -146,67 +143,76 @@ public class King : ChessBasic
 
         }
 
-
-
     }
-    private void MadKing_MoveTo(Vector2Int moveTo)
+
+
+    private void MadKing_Level2_MoveAgain(bool moveAgain)
     {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
-        ReturnPick();
-        if (!CanMoveTo(moveTo,out ChessBasic chessCanMoveTo)) 
+        if (_player.kingBuffType != Player.KingBuff.MadKing && !_player.madKing.canMoveItAgain)
         {
             _player.nowPlayerStage = PlayerStage.ReadytoEnd;
             return;
         }
 
-
-        Queue<ChessBasic> eatqueue = new Queue<ChessBasic>();
-        Vector2Int dir = new Vector2Int(Math.Sign(moveTo.x - position.x), Math.Sign(moveTo.y - position.y));
-        Vector2Int targetPos = position;
-        for (int i = 1; targetPos != moveTo; i++)
+        if (!isMoveAgain)
         {
-            targetPos = position + dir * i;
-            bool posHaveChess = _chessBoard.board.TryGetValue(targetPos, out ChessBasic chess);
-
-            if (posHaveChess && chess != null) eatqueue.Enqueue(chess);
+            isMoveAgain = true;
+            StartCoroutine(_player.playerInPut.OneMoreMove(this));
         }
-        while (eatqueue.Count > 0)
+        else
         {
-            ChessBasic chessBasic = eatqueue.Dequeue();
-            bool chessHaveBeenProtected = chessBasic.haveExtraLife;
+            isMoveAgain = false;
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
-            if (chessHaveBeenProtected) continue;
-            else chessBasic.GotEaten();
         }
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
 
-        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
     }
-
-
-    private void Normal_FindPossibleMove()
+    private void MadKing_Level3_ThroughAndEatAllChess(Vector2Int nowPosition , Vector2Int moveTo, out Queue<ChessBasic> eatqueue)
     {
-        foreach (var dir in directions)
+        if (_player.kingBuffType != Player.KingBuff.MadKing && !_player.madKing.canThroughAndEatAllChess)
         {
-            Vector2Int targetPos = position + dir;
-
-            if (IsOutOfBoard(targetPos))continue;
-
-            if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
-            {
-                if (chess.color != this.color)
-                {
-                    possibleMoveList.Add(targetPos);
-                    possibleEatList.Add(targetPos);
-
-                }
-            }
-            else
-            {
-                possibleMoveList.Add(targetPos);
-            }
+            eatqueue = null;
+            return;
         }
+        eatqueue = new Queue<ChessBasic>();
+        Vector2Int dir = new Vector2Int(Math.Sign(moveTo.x - nowPosition.x), Math.Sign(moveTo.y - nowPosition.y));
+
+        while (nowPosition != moveTo)
+        {
+            nowPosition += dir;
+            bool posHaveChess = _chessBoard.board.TryGetValue(nowPosition, out ChessBasic chess);
+            if (posHaveChess && !chess.haveExtraLife) eatqueue.Enqueue(chess);
+        }
+    }
+    private void MadKing_MoveTo(Vector2Int moveTo)
+    {
+        bool canMoveAgain = _player.madKing.canMoveItAgain;
+        bool canThroughAndEatAllChess = _player.madKing.canThroughAndEatAllChess;
+
+        if (!canMoveAgain&& canThroughAndEatAllChess)
+        {
+            base.Move(moveTo);
+            return;
+        }
+
+        ReturnPick();
+        bool canMoveTo = CanMoveTo(moveTo, out ChessBasic chessCanMoveTo);
+        Vector2Int nowPosition = position;
+        bool isEatTheChess = chessCanMoveTo != null;
+
+        if (!canMoveTo)
+        {
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
+        }
+
+        MadKing_Level3_ThroughAndEatAllChess(nowPosition, moveTo, out Queue<ChessBasic> eatqueue);
+        MoveOnly(moveTo);
+        while (eatqueue.Count > 0) eatqueue.Dequeue().GotEaten();
+
+        MadKing_Level2_MoveAgain(isEatTheChess);
+
+
     }
 
     public override void FindPossibleMove()
@@ -216,7 +222,7 @@ public class King : ChessBasic
 
         bool isMadKing = _player.kingBuffType == Player.KingBuff.MadKing;
         if (isMadKing) MadKing_FindPossibleMove();
-        else Normal_FindPossibleMove();
+        else FindCanMove(false);
 
         _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
         _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
@@ -261,7 +267,7 @@ public class King : ChessBasic
 
     public override void Move(Vector2Int moveTo)
     {
-
+        base.Move(moveTo);
     }
 
 

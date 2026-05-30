@@ -8,14 +8,18 @@ using Unity.VisualScripting;
 using static UnityEditor.Experimental.GraphView.GraphView;
 
 
-public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,ReadytoEnd,End}
+public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,ReadytoEnd,End }
 
 public class Player : MonoBehaviour
 {
+    private ChessBoard _chessBoard => ChessBoard.Instance;
+
+
     public ChessColor usingChess;
     public PlayerStage nowPlayerStage;
 
     public PlayerInPut playerInPut;
+    
 
     public Dictionary<ChessType, List<ChessBasic>> allTheChess { get; private set; } = new Dictionary<ChessType, List<ChessBasic>>();
     public void AllChessInit(HashSet<ChessBasic> chess)
@@ -36,71 +40,76 @@ public class Player : MonoBehaviour
 
     #region Buff Chess
 
+    #region King
     [Header("King Buff")]
     public KingBuff kingBuffType;
     public enum KingBuff { None, MadKing, SageKing }
     public MadKing madKing = new MadKing();
     public SageKing sageKing = new SageKing();
 
-    private void LevelUp_KingBuff()
+    private BuffBasic TargetBuff_King(KingBuff buff)
     {
-        if (kingBuffType == KingBuff.None) return;
-        bool success;
-        bool isMadKing = kingBuffType == KingBuff.MadKing;
-        if (isMadKing) madKing.LevelUp(out success);
-        else sageKing.LevelUp(out success);
-
-        if (!success) Debug.LogError("KingBuff LevelUp failed" + kingBuffType.ToString());
-
+        return buff switch
+        {
+            KingBuff.MadKing => madKing,
+            KingBuff.SageKing => sageKing,
+            _ => null
+        };
     }
 
+    #endregion
+
+    #region Queen
     [Header("Queen Buff")]
     public QueenBuff queenBuffType;
     public enum QueenBuff { None, Witcher, Beauty }
     public Witcher witcher = new Witcher();
     public Beauty beauty = new Beauty();
-
-    private void LevelUp_QueenBuff()
+    private BuffBasic TargetBuff_Queen(QueenBuff buff)
     {
-        if (queenBuffType == QueenBuff.None) return;
-        bool success;
-        bool isWitcher = queenBuffType == QueenBuff.Witcher;
-        if (isWitcher) witcher.LevelUp(out success);
-        else beauty.LevelUp(out success);
-
-        if (!success) Debug.LogError("QueenBuff LevelUp failed" + queenBuffType.ToString());
-
+        return buff switch
+        {
+            QueenBuff.Witcher => witcher,
+            QueenBuff.Beauty => beauty,
+            _ => null
+        };
     }
+    #endregion
 
+    #region Knight
 
     [Header("Knight Buff")]
     public KnightBuff knightBuffType;
     public enum KnightBuff { None, Charger, Skirmisher }
     public Charger charger = new Charger();
     public Skirmisher skirmisher = new Skirmisher();
-
-    private void LevelUp_KnightBuff()
+    private BuffBasic TargetBuff_Knight(KnightBuff buff)
     {
-        if (knightBuffType == KnightBuff.None) return;
-
-        bool success;
-        bool isCharger = knightBuffType == KnightBuff.Charger;
-
-        if (isCharger) charger.LevelUp(out success);
-        else skirmisher.LevelUp(out success);
-
-        if (!success)
+        return buff switch
         {
-            Debug.LogError("KnightBuff LevelUp failed " + knightBuffType.ToString());
-        }
+            KnightBuff.Charger => charger,
+            KnightBuff.Skirmisher => skirmisher,
+            _ => null
+        };
     }
 
+    #endregion
 
+    #region Bishop
     [Header("Bishop Buff")]
     public BishopBuff bishopBuffType;
     public enum BishopBuff { None, Sorcerer, Monk };
     public Sorcerer sorcerer = new Sorcerer();
     public Monk monk = new Monk();
+    private BuffBasic TargetBuff_Bishop(BishopBuff buff)
+    {
+        return buff switch
+        {
+            BishopBuff.Sorcerer => sorcerer,
+            BishopBuff.Monk => monk,
+            _ => null
+        };
+    }
 
     private void LevelUp_BisHopBuff()
     {
@@ -117,106 +126,130 @@ public class Player : MonoBehaviour
             Debug.LogError("BishopBuff LevelUp failed " + bishopBuffType.ToString());
         }
     }
+    #endregion
 
+    #region Rook
     [Header("Rook Buff")]
     public RookBuff rookBuffType;
     public enum RookBuff { None, Rusher, Guardian };
     public Rusher rusher = new Rusher();
     public Guardian guardian = new Guardian();
-    private void LevelUp_RookBuff()
+    private BuffBasic TargetBuff_Rook(RookBuff buff)
     {
-        if (rookBuffType == RookBuff.None) return;
-
-        bool success;
-        bool isRusher = rookBuffType == RookBuff.Rusher;
-
-        if (isRusher) rusher.LevelUp(out success);
-        else guardian.LevelUp(out success);
-
-        if (!success)
+        return buff switch
         {
-            Debug.LogError("RookBuff LevelUp failed " + rookBuffType.ToString());
-        }
+            RookBuff.Rusher => rusher,
+            RookBuff.Guardian => guardian,
+            _ => null
+        };
     }
 
-    public bool IsProTectedByRook_Guardian(Vector2Int targetChessPos)
+    private HashSet<Vector2Int> guardianProtectArea = new HashSet<Vector2Int>();
+    public void AddToProtectArea(HashSet<Vector2Int> addToProtectArea) => guardianProtectArea.AddRange(addToProtectArea);
+    public void UpdateGuardianProtectArea()
     {
-        if (rookBuffType != RookBuff.Guardian ||guardian.protectArea.Count == 0) return false;
+        if (rookBuffType != RookBuff.Guardian) return;
+        foreach(Vector2Int area in guardianProtectArea)
+        {
+            if (!_chessBoard.board.TryGetValue(area, out ChessBasic chess) || chess.color != usingChess) continue;
+            chess.haveExtraLife = false;
+        }
+        guardianProtectArea.Clear();
 
+        if (!allTheChess.ContainsKey(ChessType.Rook)) return;
         foreach(ChessBasic chess in allTheChess[ChessType.Rook])
         {
-            chess.gameObject.TryGetComponent<Rook>(out Rook rook);
-            if (rook == null)
+            Debug.Log("4");
+            if (!chess.TryGetComponent<Rook>(out Rook rook))
             {
-                Debug.Log($"Have An Non Rook in a Rook List : {chess.gameObject.name}");
-                return false;
+                Debug.LogError(" NonRook store in the Rook List");
+                return;
             }
+            rook.GuardianBuff();
 
-            if (rook.IsProtectedByGuardian(targetChessPos)) return true;
         }
-
-        return false;
     }
+    public bool IsProTectedByRook_Guardian(Vector2Int targetChessPos) => guardianProtectArea.Contains(targetChessPos);
+    #endregion
 
-
-
+    #region Pawn
     [Header("Pawn Buff")]
     public PawnBuff pawnBuffType;
     public enum PawnBuff { None, Scout, Substitute }
     public Scout scout = new Scout();
     public Substitute substitute = new Substitute();
-
-    private void LevelUp_PawnBuff()
+    private BuffBasic TargetBuff_Pawn(PawnBuff buff)
     {
-        if (pawnBuffType == PawnBuff.None) return;
-
-        bool success;
-        bool isScout = pawnBuffType == PawnBuff.Scout;
-
-        if (isScout) scout.LevelUp(out success);
-        else substitute.LevelUp(out success);
-
-        if (!success)
+        return buff switch
         {
-            Debug.LogError("PawnBuff LevelUp failed " + pawnBuffType.ToString());
+            PawnBuff.Scout => scout,
+            PawnBuff.Substitute => substitute,
+            _ => null
+        };
+    }
+    #endregion
+
+    private void BuffInit(ChessType chessType, BuffBasic buffBasic1, BuffBasic buffBasic2)
+    {
+        if(buffBasic1.buffChess!= chessType|| buffBasic2.buffChess != chessType)
+        {
+            Debug.LogError($"{chessType.ToString()} : {buffBasic1.buffName} , {buffBasic2.buffName}");
+            return;
         }
+        switch (chessType)
+        {
+            case ChessType.King:kingBuffType = KingBuff.None;break;
+            case ChessType.Queen:queenBuffType = QueenBuff.None;break;
+            case ChessType.Knight:knightBuffType = KnightBuff.None;break;
+            case ChessType.Bishop:bishopBuffType = BishopBuff.None;break;
+            case ChessType.Rook:rookBuffType = RookBuff.None;break;
+            case ChessType.Pawn:pawnBuffType = PawnBuff.None;break;
+        }
+        buffBasic1.BuffInit(this);
+        buffBasic2.BuffInit(this);
     }
     private void AllTheBuffInit()
     {
-        kingBuffType = KingBuff.None;
-        madKing.BuffInit(this);
-        sageKing.BuffInit(this);
-
-        queenBuffType = QueenBuff.None;
-        witcher.BuffInit(this);
-        beauty.BuffInit(this);
-
-        knightBuffType = KnightBuff.None;
-        charger.BuffInit(this);
-        skirmisher.BuffInit(this);
-
-        bishopBuffType = BishopBuff.None;
-        sorcerer.BuffInit(this);
-        monk.BuffInit(this);
-
-        rookBuffType = RookBuff.None;
-        rusher.BuffInit(this);
-        guardian.BuffInit(this);
-
-        pawnBuffType = PawnBuff.None;
-        scout.BuffInit(this);
-        substitute.BuffInit(this);
+        BuffInit(ChessType.King, madKing, sageKing);
+        BuffInit(ChessType.Queen, witcher, beauty);
+        BuffInit(ChessType.Knight, charger, skirmisher);
+        BuffInit(ChessType.Bishop, sorcerer, monk);
+        BuffInit(ChessType.Rook, rusher, guardian);
+        BuffInit(ChessType.Pawn, scout, substitute);
     }
 
-    public void AllTheBuffTryLevelUp()
+    public void CurrentBuffLevelUp(ChessType chessType)
     {
-        LevelUp_KingBuff();
-        LevelUp_QueenBuff();
-        LevelUp_KnightBuff();
-        LevelUp_BisHopBuff();
-        LevelUp_RookBuff();
-        LevelUp_PawnBuff();
+        BuffBasic buff = chessType switch
+        {
+            ChessType.King => TargetBuff_King(kingBuffType),
+            ChessType.Queen => TargetBuff_Queen(queenBuffType),
+            ChessType.Knight => TargetBuff_Knight(knightBuffType),
+            ChessType.Bishop => TargetBuff_Bishop(bishopBuffType),
+            ChessType.Rook => TargetBuff_Rook(rookBuffType),
+            ChessType.Pawn => TargetBuff_Pawn(pawnBuffType),
+            _ => null
+        };
+
+        buff.LevelUp(out bool success);
+        if (!success)
+        {
+            Debug.LogError(buff.buffName + " LevelUp No success");
+            return;
+        }
     }
+
+    public void ChooseBuff(BuffBasic choseBuff)
+    {
+        choseBuff.Choose();
+        choseBuff.LevelUpToTargetLevel(1, out bool success);
+        if (!success)
+        {
+            Debug.LogError(choseBuff.buffName+" LevelUp No success");
+            return;
+        }
+    }
+
 
     #endregion
 
@@ -238,13 +271,26 @@ public class Player : MonoBehaviour
         //bishopBuffType = BishopBuff.Monk;
         //monk.LevelUpToTargetLevel(3, out bool b);
 
-        knightBuffType = KnightBuff.Charger;
-        charger.LevelUpToTargetLevel(3, out bool c);
+        //knightBuffType = KnightBuff.Charger;
+        //charger.LevelUpToTargetLevel(3, out bool c);
 
         //pawnBuffType = PawnBuff.Scout;
         //scout.LevelUpToTargetLevel(3, out bool d);
 
+        //ChooseBuff(witcher);
+        //witcher.LevelUpToTargetLevel(3, out bool d);
 
+        //if (usingChess == ChessColor.White)
+        //{
+        //    ChooseBuff(rusher);
+        //    rusher.LevelUpToTargetLevel(3, out bool d);
+        //}
+        //else
+        //{
+        //    ChooseBuff(guardian);
+        //    guardian.LevelUpToTargetLevel(3, out bool d);
+        //    UpdateGuardianProtectArea();
+        //}
     }
 
     private void Player_ChessDictUpdate()
@@ -262,6 +308,7 @@ public class Player : MonoBehaviour
         {
             allTheChess.Remove(key);
         }
+        UpdateGuardianProtectArea();
     }
 
     public Coroutine turnStart;
@@ -291,7 +338,6 @@ public class Player : MonoBehaviour
             yield return null;
 
         }
-
         nowPlayerStage = PlayerStage.End;
 
         InGame.Instance.StartTurnChange();

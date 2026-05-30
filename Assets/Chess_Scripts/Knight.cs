@@ -8,6 +8,8 @@ public class Charger : BuffBasic
 {
     public override ChessType buffChess => ChessType.Knight;
     public override string buffName => "Charger";
+    public override void Choose() => _player.knightBuffType = Player.KnightBuff.Charger;
+
 
     public HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
     private readonly HashSet<Vector2Int> firstExtraArea = new HashSet<Vector2Int>()
@@ -39,11 +41,12 @@ public class Charger : BuffBasic
     }
 
 }
-
 public class Skirmisher : BuffBasic
 {
     public override ChessType buffChess => ChessType.Knight;
     public override string buffName => "Skirmisher";
+    public override void Choose() => _player.knightBuffType = Player.KnightBuff.Skirmisher;
+
 
     public HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
     private readonly HashSet<Vector2Int> firstExtraArea = new HashSet<Vector2Int>()
@@ -83,9 +86,9 @@ public class Knight : ChessBasic
     public override ChessType type => ChessType.Knight;
     public override string ChessName() { return "Knight"; }
     private bool isMoveAgain = false;
-    public override int findRange { get; protected set; } = 1;
+    public override int findRange { get; } = 1;
 
-    public override List<Vector2Int> directions => new List<Vector2Int>()
+    public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>()
     {
         new Vector2Int(2, 1),
         new Vector2Int(2, -1),
@@ -97,8 +100,11 @@ public class Knight : ChessBasic
         new Vector2Int(-1, -2)
     };
 
-
-    public override void ExtraFindPossibleMove()
+    public override void FindCanMove(bool isThrougt)
+    {
+        base.FindCanMove(isThrougt);
+    }
+    public override void ExtraFindPossibleMove(bool isthrough)
     {
         if (_player.knightBuffType == Player.KnightBuff.None) return;
 
@@ -121,7 +127,7 @@ public class Knight : ChessBasic
                     {
                         possibleMoveList.Add(targetPos);
                     }
-                    break;
+                    if(!isthrough) break;
                 }
                 else
                 {
@@ -133,46 +139,45 @@ public class Knight : ChessBasic
 
         }
     }
-    public override void FindPossibleMove()
+
+    public override void Move(Vector2Int moveTo)
     {
-        possibleMoveList.Clear();
-        possibleEatList.Clear();
+        Player.KnightBuff knightBuff = _player.knightBuffType;
 
-        foreach (var move in directions)
+        if (knightBuff == Player.KnightBuff.None)
         {
-            Vector2Int targetPos = position + move;
-
-            if (IsOutOfBoard(targetPos)) continue;
-
-            if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
-            {
-                if (chess.color != this.color)
-                {
-                    possibleMoveList.Add(targetPos);
-                    possibleEatList.Add(targetPos);
-
-                }
-            }
-            else
-            {
-                possibleMoveList.Add(targetPos);
-            }
+            base.Move(moveTo);
+            return;
         }
 
-        ExtraFindPossibleMove();
+        bool canMove = CanMoveTo(moveTo, out ChessBasic posHaveChess);
+        bool isEatTheChess = posHaveChess != null;
+        if (!canMove)
+        {
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
+        }
+        MoveOnly(moveTo);
 
-
-        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
-        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
+        if (knightBuff == Player.KnightBuff.Skirmisher) SkirmisherFinalBuff();
+        else if (knightBuff == Player.KnightBuff.Charger) ChargerFinalBuff(isEatTheChess);
+       
     }
 
-    public override void Move(Vector2Int moveTo, bool isTurnEnd)
+
+
+    private void ChargerFinalBuff(bool moveAgain)
     {
-        base.Move(moveTo, false);
+        bool haveChargerFinalBuff = _player.knightBuffType == Player.KnightBuff.Charger && _player.charger.canMoveItAgain;
 
-        SkirmisherFinalBuff();
+        if (!haveChargerFinalBuff || !moveAgain)
+        {
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
+        }
 
-        if (HaveChargerFinalBuff()&& posHaveChess&& !isMoveAgain)
+
+        if (!isMoveAgain)
         {
             isMoveAgain = true;
             StartCoroutine(_player.playerInPut.OneMoreMove(this));
@@ -181,14 +186,10 @@ public class Knight : ChessBasic
         {
             isMoveAgain = false;
             _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+
         }
-    }
 
 
-
-    private bool HaveChargerFinalBuff()
-    {
-        return _player.knightBuffType == Player.KnightBuff.Charger && _player.charger.canMoveItAgain;
     }
     private void SkirmisherFinalBuff()
     {
@@ -212,6 +213,7 @@ public class Knight : ChessBasic
 
         while (eatQueue.Count>0) eatQueue.Dequeue().GotEaten();
 
+        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
     }
 
 }

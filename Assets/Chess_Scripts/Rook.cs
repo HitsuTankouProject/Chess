@@ -9,6 +9,7 @@ public class Rusher : BuffBasic
 {
     public override ChessType buffChess => ChessType.Rook;
     public override string buffName => "Rusher";
+    public override void Choose() => _player.rookBuffType = Player.RookBuff.Rusher;
 
     public bool canThroughSameColor = false;
     public bool canThroughNonSameColor = false;
@@ -38,6 +39,8 @@ public class Guardian : BuffBasic
 {
     public override ChessType buffChess => ChessType.Rook;
     public override string buffName => "Guardian";
+    public override void Choose() => _player.rookBuffType = Player.RookBuff.Guardian;
+
 
     public HashSet<Vector2Int> protectArea = new HashSet<Vector2Int>();
     private readonly HashSet<Vector2Int> firstProtectArea = new HashSet<Vector2Int>() 
@@ -65,15 +68,15 @@ public class Guardian : BuffBasic
 
     public override void FirstLevel()
     {
-        protectArea.UnionWith(firstProtectArea);
+        protectArea.AddRange(firstProtectArea);
     }
     public override void SecondLevel()
     {
-        protectArea.UnionWith(secondProtectArea);
+        protectArea.AddRange(secondProtectArea);
     }
     public override void ThirdLevel()
     {
-        protectArea.UnionWith(thirdProtectArea);
+        protectArea.AddRange(thirdProtectArea);
     }
 
     public bool InProtectArea(Vector2Int targetPos)
@@ -107,80 +110,42 @@ public class Rook : ChessBasic
     public override ChessType type => ChessType.Rook;
 
     public override string ChessName() { return "Rook"; }
-    public override int findRange { get; protected set; } = 8;
+    public override int findRange { get; } = 8;
 
-    public override List<Vector2Int> directions => new List<Vector2Int>
+    public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-    private enum MoveJudgment
+    private bool CanThrough(ChessColor color)
     {
-        Stop, KeepGoOn, CanEatAndStop,CanEatAndThrough, Error
-    }
-    MoveJudgment MoveJudgmentResult(ChessBasic chess)
-    {
-        bool sameColor = chess.color == color;
-        bool isRusher = _player.rookBuffType == RookBuff.Rusher;
-        if (!isRusher)
-        {
-            if (sameColor) return MoveJudgment.Stop;
-            else return MoveJudgment.CanEatAndStop;
-        }
-
         bool canThroughSameColor = _player.rusher.canThroughSameColor;
         bool canThroughNonSameColor = _player.rusher.canThroughNonSameColor;
+        if (!canThroughSameColor && !canThroughNonSameColor) return false;
 
-        if (sameColor&&canThroughSameColor) return MoveJudgment.KeepGoOn;
-        else if (!sameColor && !canThroughNonSameColor) return MoveJudgment.CanEatAndStop;
-        else if (!sameColor && canThroughNonSameColor) return MoveJudgment.CanEatAndThrough;
-        return MoveJudgment.Error;
+        if(color == this.color&& canThroughSameColor) return true;
+        else if (color != this.color && canThroughNonSameColor) return true;
 
-    }
-    public bool IsProtectedByGuardian(Vector2Int targetChessPos)
-    {
-        if (_player.rookBuffType != RookBuff.Guardian || _player.guardian.protectArea.Count == 0) return false;
-        foreach (Vector2Int protectedDir in _player.guardian.protectArea)
-        {
-            Vector2Int spot = position + protectedDir;
-            if (spot == targetChessPos) return true;
-        }
         return false;
 
+
     }
-
-    public override void FindPossibleMove()
+    private void Rusher_FindCanMove()
     {
-        possibleMoveList.Clear();
-        possibleEatList.Clear();
-
-
         foreach (var dir in directions)
         {
             for (int i = 1; i < findRange; i++)
             {
                 Vector2Int targetPos = position + dir * i;
+
                 if (IsOutOfBoard(targetPos)) break;
 
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
-                    MoveJudgment judgment = MoveJudgmentResult(chess);
-
-                    if (judgment == MoveJudgment.Stop) break;
-                    else if (judgment == MoveJudgment.KeepGoOn) continue;
-                    else if (judgment == MoveJudgment.CanEatAndStop)
+                    if (chess.color != this.color)
                     {
                         possibleMoveList.Add(targetPos);
                         possibleEatList.Add(targetPos);
-
-                        break;
                     }
-                    else if (judgment == MoveJudgment.CanEatAndThrough)
-                    {
-                        possibleMoveList.Add(targetPos);
-                        possibleEatList.Add(targetPos);
-
-                        continue;
-                    }
-
+                    if (!CanThrough(chess.color)) break;
                 }
                 else
                 {
@@ -189,164 +154,86 @@ public class Rook : ChessBasic
             }
         }
 
-        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
-        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
-
     }
-
-    public void ReMoveGuardianBuff(Vector2Int beforeMoveTo)
-    {
-        if (_player.rookBuffType != RookBuff.Guardian || _player.guardian.protectArea.Count == 0) return;
-
-        HashSet<Vector2Int> protectedSpots = new HashSet<Vector2Int>();
-
-        foreach (Vector2Int protectedDir in _player.guardian.protectArea)
-        {
-            Vector2Int spot = beforeMoveTo + protectedDir;
-
-            bool haveChess = _chessBoard.board.TryGetValue(spot, out ChessBasic chess);
-
-            if (!haveChess) continue;
-            if (chess.color != color) continue;
-
-            protectedSpots.Add(spot);
-        }
-
-        foreach (Vector2Int protectedSpot in protectedSpots)
-        {
-            bool stillProtected = false;
-
-            foreach (ChessBasic rook in _player.allTheChess[ChessType.Rook])
-            {
-                if (rook == this) continue;
-
-                foreach (Vector2Int protectDir in _player.guardian.protectArea)
-                {
-                    Vector2Int protectPos = rook.position + protectDir;
-
-                    if (protectPos == protectedSpot)
-                    {
-                        stillProtected = true;
-                        break;
-                    }
-                }
-
-                if (stillProtected) break;
-            }
-
-            if (!stillProtected)
-            {
-                ChessBasic targetChess = _chessBoard.board[protectedSpot];
-
-                targetChess.haveExtraLife= false;
-            }
-        }
-    }
-
     public void GuardianBuff()
     {
-        if (_player.rookBuffType != RookBuff.Guardian || _player.guardian.protectArea.Count == 0) return;
 
-        foreach(Vector2Int protectedDir in _player.guardian.protectArea)
+        if (_player.rookBuffType != RookBuff.Guardian || _player.guardian.protectArea.Count == 0) return;
+        Debug.Log("sss00");
+        HashSet<Vector2Int> addToProtectArea = new HashSet<Vector2Int>();
+        foreach (Vector2Int protectedDir in _player.guardian.protectArea)
         {
             Vector2Int spot = position + protectedDir;
-            bool haveChess = _chessBoard.board.TryGetValue(spot, out ChessBasic chess);
-            if (!haveChess) continue;
-            if (chess.color == this.color) chess.haveExtraLife = true;
-
-
+            if (_chessBoard.IsOutOfBoard(spot)) continue;
+            if (!_chessBoard.board.TryGetValue(spot, out ChessBasic chess)
+                || chess.color != this.color) continue;
+            chess.haveExtraLife = true;
+            addToProtectArea.Add(spot);
         }
-
-
+        Debug.Log(addToProtectArea.Count);
+        _player.AddToProtectArea(addToProtectArea);
     }
 
-
-    private void RusherBuffMove(Vector2Int moveTo)
+    public override void FindCanMove(bool isThrough)
     {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
+        if (_player.rookBuffType != RookBuff.Rusher) base.FindCanMove(isThrough);
+        else Rusher_FindCanMove();
+    }
+
+    private void Rusher_MoveTo(Vector2Int moveTo)
+    {
+        if (!_player.rusher.canEatThroughNonSameColorChess)
+        {
+            base.Move(moveTo);
+            return;
+        }
+        bool canMoveTo = CanMoveTo(moveTo, out ChessBasic chessCanMoveTo);
+        Vector2Int nowPosition = position;
         ReturnPick();
-        if (!CanMoveTo(moveTo, out ChessBasic chessCanMoveTo))
+
+        if (!canMoveTo)
         {
             _player.nowPlayerStage = PlayerStage.ReadytoEnd;
             return;
         }
+
         Queue<ChessBasic> eatqueue = new Queue<ChessBasic>();
-        Vector2Int dir = new Vector2Int(Math.Sign(moveTo.x - position.x), Math.Sign(moveTo.y - position.y));
-        Vector2Int targetPos = position;
+        Vector2Int dir = new Vector2Int(Math.Sign(moveTo.x - nowPosition.x), Math.Sign(moveTo.y - nowPosition.y));
 
-        for (int i = 1; targetPos != moveTo; i++)
+        while(nowPosition!= moveTo)
         {
-            targetPos = position + dir * i;
-            bool posHaveChess = _chessBoard.board.TryGetValue(targetPos, out ChessBasic chess);
-
-            if (posHaveChess && chess != null && chess.color != color)
-            {
-                eatqueue.Enqueue(chess);
-            }
+            nowPosition += dir;
+            bool posHaveChess = _chessBoard.board.TryGetValue(nowPosition, out ChessBasic chess);
+            if (posHaveChess && chess.color != color && !chess.haveExtraLife) eatqueue.Enqueue(chess);
         }
-        while (eatqueue.Count > 0)
-        {
-            ChessBasic chessBasic = eatqueue.Dequeue();
-            bool chessHaveBeenProtected = chessBasic.haveExtraLife;
+        MoveOnly(moveTo);
 
-            if (chessHaveBeenProtected) continue;
-            else chessBasic.GotEaten();
-        }
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
+        while (eatqueue.Count > 0) eatqueue.Dequeue().GotEaten();
+
 
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-    }
-
-    public void BasicMove(Vector2Int moveTo)
-    {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
-        ReturnPick();
-
-        if (!CanMoveTo(moveTo, out ChessBasic chess))
-        {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-            return;
-        }
-        else
-        {
-            if (chess != null)
-            {
-                _player.nowPlayerStage = PlayerStage.EatingChess;
-                chess.GotEaten();
-            }
-        }
-
-        ReMoveGuardianBuff(position);
-        // ワールド座標へ移動
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        // 盤面情報更新
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
-        GuardianBuff();
     }
 
 
     public override void Move(Vector2Int moveTo)
     {
-        if(_player.rookBuffType != RookBuff.Rusher|| !_player.rusher.canThroughNonSameColor)
+        if (_player.rookBuffType == RookBuff.None)
         {
-            BasicMove(moveTo);
+            base.Move(moveTo);
+            return;
+        }
+        else if(_player.rookBuffType == RookBuff.Rusher)
+        {
+            Rusher_MoveTo(moveTo);
+        }
+        else if (_player.rookBuffType == RookBuff.Guardian)
+        {
+            MoveOnly(moveTo);
+            _player.UpdateGuardianProtectArea();
             _player.nowPlayerStage = PlayerStage.ReadytoEnd;
             return;
         }
 
-        else if (_player.rookBuffType == RookBuff.Rusher&& _player.rusher.canThroughNonSameColor)
-        {
-            RusherBuffMove(moveTo);
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-        }
-        
-
     }
 
-    public override void GotEaten()
-    {
-        ReMoveGuardianBuff(position);
-        base.GotEaten();
-    }
 }

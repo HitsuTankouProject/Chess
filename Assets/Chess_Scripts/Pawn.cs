@@ -4,11 +4,11 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-
 public class Scout : BuffBasic
 {
     public override ChessType buffChess => ChessType.Pawn;
     public override string buffName => "Scout";
+    public override void Choose() => _player.pawnBuffType = Player.PawnBuff.Scout;
 
     public bool cantPromotion = false;
     public bool canReceiveMoveAreaFromYouAteChess = false;
@@ -49,11 +49,12 @@ public class Scout : BuffBasic
 
 }
 
-
 public class Substitute : BuffBasic
 {
     public override ChessType buffChess => ChessType.Pawn;
     public override string buffName => "Substitute";
+    public override void Choose() => _player.pawnBuffType = Player.PawnBuff.Substitute;
+
     public bool cantPromotion = false;
     public bool canOnlyKillKing = false;
     public bool cantKillKingWhenPawnExist = false;
@@ -86,15 +87,15 @@ public class Pawn : ChessBasic
     public override ChessType type => ChessType.Pawn;
     private bool isFirstMove = true;
     public override string ChessName() { return "Pawn"; }
-    public override int findRange { get; protected set; } = 1;
+    public override int findRange => isFirstMove ? 2 : 1;
 
-    public override List<Vector2Int> directions => new List<Vector2Int>() { Vector2Int.up };
+    public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>() { Vector2Int.up };
     public HashSet<ChessType> canPromotionChessType = new HashSet<ChessType>() { ChessType.Queen, ChessType.Rook, ChessType.Bishop, ChessType.Knight };
 
     private List<Vector2Int> attackDirs = new List<Vector2Int>
     { new Vector2Int(1, 1), new Vector2Int(-1, 1) };
 
-    public override void ExtraFindPossibleMove()
+    public override void ExtraFindPossibleMove(bool isThrough)
     {
         if (_player.pawnBuffType != Player.PawnBuff.Scout
             || _player.scout.extraMoveArea.Count == 0) return;
@@ -105,7 +106,7 @@ public class Pawn : ChessBasic
             {
                 Vector2Int targetPosition = position + direction * i;
 
-                if (!IsOutOfBoard(targetPosition)) break;
+                if (IsOutOfBoard(targetPosition)) break;
 
                 bool haveChess = _chessBoard.board.TryGetValue(targetPosition, out ChessBasic chess);
                 if (!haveChess)
@@ -127,30 +128,33 @@ public class Pawn : ChessBasic
 
     }
 
-    public override void FindPossibleMove()
+    public override void FindCanMove(bool isThrough)
     {
-        possibleMoveList.Clear();
-        possibleEatList.Clear();
-
-        int moveDirectionValue =(color == ChessColor.White) ? 1 : -1;
-        findRange = isFirstMove ? 2 : 1;
+        int moveDirectionValue = (color == ChessColor.White) ? 1 : -1;
 
         foreach (Vector2Int moveDirection in directions)
         {
             Vector2Int moveOffset = moveDirection * moveDirectionValue;
+
             for (int distance = 1; distance <= findRange; distance++)
             {
+                Debug.Log(findRange);
                 Vector2Int targetPosition = position + moveOffset * distance;
 
-                if (!IsOutOfBoard(targetPosition)) break;
+                if (IsOutOfBoard(targetPosition)) break;
 
                 bool haveChess = _chessBoard.board.ContainsKey(targetPosition);
 
                 if (!haveChess) possibleMoveList.Add(targetPosition);
-                else break;
+                if (!isThrough && haveChess) break;
             }
         }
 
+    }
+
+    private void FindCanEat()
+    {
+        int moveDirectionValue = (color == ChessColor.White) ? 1 : -1;
         foreach (Vector2Int attackDirection in attackDirs)
         {
             Vector2Int targetPosition = position + attackDirection * moveDirectionValue;
@@ -164,11 +168,18 @@ public class Pawn : ChessBasic
             {
                 possibleMoveList.Add(targetPosition);
                 possibleEatList.Add(targetPosition);
-
             }
         }
+    }
 
-        ExtraFindPossibleMove();
+    public override void FindPossibleMove()
+    {
+        possibleMoveList.Clear();
+        possibleEatList.Clear();
+
+        FindCanMove(false);
+        FindCanEat();
+        ExtraFindPossibleMove(false);
 
         _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
         _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
@@ -180,52 +191,34 @@ public class Pawn : ChessBasic
         _player.scout.AddExtraMoveArea(chess);
     }
 
-
     public override bool CanEatChess(ChessBasic chess)
     {
+        if (chess.haveExtraLife)
+        {
+            chess.haveExtraLife = false;
+            return false;
+        }
 
-        if (chess.haveExtraLife) return false;
         bool canOnlyKillKing = _player.pawnBuffType == Player.PawnBuff.Substitute
-            && _player.substitute.canOnlyKillKing;
+        && _player.substitute.canOnlyKillKing;
         bool isKing = chess.type == ChessType.King;
+
         if (canOnlyKillKing && !isKing) return false;
-        bool haveBarrier = chess.TryGetComponent<King>(out King king) && king.haveBarrier;
-        return !haveBarrier;
+        if (!isKing) return true;
+
+        if (chess is King king && king.haveBarrier)
+        {
+            king.haveBarrier = false;
+            return false;
+        }
+        return true;
     }
 
 
     public override void Move(Vector2Int moveTo)
     {
         if (isFirstMove) isFirstMove = false;
-
-        _player.nowPlayerStage = PlayerStage.MovingChess;
-        ReturnPick();
-
-        if (!CanMoveTo(moveTo, out ChessBasic chess))
-        {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-            return;
-        }
-        else
-        {
-            if (chess != null)
-            {
-                _player.nowPlayerStage = PlayerStage.EatingChess;
-                ScoutSecondBuff(chess);
-                chess.GotEaten();
-            }
-        }
-
-        // ワールド座標へ移動
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        // 盤面情報更新
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
-
-        if (_player.IsProTectedByRook_Guardian(position))
-        {
-            haveExtraLife = true;
-        }
-        else haveExtraLife = false;
+        MoveOnly(moveTo);
         Promotion();
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
@@ -240,8 +233,6 @@ public class Pawn : ChessBasic
         Pair<ChessColor, ChessType> promotionInfo = new Pair<ChessColor, ChessType>(color, promotionType);
         _chessBoard.GenChess(position, promotionInfo,out ChessBasic genChess);
         if(genChess!=null) genChess.ChessInit(_player);
-
-
         if (poolObject != null) poolObject.pool.Return(this.gameObject);
         else Debug.LogError("Not In Pool");
     }

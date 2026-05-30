@@ -7,6 +7,8 @@ public class Sorcerer : BuffBasic
 {
     public override ChessType buffChess => ChessType.Bishop;
     public override string buffName => "Sorcerer";
+    public override void Choose() => _player.bishopBuffType = Player.BishopBuff.Sorcerer;
+
 
     public HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
     private readonly Vector2Int firstExtraDirections = Vector2Int.up;
@@ -74,13 +76,16 @@ public class Monk : BuffBasic
 {
     public override ChessType buffChess => ChessType.Bishop;
     public override string buffName => "Monk";
+    public override void Choose() => _player.bishopBuffType = Player.BishopBuff.Monk;
 
     public HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
     private readonly Vector2Int firstExtraDirections = Vector2Int.left;
     private readonly Vector2Int secondExtraDirections = Vector2Int.right;
     public readonly int extraCanGoRange = 2;
+    public bool canPurificChess { get; private set; } = false;
 
-    public override void ResetBuff()
+
+public override void ResetBuff()
     {
         extraCanGoArea.Clear();
     }
@@ -97,16 +102,16 @@ public class Monk : BuffBasic
     }
     public override void ThirdLevel()
     {
-        AddBarrierToKing();
+        canPurificChess = true;
     }
 
-    public void AddBarrierToKing()
+    public void PurificChess(HashSet<ChessBasic> purificChesses)
     {
-        foreach(ChessBasic king in _player.allTheChess[ChessType.King])
+        if (!canPurificChess || purificChesses.Count == 0) ;
+        foreach(ChessBasic chess in purificChesses)
         {
-            king.haveBuffed = true;
+            if (chess.gotCurse) chess.PurifyThisChess();
         }
-
     }
 
 
@@ -116,14 +121,14 @@ public class Bishop : ChessBasic
 {
     public override ChessType type => ChessType.Bishop;
     public override string ChessName() { return "Bishop"; }
-    public override int findRange { get; protected set; } = 8;
+    public override int findRange { get;} = 8;
 
-    public override List<Vector2Int> directions => new List<Vector2Int>()
+    public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>()
     {
          new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1)
     };
 
-    public override void ExtraFindPossibleMove()
+    public override void ExtraFindPossibleMove(bool isThrougt)
     {
         if (_player.bishopBuffType == Player.BishopBuff.None) return;
         HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
@@ -140,7 +145,7 @@ public class Bishop : ChessBasic
             extraCanGoRange = _player.monk.extraCanGoRange;
         }
 
-        foreach (var dir in extraCanGoArea)
+        foreach (Vector2Int dir in extraCanGoArea)
         {
             for (int i = 1; i <= extraCanGoRange; i++)
             {
@@ -155,7 +160,7 @@ public class Bishop : ChessBasic
                     {
                         possibleMoveList.Add(targetPos);
                     }
-                    break;
+                    if(!isThrougt) break;
                 }
                 else
                 {
@@ -164,48 +169,35 @@ public class Bishop : ChessBasic
             }
         }
     }
-    public override void FindPossibleMove()
+
+
+    public void PurificChess()
     {
         possibleMoveList.Clear();
-        possibleEatList.Clear();
-        foreach (var dir in directions)
+        HashSet<ChessBasic> purificChesses = new HashSet<ChessBasic>();
+        FindCanMove(true);
+        ExtraFindPossibleMove(true);
+
+        foreach (Vector2Int targetPos in possibleMoveList)
         {
-            for (int i = 1; i < findRange; i++)
+            if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
             {
-                Vector2Int targetPos = position + dir * i;
-
-                if (IsOutOfBoard(targetPos)) break;
-
-                if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
-                {
-                    if (chess.color != this.color)
-                    {
-                        possibleMoveList.Add(targetPos);
-                        possibleEatList.Add(targetPos);
-                    }
-                    break;
-                }
-                else
-                {
-                    possibleMoveList.Add(targetPos);
-                }
+                if (chess.color == color && chess.gotCurse) purificChesses.Add(chess);
             }
         }
 
-        ExtraFindPossibleMove();
-
-        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
-        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
-
+        _player.monk.PurificChess(purificChesses);
     }
+
     public override void Move(Vector2Int moveTo)
     {
         base.Move(moveTo);
-        if(_player.bishopBuffType == Player.BishopBuff.Sorcerer)
+        switch (_player.bishopBuffType)
         {
-            _player.sorcerer.CurseChess();
+            case Player.BishopBuff.None: return;
+            case Player.BishopBuff.Sorcerer:_player.sorcerer.CurseChess();return;
+            case Player.BishopBuff.Monk:PurificChess();return;
         }
-
     }
 
 

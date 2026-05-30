@@ -6,6 +6,7 @@ public class Witcher : BuffBasic
 {
     public override ChessType buffChess => ChessType.Queen;
     public override string buffName => "Witcher";
+    public override void Choose() => _player.queenBuffType = Player.QueenBuff.Witcher;
 
     public int canGoRange { get; private set; } = 3;
     public bool cantGotCurse { get; private set; } = false;
@@ -42,11 +43,11 @@ public class Witcher : BuffBasic
 
 
 }
-
 public class Beauty : BuffBasic
 {
     public override ChessType buffChess => ChessType.Queen;
     public override string buffName => "Beauty";
+    public override void Choose() => _player.queenBuffType = Player.QueenBuff.Beauty;
 
     public bool canProtectByKnight = false;
     public bool removeTheAreaLimit = false;
@@ -83,10 +84,10 @@ public class Queen : ChessBasic
 {
     public override ChessType type => ChessType.Queen;
     public override string ChessName() { return "Queen"; }
-    public override int findRange { get; protected set; } = 8;
+    public override int findRange { get; } = 8;
     private int witcherFindRange => _player.witcher.canGoRange;
 
-    public override List<Vector2Int> directions => new List<Vector2Int>()
+    public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>()
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
         new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
 

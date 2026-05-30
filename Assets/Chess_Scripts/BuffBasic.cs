@@ -6,7 +6,8 @@ using System.Diagnostics;
 public abstract class BuffBasic
 {
     public abstract ChessType buffChess { get; }
-    public Player _player {  get; private set; }  
+    public Player _player {  get; private set; }
+    public abstract void Choose();
 
     public abstract string buffName { get; }
 
