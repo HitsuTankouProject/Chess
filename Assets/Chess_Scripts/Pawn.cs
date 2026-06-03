@@ -80,8 +80,6 @@ public class Substitute : BuffBasic
     }
 }
 
-
-
 public class Pawn : ChessBasic
 {
     public override ChessType type => ChessType.Pawn;

@@ -232,7 +232,7 @@ public class King : ChessBasic
     {
 
        base.GotEaten();
-       ChessBlock targetSpawn = color == ChessColor.White ? _chessBoard.white_KingChessSpawn : _chessBoard.black_KingChessSpawn;
+       Vector2Int targetSpawn = color == ChessColor.White ? _chessBoard.white_KingChessSpawn : _chessBoard.black_KingChessSpawn;
        if (targetSpawn == null)
         {
             Debug.LogError("No Spawn Location");
@@ -240,21 +240,21 @@ public class King : ChessBasic
         }
 
 
-        bool isSpawnHaveChess = _chessBoard.board.ContainsKey(targetSpawn.position);
+        bool isSpawnHaveChess = _chessBoard.board.ContainsKey(targetSpawn);
         if (!isSpawnHaveChess)
         {
-            _chessBoard.GenChess(targetSpawn.position, new Pair<ChessColor, ChessType>(color, ChessType.King));
+            _chessBoard.GenChess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King));
         }
         else
         {
-            ChessBasic spawnChess = _chessBoard.board[targetSpawn.position];
-            bool sameColor = _chessBoard.board[targetSpawn.position].color == color;
-            bool isPawn = _chessBoard.board[targetSpawn.position].type == ChessType.Pawn;
+            ChessBasic spawnChess = _chessBoard.board[targetSpawn];
+            bool sameColor = _chessBoard.board[targetSpawn].color == color;
+            bool isPawn = _chessBoard.board[targetSpawn].type == ChessType.Pawn;
 
             if (!isPawn && !sameColor)
             {
                 spawnChess.GotEaten();
-                _chessBoard.GenChess(targetSpawn.position, new Pair<ChessColor, ChessType>(color, ChessType.King));
+                _chessBoard.GenChess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King));
             }
 
 

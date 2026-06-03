@@ -56,10 +56,11 @@ public class ChessBoard : MonoBehaviour
 
     [Header("Players")]
 
-    public ChessBlock black_KingChessSpawn { get; private set; }
-    public ChessBlock white_KingChessSpawn { get; private set; }
+    public Vector2Int black_KingChessSpawn { get; private set; } = new Vector2Int(-1, -1);
+    public Vector2Int white_KingChessSpawn { get; private set; } = new Vector2Int(-1, -1);
+    public Vector2Int playerChoseBlock { get; private set; } = new Vector2Int(-1, -1);
 
-
+    public ChessBlock ChessBlock(Vector2Int targetPos) => cols[targetPos.x].chessBlocks[targetPos.y];
     private readonly Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = new()
     {
             { new Vector2Int(0,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
@@ -201,16 +202,9 @@ public class ChessBoard : MonoBehaviour
             }
         }
 
-        black_KingChessSpawn = blackChessBlocks[UnityEngine.Random.Range(0, blackChessBlocks.Count)];
-        white_KingChessSpawn = whiteChessBlocks[UnityEngine.Random.Range(0, whiteChessBlocks.Count)];
-
-        if (black_KingChessSpawn.color != ChessBoardColor.Black || white_KingChessSpawn.color != ChessBoardColor.White) return false;
-
+        black_KingChessSpawn = blackChessBlocks[UnityEngine.Random.Range(0, blackChessBlocks.Count)].position;
+        white_KingChessSpawn = whiteChessBlocks[UnityEngine.Random.Range(0, whiteChessBlocks.Count)].position;
         return true;
-
-        // For Debug
-        //black_KingChessSpawn.gameObject.SetActive(false);
-        //white_KingChessSpawn.gameObject.SetActive(false);
     }
 
     #endregion
@@ -288,7 +282,6 @@ public class ChessBoard : MonoBehaviour
         }
 
     }
-
     public void ShowActive(ChessBlockStage activeStage,HashSet<Vector2Int> canGoPos)
     {
         if (canGoPos.Count == 0) return;
@@ -298,8 +291,6 @@ public class ChessBoard : MonoBehaviour
             cols[pos.x].chessBlocks[pos.y].Active(activeStage);
         }
     }
-
-
     public void ReSetActive()
     {
         if (nowShowing.Count == 0) return;
@@ -318,6 +309,15 @@ public class ChessBoard : MonoBehaviour
 
         return false;
     }
+
+    public void UpdatePlayerChose(Vector2Int position)
+    {
+        if (playerChoseBlock != new Vector2Int(-1, -1)) ChessBlock(playerChoseBlock).ShowChoseEffect(false);
+        playerChoseBlock = position;
+        ChessBlock(playerChoseBlock).ShowChoseEffect(true);
+    }
+
+
     #endregion
 
 

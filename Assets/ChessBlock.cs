@@ -36,6 +36,9 @@ public class ChessBlock : MonoBehaviour
     public bool isGotCurse { get; private set; } = false;
     private ChessBasic curseChess;
     public Vector2Int position;
+
+    public GameObject choseEffect;
+
     private Vector3 activePos => new Vector3(0, -2, 0);
     private Vector3 normalPos => new Vector3(0, -5, 0);
 
@@ -68,6 +71,13 @@ public class ChessBlock : MonoBehaviour
         curseChess = chess;
         StartCoroutine(GotCurse());
 
+    }
+
+
+    public void ShowChoseEffect(bool isShow)
+    {
+        if (choseEffect == null) return;
+        choseEffect.SetActive(isShow);
     }
 
 }

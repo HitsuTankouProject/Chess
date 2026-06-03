@@ -21,21 +21,23 @@ public class Player : MonoBehaviour
     public PlayerInPut playerInPut;
     
 
-    public Dictionary<ChessType, List<ChessBasic>> allTheChess { get; private set; } = new Dictionary<ChessType, List<ChessBasic>>();
-    public void AllChessInit(HashSet<ChessBasic> chess)
+    public Dictionary<Vector2Int, ChessBasic> allTheChess { get; private set; } = new Dictionary<Vector2Int, ChessBasic>();
+    public void AllChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
-        foreach (ChessBasic target in chess)
-        {
-            if (!allTheChess.ContainsKey(target.type))
-            {
-                allTheChess[target.type] = new List<ChessBasic>();
-            }
-
-            allTheChess[target.type].Add(target);
-            target.ChessInit(this);
-        }
+        allTheChess = targetDict;
     }
-
+    private List<ChessBasic> ChessListByType(ChessType chessType)
+    {
+        List<ChessBasic> chessList = new List<ChessBasic>();
+        foreach (ChessBasic chessBasic in allTheChess.Values)
+        {
+            if (chessBasic.type == chessType)
+            {
+                chessList.Add(chessBasic);
+            }
+        }
+        return chessList;
+    }
 
 
     #region Buff Chess
@@ -155,9 +157,11 @@ public class Player : MonoBehaviour
             chess.haveExtraLife = false;
         }
         guardianProtectArea.Clear();
+        
+        List<ChessBasic> rookList = ChessListByType(ChessType.Rook);
 
-        if (!allTheChess.ContainsKey(ChessType.Rook)) return;
-        foreach(ChessBasic chess in allTheChess[ChessType.Rook])
+        if (rookList.Count == 0) return;
+        foreach(ChessBasic chess in rookList)
         {
             Debug.Log("4");
             if (!chess.TryGetComponent<Rook>(out Rook rook))
@@ -261,9 +265,9 @@ public class Player : MonoBehaviour
         playerInPut = new PlayerInPut(this);
     }
 
-    public void Player_ChessInit(HashSet<ChessBasic> targetList)
+    public void Player_ChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
-        AllChessInit(targetList);
+        AllChessInit(targetDict);
 
         //rookBuffType = RookBuff.Rusher;
         //rusher.LevelUpToTargetLevel(3, out bool a);
@@ -296,18 +300,16 @@ public class Player : MonoBehaviour
     private void Player_ChessDictUpdate()
     {
         List<ChessType> removeKeys = new List<ChessType>();
-        foreach (var pair in allTheChess)
+
+        foreach(Vector2Int pos in allTheChess.Keys)
         {
-            pair.Value.RemoveAll(chess => !chess.gameObject.activeSelf);
-            if (pair.Value.Count == 0)
+            if(!_chessBoard.board.ContainsKey(pos) || !allTheChess[pos].gameObject.activeSelf)
             {
-                removeKeys.Add(pair.Key);
+                allTheChess.Remove(pos);
             }
+
         }
-        foreach (ChessType key in removeKeys)
-        {
-            allTheChess.Remove(key);
-        }
+
         UpdateGuardianProtectArea();
     }
 

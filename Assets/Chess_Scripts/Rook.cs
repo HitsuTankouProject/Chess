@@ -60,7 +60,6 @@ public class Guardian : BuffBasic
 
     };
 
-
     public override void ResetBuff()
     {
         protectArea = new HashSet<Vector2Int>();
@@ -79,28 +78,6 @@ public class Guardian : BuffBasic
         protectArea.AddRange(thirdProtectArea);
     }
 
-    public bool InProtectArea(Vector2Int targetPos)
-    {
-        if (_player.rookBuffType != RookBuff.Guardian) return false;
-        if (!_player.allTheChess.TryGetValue(ChessType.Rook, out List<ChessBasic> rooks)) return false;
-        if (rooks.Count == 0) return false;
-
-        for (int i = 0; i < rooks.Count; i++)
-        {
-            foreach (Vector2Int direction in protectArea)
-            {
-                Vector2Int protectPos = rooks[i].position + direction;
-
-                if (targetPos == protectPos)
-                {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-
-    }
 
 }
 

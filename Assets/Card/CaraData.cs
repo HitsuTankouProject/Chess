@@ -115,7 +115,7 @@ namespace CaraData
         {
             cardMaterialDict = new Dictionary<AllBuffCara, Pair<Material, Material>>()
             {
-                 {AllBuffCara.None, new Pair<Material, Material>(null, null) },
+                {AllBuffCara.None, new Pair<Material, Material>(null, null) },
 
                 {AllBuffCara.SageKing, new Pair<Material, Material>(m_Card_King_Front_SageKing, m_Card_King_Back) },
                 {AllBuffCara.MadKing, new Pair<Material, Material>(m_Card_King_Front_MadKing, m_Card_King_Back) },

@@ -52,22 +52,14 @@ public class Sorcerer : BuffBasic
             return;
         }
 
-
-        List<ChessType> canCurseTypes = new List<ChessType>();
-        foreach (var pair in _enemy.allTheChess)
+        List<ChessBasic> canCurseChessList = new List<ChessBasic>();
+        foreach (ChessBasic chess in _enemy.allTheChess.Values)
         {
-            if (pair.Value == null || pair.Value.Count == 0) continue;
-
-            canCurseTypes.Add(pair.Key); 
+            if(chess.type == ChessType.King) continue;
+            canCurseChessList.Add(chess);
         }
-        if (canCurseTypes.Count == 0) return;
-
-        ChessType chessType = canCurseTypes[Random.Range(0, canCurseTypes.Count)];
-        List<ChessBasic> targetChessList = _enemy.allTheChess[chessType];
-
-
-        int randomIndex = Random.Range(0, targetChessList.Count);
-        targetChessList[randomIndex].CurseThisChess();
+        int randomIndex = Random.Range(0, canCurseChessList.Count);
+        canCurseChessList[randomIndex].CurseThisChess();
     }
 
 }

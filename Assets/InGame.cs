@@ -208,20 +208,14 @@ public class InGame : MonoBehaviour
     private IEnumerator TurnInit()
     {
         yield return StartCoroutine(_chessBoard.ChessBoard_TurnInit());
+        Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
+        Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
 
-        HashSet<ChessBasic> whiteChess = new HashSet<ChessBasic>();
-        HashSet<ChessBasic> blackChess = new HashSet<ChessBasic>();
-
-        foreach (ChessBasic chess in _chessBoard.board.Values)
+        foreach (Vector2Int chessPos in _chessBoard.board.Keys)
         {
-            if(chess.color == ChessColor.White)
-            {
-                whiteChess.Add(chess);
-            }
-            else
-            {
-                blackChess.Add(chess);
-            }
+            if (_chessBoard.board[chessPos].color == ChessColor.White) whiteChess[chessPos] = _chessBoard.board[chessPos];
+            else blackChess[chessPos] = _chessBoard.board[chessPos];
+
 
         }
         yield return null;
@@ -245,7 +239,7 @@ public class InGame : MonoBehaviour
     private void Start()
     {
         InGameInit();
-
+        InPutManager.Instance.InPutManager_Init();
     }
 
     public bool test = false;
