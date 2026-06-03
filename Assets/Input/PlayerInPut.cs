@@ -40,10 +40,11 @@ public class PlayerInPut
 
     #endregion
 
-
     public void StartInPutSystem() => inputStage = InputStage.Waiting;
 
     [SerializeField] private ChessBasic pickIngChess;
+
+    #region Mouse
 
     public Vector2Int FindPos(Vector3 targetClick)
     {
@@ -203,6 +204,28 @@ public class PlayerInPut
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
     }
 
+    #endregion
+
+    #region Gamepad
+
+    private bool isConformed() => nowUsingGamepad.buttonSouth.wasPressedThisFrame;
+    private Vector2Int nowPos = Vector2Int.zero;
+    private Vector2 rightStickInput => nowUsingGamepad.rightStick.ReadDefaultValue();
+
+
+    private void GamepadInput()
+    {
+        Vector2Int targetPos = nowPos + Vector2Int.RoundToInt(rightStickInput);
+        if (_chessBoard.IsOutOfBoard(targetPos)) return;
+
+        _chessBoard.board[nowPos].ReturnPick();
+        _chessBoard.board[targetPos].GotPick();
+        nowPos = targetPos;
+
+
+    }
+
+    #endregion
 
     public void InPutSystem_Update()
     {
