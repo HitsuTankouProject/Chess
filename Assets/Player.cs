@@ -22,6 +22,11 @@ public class Player : MonoBehaviour
     
 
     public Dictionary<Vector2Int, ChessBasic> allTheChess { get; private set; } = new Dictionary<Vector2Int, ChessBasic>();
+    public void UpdateChessDict(Vector2Int oldPos, Vector2Int newPos, ChessBasic chess)
+    {
+        if (allTheChess.ContainsKey(oldPos)) allTheChess.Remove(oldPos);
+        allTheChess[newPos] = chess;
+    }
     public void AllChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
         allTheChess = targetDict;
@@ -275,30 +280,6 @@ public class Player : MonoBehaviour
 
         //rookBuffType = RookBuff.Rusher;
         //rusher.LevelUpToTargetLevel(3, out bool a);
-
-        //bishopBuffType = BishopBuff.Monk;
-        //monk.LevelUpToTargetLevel(3, out bool b);
-
-        //knightBuffType = KnightBuff.Charger;
-        //charger.LevelUpToTargetLevel(3, out bool c);
-
-        //pawnBuffType = PawnBuff.Scout;
-        //scout.LevelUpToTargetLevel(3, out bool d);
-
-        //ChooseBuff(witcher);
-        //witcher.LevelUpToTargetLevel(3, out bool d);
-
-        //if (usingChess == ChessColor.White)
-        //{
-        //    ChooseBuff(rusher);
-        //    rusher.LevelUpToTargetLevel(3, out bool d);
-        //}
-        //else
-        //{
-        //    ChooseBuff(guardian);
-        //    guardian.LevelUpToTargetLevel(3, out bool d);
-        //    UpdateGuardianProtectArea();
-        //}
     }
 
     private void Player_ChessDictUpdate()
@@ -336,13 +317,7 @@ public class Player : MonoBehaviour
         {
             switch (nowPlayerStage)
             {
-                case PlayerStage.Ready:
-                    playerInPut.InPutSystem_Update();
-                    break;
-                case PlayerStage.ReadytoEnd:
-                    turnCanEnd = true;
-                    break;
-
+                case PlayerStage.ReadytoEnd:turnCanEnd = true; break;
                 default:break;
             }
 

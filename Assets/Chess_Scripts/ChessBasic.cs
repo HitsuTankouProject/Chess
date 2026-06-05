@@ -223,6 +223,7 @@ public abstract class ChessBasic : MonoBehaviour
         // ワールド座標へ移動
         this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
         // 盤面情報更新
+        _player.UpdateChessDict(position, moveTo, this);
         _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
 
         if (_player.IsProTectedByRook_Guardian(position))
