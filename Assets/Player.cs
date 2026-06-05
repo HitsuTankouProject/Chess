@@ -25,6 +25,10 @@ public class Player : MonoBehaviour
     public void AllChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
         allTheChess = targetDict;
+        foreach (ChessBasic chess in allTheChess.Values)
+        {
+            chess.ChessInit(this);
+        }
     }
     private List<ChessBasic> ChessListByType(ChessType chessType)
     {
@@ -262,7 +266,7 @@ public class Player : MonoBehaviour
     {
         usingChess = targetChess;
         AllTheBuffInit();
-        playerInPut = new PlayerInPut(this);
+        playerInPut.Init(this);
     }
 
     public void Player_ChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
@@ -299,16 +303,21 @@ public class Player : MonoBehaviour
 
     private void Player_ChessDictUpdate()
     {
-        List<ChessType> removeKeys = new List<ChessType>();
+        List<Vector2Int> removeKeys = new List<Vector2Int>();
 
         foreach(Vector2Int pos in allTheChess.Keys)
         {
             if(!_chessBoard.board.ContainsKey(pos) || !allTheChess[pos].gameObject.activeSelf)
             {
-                allTheChess.Remove(pos);
+                removeKeys.Add(pos);
             }
 
         }
+        foreach(Vector2Int pos in removeKeys)
+        {
+            allTheChess.Remove(pos);
+        }
+
 
         UpdateGuardianProtectArea();
     }
@@ -350,7 +359,7 @@ public class Player : MonoBehaviour
         nowPlayerStage = PlayerStage.TurnInit;
 
         turnStart = StartCoroutine(TurnStart());
-
+        playerInPut.StartInput();
     }
 
 

@@ -40,11 +40,7 @@ public class ChessBoard : MonoBehaviour
         }
     }
 
-    [Header("Chess Board")]
-    public List<Col> cols;
-    public ChessObject chessPrefab;
-    private readonly Vector2Int chessBoard_max = new Vector2Int(8, 8);
-    private HashSet<Vector2Int> nowShowing = new HashSet<Vector2Int>();
+
 
     [Header("Board Block Material")]
     public Material m_Black;
@@ -60,6 +56,11 @@ public class ChessBoard : MonoBehaviour
     public Vector2Int white_KingChessSpawn { get; private set; } = new Vector2Int(-1, -1);
     public Vector2Int playerChoseBlock { get; private set; } = new Vector2Int(-1, -1);
 
+    [Header("Chess Board")]
+    public List<Col> cols;
+    public ChessObject chessPrefab;
+    private readonly Vector2Int chessBoard_max = new Vector2Int(8, 8);
+    private HashSet<Vector2Int> nowShowing = new HashSet<Vector2Int>();
     public ChessBlock ChessBlock(Vector2Int targetPos) => cols[targetPos.x].chessBlocks[targetPos.y];
     private readonly Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = new()
     {
@@ -89,7 +90,7 @@ public class ChessBoard : MonoBehaviour
             //{ new Vector2Int(4,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
             //{ new Vector2Int(5,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
             //{ new Vector2Int(6,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(7,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+            { new Vector2Int(7,6), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
 
             { new Vector2Int(0,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
             { new Vector2Int(1,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Knight )},
@@ -101,10 +102,9 @@ public class ChessBoard : MonoBehaviour
             { new Vector2Int(7,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
 
     };
-
     public Dictionary<Vector2Int, ChessBasic> board { get; private set; } = new Dictionary<Vector2Int, ChessBasic>();
-
     public Dictionary<Pair<ChessColor, ChessType>, GameObject> chessPrefabDictionary { get; private set; }
+
 
     #region Game Initialization
     private bool PrefabDictionaryInit()
@@ -137,37 +137,37 @@ public class ChessBoard : MonoBehaviour
         {
             for (int y = 0; y < cols[x].chessBlocks.Count; y++)
             {
-                cols[x].chessBlocks[y].position = new Vector2Int(x, y);
+                cols[x].chessBlocks[y].Init(new Vector2Int(x, y));
             }
         }
     }
 
-    private void CheckChessBoardError()
-    {
-        if (cols.Count != chessBoard_max.x)
-        {
-            Debug.LogError($"Chess board has incorrect number of columns. Expected: 8, Actual: {cols.Count}");
-            return;
-        }
+    //private void CheckChessBoardError()
+    //{
+    //    if (cols.Count != chessBoard_max.x)
+    //    {
+    //        Debug.LogError($"Chess board has incorrect number of columns. Expected: 8, Actual: {cols.Count}");
+    //        return;
+    //    }
 
-        for (int x = 0; x < cols.Count; x++)
-        {
-            int y = cols[x].chessBlocks.Count;
-            if (y != chessBoard_max.y) Debug.LogError($"Column {x} has insufficient number of chess blocks. Expected: 8, Actual: {y}");
-            for (y = 0; y < chessBoard_max.y; y++)
-            {
-                if (cols[x].chessBlocks[y] == null)
-                {
-                    Debug.LogError($"Chess block at position ({x},{y}) is null.");
-                }
-                else if (cols[x].chessBlocks[y].name != $"Pos_{x}_{y}")
-                {
-                    Debug.LogError($"Chess block at position ({x},{y}) has incorrect name. Expected: ChessBlock_{x}_{y}, Actual: {cols[x].chessBlocks[y].name}");
-                }
-            }
+    //    for (int x = 0; x < cols.Count; x++)
+    //    {
+    //        int y = cols[x].chessBlocks.Count;
+    //        if (y != chessBoard_max.y) Debug.LogError($"Column {x} has insufficient number of chess blocks. Expected: 8, Actual: {y}");
+    //        for (y = 0; y < chessBoard_max.y; y++)
+    //        {
+    //            if (cols[x].chessBlocks[y] == null)
+    //            {
+    //                Debug.LogError($"Chess block at position ({x},{y}) is null.");
+    //            }
+    //            else if (cols[x].chessBlocks[y].name != $"Pos_{x}_{y}")
+    //            {
+    //                Debug.LogError($"Chess block at position ({x},{y}) has incorrect name. Expected: ChessBlock_{x}_{y}, Actual: {cols[x].chessBlocks[y].name}");
+    //            }
+    //        }
 
-        }
-    }
+    //    }
+    //}
 
     #endregion
 
@@ -210,20 +210,20 @@ public class ChessBoard : MonoBehaviour
     #endregion
 
     #region Normal Function
-    private bool BoardCheckError(ChessBasic chessBasic)
-    {
-        if (chessBasic == null)
-        {
-            Debug.LogError("Chess piece is null.");
-            return false;
-        }
-        if (board[chessBasic.position] != chessBasic)
-        {
-            Debug.LogError("Chess piece mismatch.");
-            return false;
-        }
-        return true;
-    }
+    //private bool BoardCheckError(ChessBasic chessBasic)
+    //{
+    //    if (chessBasic == null)
+    //    {
+    //        Debug.LogError("Chess piece is null.");
+    //        return false;
+    //    }
+    //    if (board[chessBasic.position] != chessBasic)
+    //    {
+    //        Debug.LogError("Chess piece mismatch.");
+    //        return false;
+    //    }
+    //    return true;
+    //}
     public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair)
     {
         if (chessPrefabDictionary[pair] == null)
@@ -237,7 +237,6 @@ public class ChessBoard : MonoBehaviour
         ChessBasic target = chess.GetComponent<ChessBasic>();
         BoardUpdate(target, position, ChessAction.Move);
 
-        //Debug.Log(target.ChessName() + $"___{target.position}");
     }
     public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair, out ChessBasic genChess)
     {
@@ -253,17 +252,17 @@ public class ChessBoard : MonoBehaviour
         ChessBasic target = chess.GetComponent<ChessBasic>();
         BoardUpdate(target, position, ChessAction.Move);
         genChess = target;
-        //Debug.Log(target.ChessName() + $"___{target.position}");
     }
 
     public Vector3 ReturnChessBlockPosition(Vector2Int position)
     {
-        if (position.x < 0 || position.x >= cols.Count || position.y < 0 || position.y >= cols[position.x].chessBlocks.Count)
+        if (IsOutOfBoard(position))
         {
             Debug.LogError($"Invalid position: ({position.x},{position.y})");
             return Vector3.zero;
         }
-        return cols[position.x].chessBlocks[position.y].transform.position;
+
+        return ChessBlock(position).transform.position;
     }
     public void BoardUpdate(ChessBasic chessBasic, Vector2Int position, ChessAction chessAction)
     {
@@ -286,18 +285,12 @@ public class ChessBoard : MonoBehaviour
     {
         if (canGoPos.Count == 0) return;
         nowShowing.AddRange(canGoPos);
-        foreach (var pos in canGoPos)
-        {
-            cols[pos.x].chessBlocks[pos.y].Active(activeStage);
-        }
+        foreach (var pos in canGoPos) ChessBlock(pos).Active(activeStage);
     }
     public void ReSetActive()
     {
         if (nowShowing.Count == 0) return;
-        foreach (var pos in nowShowing)
-        {
-            cols[pos.x].chessBlocks[pos.y].Active(ChessBlockStage.Normal);
-        }
+        foreach (var pos in nowShowing) ChessBlock(pos).Active(ChessBlockStage.Normal);
         nowShowing.Clear();
     }
 
@@ -310,11 +303,19 @@ public class ChessBoard : MonoBehaviour
         return false;
     }
 
+    private readonly Vector2Int invalidPosition = new Vector2Int(-1, -1);
     public void UpdatePlayerChose(Vector2Int position)
     {
-        if (playerChoseBlock != new Vector2Int(-1, -1)) ChessBlock(playerChoseBlock).ShowChoseEffect(false);
-        playerChoseBlock = position;
-        ChessBlock(playerChoseBlock).ShowChoseEffect(true);
+        bool hasNewChoice = position != invalidPosition;
+        bool hasOldChoice = playerChoseBlock != invalidPosition;
+
+        if (hasOldChoice) ChessBlock(playerChoseBlock)?.ShowChoseEffect(false);
+        if (hasNewChoice)
+        {
+            playerChoseBlock = position;
+            ChessBlock(playerChoseBlock)?.ShowChoseEffect(true);
+        }
+        else playerChoseBlock = invalidPosition;
     }
 
 
@@ -323,7 +324,7 @@ public class ChessBoard : MonoBehaviour
 
     public void ChessBoard_Init()
     {
-        CheckChessBoardError();
+        //CheckChessBoardError();
         _poolManager.AllPoolInit();
         ChessBlockInit();
     }

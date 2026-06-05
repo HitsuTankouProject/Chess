@@ -320,6 +320,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5557200307568946705
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -391,6 +392,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &3518151267831872184
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -642,6 +644,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4150966406001355039
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1163,6 +1166,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &7793591523417017473
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1324,6 +1328,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &2914395306630763094
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1845,6 +1850,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8560847406924766819
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1916,6 +1922,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5597233736427195172
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1987,6 +1994,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4476665348301730177
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2457,6 +2465,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &7225978103623746595
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2657,6 +2666,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8913625130163055405
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3307,6 +3317,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &2811461820597671965
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3648,6 +3659,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5328735998611286651
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3809,6 +3821,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &3062436886328222700
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4228,6 +4241,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &6114223431427969297
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4389,6 +4403,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5408333554029108409
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4460,6 +4475,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8874714771418191735
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4801,6 +4817,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &7693420083405296412
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4962,6 +4979,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &2587518474526962232
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5033,6 +5051,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &7821710703757366652
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5194,6 +5213,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &6948440235943059155
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5715,6 +5735,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &6219930366356559823
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5876,6 +5897,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4409196712614610906
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6757,6 +6779,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &1330974105076458056
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6918,6 +6941,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4849868017910162917
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6989,6 +7013,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &7047704338999641648
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7330,6 +7355,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &7922528188045688200
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7491,6 +7517,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8907055360685095245
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7562,6 +7589,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8618453143603355166
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7813,6 +7841,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4130424699887918694
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8064,6 +8093,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4008293657577829038
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8135,6 +8165,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &675920531446064295
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8206,6 +8237,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4553986178707858660
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8367,6 +8399,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4179113244094560010
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8438,6 +8471,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &2704830913717541605
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -8599,6 +8633,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8820996433210395900
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -9480,6 +9515,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &3478541329657016446
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10040,6 +10076,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5465244585248769343
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10111,6 +10148,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &7888091127745626864
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10424,6 +10462,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8519363346084495811
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10675,6 +10714,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8191537093077607535
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10746,6 +10786,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &7229244937916744983
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11447,6 +11488,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &2436717862454081958
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11608,6 +11650,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &3795718483754447986
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -11949,6 +11992,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &712056425605158417
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12110,6 +12154,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &1411201030083084683
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12361,6 +12406,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &9053652283902516713
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12702,6 +12748,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &8771126729298839124
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -12863,6 +12910,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &700218104030117659
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13351,6 +13399,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &6441863619031829336
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13422,6 +13471,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &1905070084250932785
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13673,6 +13723,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5407738287425837302
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13834,6 +13885,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5424190491598500611
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -13944,6 +13996,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &3016469146228603644
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14555,6 +14608,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &6541448146319572580
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -14716,6 +14770,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &6028791081654220563
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -15440,6 +15495,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &6501131095543561411
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -15511,6 +15567,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &1700819148879998153
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -15582,6 +15639,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &6657547615422290616
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -15653,6 +15711,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &1368558908325594125
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16017,6 +16076,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &1281570290309699674
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16268,6 +16328,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5112685219485115571
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16519,6 +16580,7 @@ MonoBehaviour:
   color: 0
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &5663460282848445560
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16680,6 +16742,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4535071980938218407
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -16751,6 +16814,7 @@ MonoBehaviour:
   color: 1
   isKingChessSpawn: 0
   position: {x: 0, y: 0}
+  choseEffect: {fileID: 0}
 --- !u!65 &4565021977685112946
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -151,6 +151,7 @@ public class InGame : MonoBehaviour
 
     private IEnumerator TurnChange()
     {
+        _chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
         if (inGameStage == InGameStage.TurnChanging)
         {
             yield break;
@@ -215,8 +216,6 @@ public class InGame : MonoBehaviour
         {
             if (_chessBoard.board[chessPos].color == ChessColor.White) whiteChess[chessPos] = _chessBoard.board[chessPos];
             else blackChess[chessPos] = _chessBoard.board[chessPos];
-
-
         }
         yield return null;
 

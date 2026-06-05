@@ -37,10 +37,18 @@ public class ChessBlock : MonoBehaviour
     private ChessBasic curseChess;
     public Vector2Int position;
 
-    public GameObject choseEffect;
+    private GameObject choseEffect;
 
-    private Vector3 activePos => new Vector3(0, -2, 0);
-    private Vector3 normalPos => new Vector3(0, -5, 0);
+    private readonly Pair<Vector3, Vector3> activeSide = new Pair<Vector3, Vector3>()
+    {
+        first = new Vector3(0, -2, 0),
+        second = new Vector3(0, 3.5f, 0)
+    };
+    private readonly Pair<Vector3, Vector3> normalSide = new Pair<Vector3, Vector3>()
+    {
+        first = new Vector3(0, -5, 0),
+        second = new Vector3(0, 0.03f, 0)
+    };
 
     private MeshRenderer meshRenderer => transform.GetChild(0).GetComponent<MeshRenderer>();
 
@@ -48,8 +56,9 @@ public class ChessBlock : MonoBehaviour
     {
         if (curseChess != null) return;
         meshRenderer.material = GetStageMaterial(chessBlockStage);
-        Vector3 targetPos = chessBlockStage == ChessBlockStage.Normal ? normalPos : activePos;
-        transform.GetChild(0).localPosition = targetPos;
+        Pair<Vector3, Vector3> targetSide = chessBlockStage == ChessBlockStage.Normal ? normalSide : activeSide;
+        transform.GetChild(0).localPosition = targetSide.first;
+        choseEffect.transform.localPosition = targetSide.second;
     }
 
     private IEnumerator GotCurse()
@@ -72,12 +81,17 @@ public class ChessBlock : MonoBehaviour
         StartCoroutine(GotCurse());
 
     }
-
-
     public void ShowChoseEffect(bool isShow)
     {
         if (choseEffect == null) return;
         choseEffect.SetActive(isShow);
     }
 
-}
+    public void Init(Vector2Int targetPos)
+    {
+        position = targetPos;
+        choseEffect = transform.GetChild(1).gameObject;
+        choseEffect.SetActive(false);
+    }
+
+}   

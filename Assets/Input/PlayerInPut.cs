@@ -2,21 +2,31 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Linq;
+using UnityEngine.InputSystem.LowLevel;
+using Unity.VisualScripting;
 public enum CanUseDevice { Mouse,Gamepad };
 public enum InputStage { None, Waiting, Picking, OneMoreMove }
 
-[System.Serializable]
-public class PlayerInPut
+public class PlayerInPut : MonoBehaviour
 {
     private ChessBoard _chessBoard => ChessBoard.Instance;
+    private int gameBoardLayerMask;
     private InGame _inGame => InGame.Instance;
+    private Camera _camera;
+
     private Player _player;
+
     public InputStage inputStage/* { get; private set; } */= InputStage.None;
-    public PlayerInPut(Player player)
+
+    public void Init(Player player)
     {
         _player = player;
         inputStage = InputStage.None;
+        _camera = Camera.main;
+        gameBoardLayerMask = LayerMask.GetMask("GameBoard");
+        //if (nowUsingDevice == CanUseDevice.Gamepad) StartCoroutine(GamePadInPut());
     }
+
 
     #region Using Device
     public CanUseDevice nowUsingDevice/* {  get; private set; } */= CanUseDevice.Mouse;
@@ -41,7 +51,7 @@ public class PlayerInPut
     public void StartInPutSystem() => inputStage = InputStage.Waiting;
 
     [SerializeField] private ChessBasic pickIngChess;
-
+    private readonly Vector2Int invalidBoardPos = new(-1, -1);
     private bool PickChess(Vector2Int boardPos)
     {
         bool haveChess =
@@ -62,7 +72,6 @@ public class PlayerInPut
         pickIngChess = targetChess;
         pickIngChess.FindPossibleMove();
         pickIngChess.GotPick();
-
         return true;
     }
     private bool PutChess(Vector2Int boardPos)
@@ -79,8 +88,6 @@ public class PlayerInPut
 
         if (!canMove)
         {
-            pickIngChess.ReturnPick();
-            pickIngChess = null;
             return false;
         }
 
@@ -137,36 +144,35 @@ public class PlayerInPut
     }
 
     #region Mouse
+
     private bool TryGetBoardPos(Vector3 worldPos, out Vector2Int boardPos)
     {
         Ray ray = new Ray(worldPos + Vector3.up * 10f, Vector3.down);
 
-        if (Physics.Raycast(
-            ray,
-            out RaycastHit hit,
-            100f,
-            LayerMask.GetMask("GameBoard"),
-            QueryTriggerInteraction.Collide))
+        bool isHitGameBoard = Physics.Raycast(ray, out RaycastHit hit, 100f, gameBoardLayerMask, QueryTriggerInteraction.Collide);
+        if (!isHitGameBoard)
         {
-            Debug.Log(hit.collider.gameObject.name);
-
-            string[] split = hit.collider.gameObject.name.Split('_');
-
-            boardPos = new Vector2Int(
-                int.Parse(split[1]),
-                int.Parse(split[2]));
-
-            return true;
+            boardPos = invalidBoardPos;
+            _chessBoard.UpdatePlayerChose(boardPos);
+            return false;
         }
+        string[] split = hit.collider.gameObject.name.Split('_');
 
-        boardPos = new Vector2Int(-1, -1);
-        return false;
+        if (!int.TryParse(split[1], out int x) || !int.TryParse(split[2], out int y)) 
+        {
+            boardPos = invalidBoardPos;
+            return false;
+        }
+        boardPos = new Vector2Int(x, y);
+        _chessBoard.UpdatePlayerChose(boardPos);
+        return true;
+     
     }
     private bool TryGetMouseWorldPos(out Vector3 mouseWorldPos)
     {
         Vector2 mousePos = nowUsingMouse.position.ReadValue();
 
-        Ray ray = Camera.main.ScreenPointToRay(mousePos);
+        Ray ray = _camera.ScreenPointToRay(mousePos);
 
         Plane boardPlane = new Plane(Vector3.up, Vector3.zero);
 
@@ -188,58 +194,57 @@ public class PlayerInPut
 
     private bool TryGetPressedBoardPos(out Vector2Int boardPos)
     {
-        boardPos = new Vector2Int(-1, -1);
+        boardPos = invalidBoardPos;
 
-        if (!IsPressed())
-        {
-            return false;
-        }
-
-        Debug.Log("Pressed");
-
-        if (!TryGetMouseWorldPos(out Vector3 mouseWorldPos))
-        {
-            return false;
-        }
-
+        if (!IsPressed()) return false;
+        if (!TryGetMouseWorldPos(out Vector3 mouseWorldPos)) return false;
         return TryGetBoardPos(mouseWorldPos, out boardPos);
     }
 
-
-
-    private void Waiting()
+    private IEnumerator MouseInPut()
     {
-        if (!TryGetPressedBoardPos(out Vector2Int boardPos))
+        while (true)
         {
-            return;
+            if (inputStage == InputStage.None)  yield break;
+            if (!TryGetPressedBoardPos(out Vector2Int boardPos))
+            {
+                yield return null;
+                continue;
+            }
+            if(inputStage == InputStage.Waiting)
+            {
+                if (!PickChess(boardPos))
+                {
+                    yield return null;
+                    continue;
+                }
+                inputStage = InputStage.Picking;
+                yield return null;
+                continue;
+            }
+            else if (inputStage == InputStage.Picking)
+            {
+                if (!PutChess(boardPos))
+                {
+                    pickIngChess.ReturnPick();
+                    pickIngChess = null;
+                    inputStage = InputStage.Waiting;
+                    yield return null;
+                    continue;
+                }
+
+                inputStage = InputStage.None;
+                yield return null;
+            }
         }
 
-        bool pickSuccess = PickChess(boardPos);
-
-        if (!pickSuccess)
-        {
-            return;
-        }
-
-        inputStage = InputStage.Picking;
     }
 
-    private void PickingChess()
+    private void StartMouseInput()
     {
-        if (!TryGetPressedBoardPos(out Vector2Int boardPos))
-        {
-            return;
-        }
-
-        bool putSuccess = PutChess(boardPos);
-
-        if (!putSuccess)
-        {
-            inputStage = InputStage.Waiting;
-            return;
-        }
-
-        inputStage = InputStage.None;
+        if (inputUpdate != null) RejectInput();
+        inputStage = InputStage.Waiting;
+        inputUpdate = StartCoroutine(MouseInPut());
     }
 
     #endregion
@@ -255,10 +260,10 @@ public class PlayerInPut
         if (nowUsingGamepad == null) return result;
 
         int offset = InGame.Instance.nowTurn == ChessColor.White ? 1 : -1;
-        if (nowUsingGamepad.dpad.up.wasPressedThisFrame) result = Vector2Int.up;
-        else if (nowUsingGamepad.dpad.down.wasPressedThisFrame) result = Vector2Int.down;
-        else if (nowUsingGamepad.dpad.left.wasPressedThisFrame) result = Vector2Int.left;
-        else if (nowUsingGamepad.dpad.right.wasPressedThisFrame) result = Vector2Int.right;
+        if (nowUsingGamepad.dpad.up.isPressed) result = Vector2Int.up;
+        else if (nowUsingGamepad.dpad.down.isPressed) result = Vector2Int.down;
+        else if (nowUsingGamepad.dpad.left.isPressed) result = Vector2Int.left;
+        else if (nowUsingGamepad.dpad.right.isPressed) result = Vector2Int.right;
 
         return result * offset;
     }
@@ -269,7 +274,7 @@ public class PlayerInPut
 
     private bool haveRightStickInput => rightStickInput.magnitude > 0.5f;
 
-    private const float GamepadInputCd = 0.2f;
+    private const float GamepadInputCd = 0.075f;
 
     private bool IsConformed()
     {
@@ -313,7 +318,9 @@ public class PlayerInPut
 
         while (true)
         {
-            if(!isGamepadInputAccessible)
+            if (inputStage == InputStage.None) yield break;
+
+            if (!isGamepadInputAccessible)
             {
                 yield return new WaitForSeconds(GamepadInputCd);
                 isGamepadInputAccessible = true;
@@ -350,21 +357,49 @@ public class PlayerInPut
             yield return null;
         }
 
-    } 
+    }
+
+    private void StartGamepadInput()
+    {
+        if (inputUpdate != null) RejectInput();
+        inputStage = InputStage.Waiting;
+        inputUpdate = StartCoroutine(GamePadInPut());
+    }
+
+    #endregion
 
 
-
-#endregion
-
-public void InPutSystem_Update()
-{
-        switch (inputStage)
+    private Coroutine inputUpdate;
+    private void RejectInput()
+    {
+        StopAllCoroutines();
+        inputUpdate = null;
+        if (pickIngChess != null)
         {
-            case InputStage.None: pickIngChess = null; return;
-            case InputStage.Waiting: Waiting(); return;
-            case InputStage.Picking: PickingChess(); return;
+            pickIngChess.ReturnPick();
+            pickIngChess = null;
         }
-}
+        _chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
+        _chessBoard.ReSetActive();
+    }
+
+    public void StartInput()
+    {
+        StartGamepadInput();
+    }
+
+
+    public bool test;
+    public void InPutSystem_Update()
+    {
+        if (test)
+        {
+            StartInput();
+            test = false;
+        }
+
+
+    }
 
 
 }
