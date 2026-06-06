@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
             chess.ChessInit(this);
         }
     }
-    private List<ChessBasic> ChessListByType(ChessType chessType)
+    public List<ChessBasic> ChessListByType(ChessType chessType)
     {
         List<ChessBasic> chessList = new List<ChessBasic>();
         foreach (ChessBasic chessBasic in allTheChess.Values)
@@ -336,12 +336,5 @@ public class Player : MonoBehaviour
         turnStart = StartCoroutine(TurnStart());
         playerInPut.StartInput();
     }
-
-
-    private void Update()
-    {
-        
-    }
-
 
 }

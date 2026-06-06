@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using static Player;
+using Unity.VisualScripting;
 
 public class SageKing : BuffBasic
 {
@@ -93,8 +94,18 @@ public class King : ChessBasic
     public override ChessType type => ChessType.King;
     public override int findRange { get;} = 1;
     private bool isMoveAgain = false;
-
     public override string ChessName() { return "King"; }
+
+    private Player _enemy;
+
+    public override void ChessInit(Player player)
+    {
+        base.ChessInit(player);
+
+        _enemy = player == InGame.Instance.whiteChessPlayer ? 
+            InGame.Instance.blackChessPlayer : InGame.Instance.whiteChessPlayer;
+    }
+
 
     public bool haveBarrier = false;
     public void AddBarrier()
@@ -189,7 +200,7 @@ public class King : ChessBasic
         bool canMoveAgain = _player.madKing.canMoveItAgain;
         bool canThroughAndEatAllChess = _player.madKing.canThroughAndEatAllChess;
 
-        if (!canMoveAgain&& canThroughAndEatAllChess)
+        if (!canMoveAgain && !canThroughAndEatAllChess)
         {
             base.Move(moveTo);
             return;
@@ -228,46 +239,70 @@ public class King : ChessBasic
         _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
     }
 
-    public override void GotEaten()
+    private ChessType CanKillKingType()
     {
+        int count = Enum.GetValues(typeof(ChessType)).Length;
 
-       base.GotEaten();
-       Vector2Int targetSpawn = color == ChessColor.White ? _chessBoard.white_KingChessSpawn : _chessBoard.black_KingChessSpawn;
-       if (targetSpawn == null)
+        for (int i = count - 1; i > 0; i--)
+        {
+            ChessType chessType = (ChessType)i;
+
+            if (_enemy.ChessListByType(chessType).Count > 0)
+                return chessType;
+        }
+
+        return ChessType.King;
+    }
+
+    private void Respawn()
+    {
+        Vector2Int targetSpawn = color == ChessColor.White ? 
+            _chessBoard.white_KingChessSpawn : _chessBoard.black_KingChessSpawn;
+        if (targetSpawn == new Vector2Int(-1, -1))
         {
             Debug.LogError("No Spawn Location");
             return;
         }
 
-
-        bool isSpawnHaveChess = _chessBoard.board.ContainsKey(targetSpawn);
-        if (!isSpawnHaveChess)
+        if (!_chessBoard.board.TryGetValue(targetSpawn, out ChessBasic chess))
         {
             _chessBoard.GenChess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King));
+            return;
         }
-        else
+
+        if (chess.color == this.color)
         {
-            ChessBasic spawnChess = _chessBoard.board[targetSpawn];
-            bool sameColor = _chessBoard.board[targetSpawn].color == color;
-            bool isPawn = _chessBoard.board[targetSpawn].type == ChessType.Pawn;
-
-            if (!isPawn && !sameColor)
-            {
-                spawnChess.GotEaten();
-                _chessBoard.GenChess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King));
-            }
-
-
-
-
-
+            InGame.Instance.GameSet();
+            return;
         }
 
+        ChessType killerType = CanKillKingType();
+
+        if (chess.type != killerType)
+        {
+            chess.GotEaten();
+
+            _chessBoard.GenChess(
+                targetSpawn,
+                new Pair<ChessColor, ChessType>(color, ChessType.King));
+
+            return;
+        }
+
+        InGame.Instance.GameSet();
+
+    }
+
+    public override void GotEaten()
+    {
+        base.GotEaten();
+        Respawn();
     }
 
     public override void Move(Vector2Int moveTo)
     {
-        base.Move(moveTo);
+        if(_player.kingBuffType != Player.KingBuff.MadKing) base.Move(moveTo);
+        MadKing_MoveTo(moveTo);
     }
 
 

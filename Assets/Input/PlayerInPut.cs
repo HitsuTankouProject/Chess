@@ -29,15 +29,19 @@ public class PlayerInPut : MonoBehaviour
 
 
     #region Using Device
-    public CanUseDevice nowUsingDevice { get; private set; } = CanUseDevice.Mouse;
-    public GamepadData lastConnectingGamepadData { get; private set; } = null;
+    public CanUseDevice nowUsingDevice/* { get; private set; } */= CanUseDevice.Mouse;
     public Gamepad nowUsingGamepad { get; private set; } = null;
     public Mouse nowUsingMouse => Mouse.current;
 
     public void ChangeToGamepad(Gamepad targetGamepad)
     {
+        if (targetGamepad == null || !targetGamepad.added)
+        {
+            ChangeToMouse();
+            return;
+        }
+
         nowUsingGamepad = targetGamepad;
-        lastConnectingGamepadData = new GamepadData(targetGamepad);
         nowUsingDevice = CanUseDevice.Gamepad;
         if(inputStage == InputStage.OneMoreMove)StartCoroutine(OneMoreMove(pickIngChess));
         else ChangeInput(CanUseDevice.Gamepad);
@@ -253,9 +257,16 @@ public class PlayerInPut : MonoBehaviour
 
     private const float stickInputThreshold = 0.4f;
     private bool StickInput(float targetIndex) => targetIndex > stickInputThreshold;
-    private bool IsConformedKey() => nowUsingGamepad.buttonSouth.wasPressedThisFrame;
-    private bool IsCancelKey() => nowUsingGamepad.buttonEast.wasPressedThisFrame;
-
+    private bool IsConformedKey()
+    {
+        if (nowUsingGamepad == null) return false;
+        return nowUsingGamepad.buttonSouth.wasPressedThisFrame;
+    }
+    private bool IsCancelKey()
+    {
+        if (nowUsingGamepad == null) return false;
+        return nowUsingGamepad.buttonEast.wasPressedThisFrame;
+    }
     private void Conform(Vector2Int boardPos)
     {
         switch (inputStage)
@@ -286,6 +297,14 @@ public class PlayerInPut : MonoBehaviour
    
     private Vector2Int GamepadLeftStick()
     {
+        if (nowUsingGamepad == null) return Vector2Int.zero;
+
+        if (!nowUsingGamepad.added)
+        {
+            ChangeToMouse();
+            return Vector2Int.zero;
+        }
+
         Vector2Int result = Vector2Int.zero;
         Vector2 leftStickValue = nowUsingGamepad.leftStick.ReadValue();
         float x = Mathf.Abs(leftStickValue.x);
@@ -327,27 +346,6 @@ public class PlayerInPut : MonoBehaviour
         return true;
 
     }
-
-    //private bool IsInGamePad_InputArea(Vector2Int targetPos)
-    //{
-    //    switch(inputStage)
-    //    {
-    //        case InputStage.Waiting:
-    //            if (_player != null) 
-    //                return _player.allTheChess.ContainsKey(targetPos);
-    //            Debug.LogError("_player is null in IsInGamePad_InputArea");
-    //            return false;
-    //        case InputStage.Picking:
-    //            if (pickIngChess != null) 
-    //                return pickIngChess.possibleMoveList.Contains(targetPos);
-    //            Debug.LogError("pickIngChess is null in IsInGamePad_InputArea");
-    //            return false;
-    //        default:
-    //            Debug.LogError("it should go to here");
-    //            return false;
-    //    }
-    //}
-
     private IEnumerable<Vector2Int> GetAreas()
     {
         if (inputStage == InputStage.Waiting) 

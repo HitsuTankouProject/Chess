@@ -227,7 +227,28 @@ public class InGame : MonoBehaviour
 
     }
 
-    #region Turn
+    #region GameSet
+
+    public int nowRound { get; private set; } = 1;
+    private const int maxRound = 3;
+
+    public void GameSet()
+    {
+        inGameStage = InGameStage.GameSet;
+        Debug.Log("GameSet!!");
+        nowRound++;
+        if(nowRound> maxRound)
+        {
+            Debug.Log("Real GameSet");
+            return;
+        }
+
+        inGameStage = InGameStage.TurnStart;
+
+        StartCoroutine(TurnInit());
+
+
+    }
 
 
 
@@ -249,7 +270,6 @@ public class InGame : MonoBehaviour
         {
             test = false;
 
-            StartCoroutine(CameraTurn());
         }
 
 
