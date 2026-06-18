@@ -174,6 +174,14 @@ public class ChessBoard : MonoBehaviour
     #region Turn Initialization
     private bool GenChessAtStart()
     {
+        if (board.Count > 0)
+        {
+            foreach (var chess in board.Values)
+            {
+                if (chess.poolObject != null) chess.poolObject.pool.Return(chess.gameObject);
+            }
+        }
+
         board.Clear();
         foreach (var entry in chessStartMap)
         {

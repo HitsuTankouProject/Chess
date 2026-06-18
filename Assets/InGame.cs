@@ -6,6 +6,7 @@ using static ChessBlock;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 
+
 [System.Serializable]
 public class Pair<F, S>
 {
@@ -16,8 +17,8 @@ public class Pair<F, S>
         this.first = f;
         this.second = s;
     }
-    public F first { get; set; }
-    public S second { get; set; }
+    public F first;
+    public S second;
 
     public override bool Equals(object obj)
     {
@@ -61,6 +62,8 @@ public class CameraView
 public enum InGameStage
 {
     Init,
+
+    ChooseSkill,
 
     TurnStart,
     TurnChanging,
@@ -115,8 +118,13 @@ public class InGame : MonoBehaviour
         }
 
         float timer = 0;
-        CameraView basicView = nowTurn == ChessColor.White ? blackView : whiteView;
 
+        CameraView basicView = nowTurn == ChessColor.White ? blackView : whiteView;
+        if(Vector3.Distance(_camera.transform.position, nowCameraView.position) < 0.1f)
+        {
+            _camera.transform.rotation = Quaternion.Euler(nowCameraView.angle);
+            yield break;
+        }
 
         while (timer < cameraTurnTime)
         {
@@ -201,13 +209,12 @@ public class InGame : MonoBehaviour
         whiteChessPlayer.Player_Init(ChessColor.White);
         blackChessPlayer.Player_Init(ChessColor.Black);
 
-        inGameStage = InGameStage.TurnStart;
-
         StartCoroutine(TurnInit());
     }
 
     private IEnumerator TurnInit()
     {
+
         yield return StartCoroutine(_chessBoard.ChessBoard_TurnInit());
         Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
         Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
@@ -223,13 +230,15 @@ public class InGame : MonoBehaviour
         blackChessPlayer.Player_ChessInit(blackChess);
 
         yield return null;
+        nowTurn = ChessColor.White;
         whiteChessPlayer.Player_TurnStart();
-
+        yield return StartCoroutine(CameraTurn());
+        inGameStage = InGameStage.TurnStart;
     }
 
     #region GameSet
 
-    public int nowRound { get; private set; } = 1;
+    public int nowRound = 1;
     private const int maxRound = 3;
 
     public void GameSet()
@@ -243,11 +252,8 @@ public class InGame : MonoBehaviour
             return;
         }
 
-        inGameStage = InGameStage.TurnStart;
-
+        inGameStage = InGameStage.Init;
         StartCoroutine(TurnInit());
-
-
     }
 
 
@@ -269,7 +275,7 @@ public class InGame : MonoBehaviour
         if (test)
         {
             test = false;
-
+            GameSet();
         }
 
 

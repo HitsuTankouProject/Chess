@@ -89,6 +89,15 @@ public class InPutManager : MonoBehaviour
     private Dictionary <PlayerInPut, GamepadData> 
         theLastConnectGamepadData = new Dictionary<PlayerInPut, GamepadData>();
 
+    public int gameBoardLayerMask { get; private set; } = -1;
+    public int chessLayerMask { get; private set; } = -1;
+    public int buttonLayerMask { get; private set; } = -1;
+    public int cardLayerMask { get; private set; } = -1;
+
+    public Dictionary<InGameStage, int> hitLayerMasks;
+
+
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -235,13 +244,34 @@ public class InPutManager : MonoBehaviour
 
     #endregion
 
+    public void LayerMask_Init()
+    {
+        gameBoardLayerMask = LayerMask.GetMask("GameBoard");
+        chessLayerMask = LayerMask.GetMask("Chess");
+        buttonLayerMask = LayerMask.GetMask("Button");
+        cardLayerMask = LayerMask.GetMask("Card");
+
+        hitLayerMasks = new Dictionary<InGameStage, int>()
+        {
+            {   InGameStage.Init, -1 },
+            {   InGameStage.ChooseSkill, buttonLayerMask | cardLayerMask },
+            {   InGameStage.TurnStart, gameBoardLayerMask | chessLayerMask | buttonLayerMask | cardLayerMask },
+            {   InGameStage.TurnChanging, buttonLayerMask | cardLayerMask },
+            {   InGameStage.GameSet,buttonLayerMask},
+        };
+
+    }
+
+    public int CanHitLayerMask() => hitLayerMasks.ContainsKey(InGame.Instance.inGameStage) ? hitLayerMasks[InGame.Instance.inGameStage] : -1;
+
     public void InPutManager_Init()
     {
+        LayerMask_Init();
+
         if (watchControllerConnecting != null)
         {
             StopCoroutine(watchControllerConnecting);
         }
-
         watchControllerConnecting =
             StartCoroutine(WatchControllerConnecting());
 
@@ -249,4 +279,8 @@ public class InPutManager : MonoBehaviour
 
         UpdateTheGamePadAndPlayerInPut();
     }
+
+
+
+
 }

@@ -1,20 +1,21 @@
 using UnityEngine;
-using CaraData;
 
 public class Card : MonoBehaviour
 {
-    public AllBuffCara buffCard;
-    private AllBuffCara oldBuffCard = AllBuffCara.None;
+    public AllBuffCard buffCard;
+    private AllBuffCard oldBuffCard = AllBuffCard.None;
 
     public MeshRenderer card_Front;
     public MeshRenderer card_back;
 
-    private void Start()
+    protected virtual void OnValidate()
     {
-        CaraData.CaraData.CaraDataInit();
+        int layer = LayerMask.NameToLayer("Card");
+
+        if (layer != -1) gameObject.layer = layer;
     }
 
-    public void SetCard(AllBuffCara card)
+    public void SetCard(AllBuffCard card)
     {
         buffCard = card;
         ChangeTheCard();
@@ -22,7 +23,7 @@ public class Card : MonoBehaviour
 
     public void ChoseTheCard(Player player)
     {
-        if (buffCard == AllBuffCara.None) return;
+        if (buffCard == AllBuffCard.None) return;
     }
 
     private void ChangeTheCard()
@@ -30,7 +31,7 @@ public class Card : MonoBehaviour
         if (buffCard == oldBuffCard) return;
 
         oldBuffCard = buffCard;
-        Pair<Material, Material> materials = CaraData.CaraData.cardMaterialDict[buffCard];
+        Pair<Material, Material> materials = ResourcesData.Instance.cardMaterialDict[buffCard];
 
         card_Front.material = materials.first;
         card_back.material = materials.second;
@@ -39,7 +40,7 @@ public class Card : MonoBehaviour
 
     private void Update()
     {
-        ChangeTheCard();
+        //ChangeTheCard();
     }
 
 

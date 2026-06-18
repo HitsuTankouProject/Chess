@@ -87,7 +87,6 @@ public class Knight : ChessBasic
     public override string ChessName() { return "Knight"; }
     private bool isMoveAgain = false;
     public override int findRange { get; } = 1;
-
     public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>()
     {
         new Vector2Int(2, 1),

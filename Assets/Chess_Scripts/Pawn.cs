@@ -93,6 +93,12 @@ public class Pawn : ChessBasic
     private List<Vector2Int> attackDirs = new List<Vector2Int>
     { new Vector2Int(1, 1), new Vector2Int(-1, 1) };
 
+    public override void ChessInit(Player player)
+    {
+        base.ChessInit(player);
+        isFirstMove = true;
+    }
+
     public override void ExtraFindPossibleMove(bool isThrough)
     {
         if (_player.pawnBuffType != Player.PawnBuff.Scout
@@ -136,7 +142,6 @@ public class Pawn : ChessBasic
 
             for (int distance = 1; distance <= findRange; distance++)
             {
-                Debug.Log(findRange);
                 Vector2Int targetPosition = position + moveOffset * distance;
 
                 if (IsOutOfBoard(targetPosition)) break;
@@ -218,6 +223,8 @@ public class Pawn : ChessBasic
         if (isFirstMove) isFirstMove = false;
         MoveOnly(moveTo);
         Promotion();
+
+
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
     }
