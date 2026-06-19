@@ -15,13 +15,6 @@ public enum AllBuffCard
 
 public class ResourcesData : MonoBehaviour
 {
-    public static ResourcesData Instance { get; private set; }
-    private void Awake()
-    {
-        if (Instance == null) Instance = this;
-        else Destroy(this);
-    }
-
     [Header("Card Materials")]
     public Pair<Material, Material> m_Card_King_SageKing;
     public Pair<Material, Material> m_Card_King_MadKing;
@@ -35,7 +28,7 @@ public class ResourcesData : MonoBehaviour
     public Pair<Material, Material> m_Card_Knight_Skirmisher;
     public Pair<Material, Material> m_Card_Pawn_Scout;
     public Pair<Material, Material> m_Card_Pawn_Substitute;
-    public Dictionary<AllBuffCard, Pair<Material, Material>> cardMaterialDict;
+    public Dictionary<AllBuffCard, Pair<Material, Material>> cardMaterialDict {  get; private set; }
     public void CardMaterialDictInit()
     {
         cardMaterialDict = new Dictionary<AllBuffCard, Pair<Material, Material>>()
@@ -62,6 +55,5 @@ public class ResourcesData : MonoBehaviour
 
             };
     }
-
 
 }

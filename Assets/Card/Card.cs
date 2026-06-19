@@ -2,18 +2,13 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
+    private GameManager _gameManager => GameManager.Instance;
+
     public AllBuffCard buffCard;
     private AllBuffCard oldBuffCard = AllBuffCard.None;
 
     public MeshRenderer card_Front;
     public MeshRenderer card_back;
-
-    protected virtual void OnValidate()
-    {
-        int layer = LayerMask.NameToLayer("Card");
-
-        if (layer != -1) gameObject.layer = layer;
-    }
 
     public void SetCard(AllBuffCard card)
     {
@@ -29,9 +24,8 @@ public class Card : MonoBehaviour
     private void ChangeTheCard()
     {
         if (buffCard == oldBuffCard) return;
-
         oldBuffCard = buffCard;
-        Pair<Material, Material> materials = ResourcesData.Instance.cardMaterialDict[buffCard];
+        Pair<Material, Material> materials = _gameManager.CardMaterials(buffCard);
 
         card_Front.material = materials.first;
         card_back.material = materials.second;
@@ -40,7 +34,7 @@ public class Card : MonoBehaviour
 
     private void Update()
     {
-        //ChangeTheCard();
+        ChangeTheCard();
     }
 
 
