@@ -16,24 +16,26 @@ public enum AllBuffCard
 public class ResourcesData : MonoBehaviour
 {
     [Header("Card Materials")]
-    public Pair<Material, Material> m_Card_King_SageKing;
-    public Pair<Material, Material> m_Card_King_MadKing;
-    public Pair<Material, Material> m_Card_Queen_Witcher;
-    public Pair<Material, Material> m_Card_Queen_Beauty;
-    public Pair<Material, Material> m_Card_Bishop_Sorcerer;
-    public Pair<Material, Material> m_Card_Bishop_Monk;
-    public Pair<Material, Material> m_Card_Rook_Rusher;
-    public Pair<Material, Material> m_Card_Rook_Guardian;
-    public Pair<Material, Material> m_Card_Knight_Charger;
-    public Pair<Material, Material> m_Card_Knight_Skirmisher;
-    public Pair<Material, Material> m_Card_Pawn_Scout;
-    public Pair<Material, Material> m_Card_Pawn_Substitute;
-    public Dictionary<AllBuffCard, Pair<Material, Material>> cardMaterialDict {  get; private set; }
+    public Material m_Card_King_SageKing;
+    public Material m_Card_King_MadKing;
+    public Material m_Card_Queen_Witcher;
+    public Material m_Card_Queen_Beauty;
+    public Material m_Card_Bishop_Sorcerer;
+    public Material m_Card_Bishop_Monk;
+    public Material m_Card_Rook_Rusher;
+    public Material m_Card_Rook_Guardian;
+    public Material m_Card_Knight_Charger;
+    public Material m_Card_Knight_Skirmisher;
+    public Material m_Card_Pawn_Scout;
+    public Material m_Card_Pawn_Substitute;
+
+    public Material m_CardBack;
+    public Dictionary<AllBuffCard, Material> cardMaterialDict {  get; private set; }
     public void CardMaterialDictInit()
     {
-        cardMaterialDict = new Dictionary<AllBuffCard, Pair<Material, Material>>()
+        cardMaterialDict = new Dictionary<AllBuffCard, Material>()
             {
-                {AllBuffCard.None, new Pair<Material, Material>(null, null) },
+                {AllBuffCard.None, null },
 
                 {AllBuffCard.SageKing, m_Card_King_SageKing },
                 {AllBuffCard.MadKing, m_Card_King_MadKing },
@@ -52,7 +54,6 @@ public class ResourcesData : MonoBehaviour
 
                 {AllBuffCard.Scout, m_Card_Pawn_Scout },
                 {AllBuffCard.Substitute, m_Card_Pawn_Substitute }
-
             };
     }
 

@@ -30,10 +30,6 @@ public class GameManager : MonoBehaviour
         resourcesData.CardMaterialDictInit();
     }
 
-    public Pair<Material, Material> CardMaterials(AllBuffCard buffCard) => resourcesData.cardMaterialDict[buffCard];
-
-
-
     #endregion
 
     private void Start()

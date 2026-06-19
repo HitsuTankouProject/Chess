@@ -202,6 +202,7 @@ public class Player : MonoBehaviour
     }
     #endregion
 
+    private Dictionary<AllBuffCard, BuffBasic> cardBuffMap;
     private void BuffInit(ChessType chessType, BuffBasic buffBasic1, BuffBasic buffBasic2)
     {
         if(buffBasic1.buffChess!= chessType|| buffBasic2.buffChess != chessType)
@@ -229,6 +230,27 @@ public class Player : MonoBehaviour
         BuffInit(ChessType.Bishop, sorcerer, monk);
         BuffInit(ChessType.Rook, rusher, guardian);
         BuffInit(ChessType.Pawn, scout, substitute);
+
+        cardBuffMap = new Dictionary<AllBuffCard, BuffBasic>
+        {
+            { AllBuffCard.SageKing, sageKing },
+            { AllBuffCard.MadKing, madKing },
+        
+            { AllBuffCard.Witcher, witcher },
+            { AllBuffCard.Beauty, beauty },
+        
+            { AllBuffCard.Charger, charger },
+            { AllBuffCard.Skirmisher, skirmisher },
+        
+            { AllBuffCard.Sorcerer, sorcerer },
+            { AllBuffCard.Monk, monk },
+        
+            { AllBuffCard.Rusher, rusher },
+            { AllBuffCard.Guardian, guardian },
+        
+            { AllBuffCard.Scout, scout },
+            { AllBuffCard.Substitute, substitute },
+        };
     }
 
     public void CurrentBuffLevelUp(ChessType chessType)
@@ -252,13 +274,13 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void ChooseBuff(BuffBasic choseBuff)
+    public void ChooseBuff(AllBuffCard choseBuff)
     {
-        choseBuff.Choose();
-        choseBuff.LevelUpToTargetLevel(1, out bool success);
+        cardBuffMap[choseBuff].Choose();
+        cardBuffMap[choseBuff].LevelUpToTargetLevel(1, out bool success);
         if (!success)
         {
-            Debug.LogError(choseBuff.buffName+" LevelUp No success");
+            Debug.LogError(cardBuffMap[choseBuff].buffName+" LevelUp No success");
             return;
         }
     }

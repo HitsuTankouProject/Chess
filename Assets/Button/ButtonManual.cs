@@ -10,6 +10,6 @@ public abstract class ButtonManual : MonoBehaviour
     public virtual void StartGame() { }
     public virtual void BackToGameTitle() { }
     
-
+    public virtual void DrawAgain() { }
 
 }

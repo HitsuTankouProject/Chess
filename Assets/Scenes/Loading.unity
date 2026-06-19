@@ -428,42 +428,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f4cb9fe1647c6469cd1ca82fa5debb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourcesData
-  m_Card_King_SageKing:
-    first: {fileID: 2100000, guid: 6cd86beaf5dfebd4e8f9b9647901e672, type: 2}
-    second: {fileID: 2100000, guid: 75130cd5b160f24478582646ae0a882b, type: 2}
-  m_Card_King_MadKing:
-    first: {fileID: 2100000, guid: 597744f7c697f4d4bb8655b17a374ade, type: 2}
-    second: {fileID: 2100000, guid: 75130cd5b160f24478582646ae0a882b, type: 2}
-  m_Card_Queen_Witcher:
-    first: {fileID: 2100000, guid: 5253e34b5917c964a9d1138130478319, type: 2}
-    second: {fileID: 2100000, guid: 3fd131ffc99aeb140a3621e48ed8eea0, type: 2}
-  m_Card_Queen_Beauty:
-    first: {fileID: 2100000, guid: e35bf6547287e9d4b834e6b8826b015e, type: 2}
-    second: {fileID: 2100000, guid: 3fd131ffc99aeb140a3621e48ed8eea0, type: 2}
-  m_Card_Bishop_Sorcerer:
-    first: {fileID: 2100000, guid: aad29512c65a87b45821b4be730ac368, type: 2}
-    second: {fileID: 2100000, guid: 4db6a90c8b21f2b4184188d3ba3a4817, type: 2}
-  m_Card_Bishop_Monk:
-    first: {fileID: 2100000, guid: ae583504d2f73f244840ca77df4cf4d0, type: 2}
-    second: {fileID: 2100000, guid: 4db6a90c8b21f2b4184188d3ba3a4817, type: 2}
-  m_Card_Rook_Rusher:
-    first: {fileID: 2100000, guid: 6e8cd9051b9faf54fb2492eb9843d62a, type: 2}
-    second: {fileID: 2100000, guid: 8b4b1eafa9dcc2a4f841525eb88edfd0, type: 2}
-  m_Card_Rook_Guardian:
-    first: {fileID: 2100000, guid: 60d76df8715eed8448ea789b044d80d2, type: 2}
-    second: {fileID: 2100000, guid: 8b4b1eafa9dcc2a4f841525eb88edfd0, type: 2}
-  m_Card_Knight_Charger:
-    first: {fileID: 2100000, guid: 675757966ec61cd4aa10a1e865332a7b, type: 2}
-    second: {fileID: 2100000, guid: d849c3403a0de1c4d832f1fb3012a452, type: 2}
-  m_Card_Knight_Skirmisher:
-    first: {fileID: 2100000, guid: f1cd544e2b24a84478ae448d17faf319, type: 2}
-    second: {fileID: 2100000, guid: d849c3403a0de1c4d832f1fb3012a452, type: 2}
-  m_Card_Pawn_Scout:
-    first: {fileID: 2100000, guid: 094511d3a95facc46991ea94bfe0fd76, type: 2}
-    second: {fileID: 2100000, guid: 9509011f560519b44bce5d4cffaf74b8, type: 2}
-  m_Card_Pawn_Substitute:
-    first: {fileID: 2100000, guid: a66d8ad0d80cac54394aa0965a98c10a, type: 2}
-    second: {fileID: 2100000, guid: 9509011f560519b44bce5d4cffaf74b8, type: 2}
+  m_Card_King_SageKing: {fileID: 2100000, guid: 6cd86beaf5dfebd4e8f9b9647901e672, type: 2}
+  m_Card_King_MadKing: {fileID: 2100000, guid: 597744f7c697f4d4bb8655b17a374ade, type: 2}
+  m_Card_Queen_Witcher: {fileID: 2100000, guid: 5253e34b5917c964a9d1138130478319, type: 2}
+  m_Card_Queen_Beauty: {fileID: 2100000, guid: e35bf6547287e9d4b834e6b8826b015e, type: 2}
+  m_Card_Bishop_Sorcerer: {fileID: 2100000, guid: aad29512c65a87b45821b4be730ac368, type: 2}
+  m_Card_Bishop_Monk: {fileID: 2100000, guid: ae583504d2f73f244840ca77df4cf4d0, type: 2}
+  m_Card_Rook_Rusher: {fileID: 2100000, guid: 6e8cd9051b9faf54fb2492eb9843d62a, type: 2}
+  m_Card_Rook_Guardian: {fileID: 2100000, guid: 60d76df8715eed8448ea789b044d80d2, type: 2}
+  m_Card_Knight_Charger: {fileID: 2100000, guid: 675757966ec61cd4aa10a1e865332a7b, type: 2}
+  m_Card_Knight_Skirmisher: {fileID: 2100000, guid: f1cd544e2b24a84478ae448d17faf319, type: 2}
+  m_Card_Pawn_Scout: {fileID: 2100000, guid: 094511d3a95facc46991ea94bfe0fd76, type: 2}
+  m_Card_Pawn_Substitute: {fileID: 2100000, guid: a66d8ad0d80cac54394aa0965a98c10a, type: 2}
+  m_CardBack: {fileID: 2100000, guid: 7695027412df97b4db25d6faffd30e24, type: 2}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

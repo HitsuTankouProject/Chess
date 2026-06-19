@@ -1,12 +1,12 @@
 using UnityEngine;
-
+using System.Collections;
 public enum CardFace { Front, Back }
 
 public class Card : MonoBehaviour
 {
-
-
     private GameManager _gameManager => GameManager.Instance;
+    private ResourcesData _resourcesData => _gameManager.resourcesData;
+
 
     public AllBuffCard buffCard;
     private AllBuffCard oldBuffCard = AllBuffCard.None;
@@ -29,23 +29,39 @@ public class Card : MonoBehaviour
     {
         if (buffCard == oldBuffCard) return;
         oldBuffCard = buffCard;
-        Pair<Material, Material> materials = _gameManager.CardMaterials(buffCard);
 
-        card_Front.material = materials.first;
-        card_back.material = materials.second;
+        card_Front.material = _resourcesData.cardMaterialDict[buffCard];
     }
 
-    
-    private Vector3 RotateAngle() { return Vector3.one; }
+    private const float cardTurnTime = 0.5f;
 
+    private float FinalFaceTo(CardFace faceTo) => faceTo == CardFace.Front ? 0f : 180f;
 
-
-    private void Update()
+    public IEnumerator TurnTheCard(CardFace faceTo)
     {
-        ChangeTheCard();
+        float targetY = FinalFaceTo(faceTo);
+        float startY = transform.localEulerAngles.y;
+
+        if (Mathf.Abs(Mathf.DeltaAngle(startY, targetY)) < 0.1f)
+            yield break;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < cardTurnTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float t = Mathf.Clamp01(elapsedTime / cardTurnTime);
+
+            float y = Mathf.LerpAngle(startY, targetY, t);
+
+            transform.localEulerAngles = new Vector3(0, y, 0);
+
+            yield return null;
+        }
+
+        transform.localEulerAngles = new Vector3(0, targetY, 0);
     }
-
-
 
 
 }
