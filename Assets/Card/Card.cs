@@ -1,7 +1,11 @@
 using UnityEngine;
 
+public enum CardFace { Front, Back }
+
 public class Card : MonoBehaviour
 {
+
+
     private GameManager _gameManager => GameManager.Instance;
 
     public AllBuffCard buffCard;
@@ -30,6 +34,10 @@ public class Card : MonoBehaviour
         card_Front.material = materials.first;
         card_back.material = materials.second;
     }
+
+    
+    private Vector3 RotateAngle() { return Vector3.one; }
+
 
 
     private void Update()
