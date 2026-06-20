@@ -1,0 +1,13 @@
+﻿Buff Name,Level01,Level02,Level03
+SageKing,Cannot Respawn,Gain a Barrier when moving\nHigher chance vs Mad King.,The King wins upon reaching the \n enemy King's starting position.
+MadKing,Cannot Respawn,Gain 1 extra move after \ncapturing a piece.(Once per turn),Movement Range becomes 3.\nCapture all pieces in its path.
+Witcher,Immune to Curses.,"After moving, \ncan place curses on board cells.","After moving, curses all cells it can move to."
+Beauty,,,
+Sorcerer,,,
+Monk,,,
+Rusher,,,
+Guardian,,,
+Charger,,,
+Skirmisher,,,
+Scout,,,
+Substitute,,,

@@ -6,7 +6,12 @@ public class Button_Card : MyButton
     
     public override void OnClick()
     {
-        buttonManual.PickTheCard(card);
+        if (buttonManual != null)
+        {
+            buttonManual.PickTheCard(card);
+        }
+        else Debug.LogWarning("ButtonManual is not assigned in " + gameObject.name);
+
     }
 
 

@@ -1,5 +1,34 @@
 using UnityEngine;
 using System.Collections;
+
+public class CardData
+{
+    public string name { get; private set; }
+
+    public Material m_CardCover { get; private set; }
+    public string buffLevel01Description { get; private set; }
+    public string buffLevel02Description { get; private set; }
+    public string buffLevel03Description { get; private set; }
+
+    public CardData(string cardName, Material cover, string level1, string level2, string level3)
+    {
+        name = cardName;
+        m_CardCover = cover;
+        buffLevel01Description = level1;
+        buffLevel02Description = level2;
+        buffLevel03Description = level3;
+    }
+    public void ChangeLanguage(string cardName, string level1, string level2, string level3)
+    {
+        name = cardName;
+        buffLevel01Description = level1;
+        buffLevel02Description = level2;
+        buffLevel03Description = level3;
+    }
+}
+
+
+
 public enum CardFace { Front, Back }
 
 public class Card : MonoBehaviour
@@ -33,7 +62,7 @@ public class Card : MonoBehaviour
         card_Front.material = _resourcesData.cardMaterialDict[buffCard];
     }
 
-    private const float cardTurnTime = 0.5f;
+    private const float cardTurnTime = 0.35f;
 
     private float FinalFaceTo(CardFace faceTo) => faceTo == CardFace.Front ? 0f : 180f;
 
