@@ -169,6 +169,7 @@ public class Bishop : ChessBasic
         HashSet<ChessBasic> purificChesses = new HashSet<ChessBasic>();
         FindCanMove(true);
         ExtraFindPossibleMove(true);
+        purificChesses.Add(this);
 
         foreach (Vector2Int targetPos in possibleMoveList)
         {

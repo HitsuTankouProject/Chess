@@ -2,10 +2,12 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
-
+using TMPro;
 public class ChooseSkillManual : ButtonManual
 {
     private InGame _inGame => InGame.Instance;
+    private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
+
     private ChessColor chooseSkillPlayerColor = ChessColor.White;
     private Player chooseSkillPlayer =>
         chooseSkillPlayerColor == ChessColor.White ?
@@ -14,7 +16,7 @@ public class ChooseSkillManual : ButtonManual
     public Card[] canPickCard;
     private Card pickedCard;
 
-    private Dictionary<ChessType, AllBuffCard[]> buffChessDict = new()
+    private readonly Dictionary<ChessType, AllBuffCard[]> buffChessDict = new()
     {
         [ChessType.King] = new[] { AllBuffCard.MadKing, AllBuffCard.SageKing },
         [ChessType.Queen] = new[] { AllBuffCard.Witcher, AllBuffCard.Beauty },
@@ -25,7 +27,6 @@ public class ChooseSkillManual : ButtonManual
         [ChessType.Pawn] = new[] { AllBuffCard.Scout, AllBuffCard.Substitute }
     };
 
-    public GameObject descriptionPad;
     public override void PickTheCard(Card card)
     {
         pickedCard = card;
@@ -52,10 +53,31 @@ public class ChooseSkillManual : ButtonManual
 
     public override void DrawAgain()=> StartCoroutine(CardReadyProcess());
 
+    [Header("Card's Description ")]
+    public GameObject descriptionPad;
+    public TMP_Text descriptionName;
+    public MeshRenderer pickCardCover_MeshRenderer;
+    public TMP_Text descriptionLevel01;
+    public TMP_Text descriptionLevel02;
+    public TMP_Text descriptionLevel03;
+
+
+    private void DescriptionUpdate()
+    {
+        if (pickedCard == null) return;
+        CardData cardData = _resourcesData.cardDataDict[pickedCard.buffCard];
+        descriptionName.text = cardData.name;
+        pickCardCover_MeshRenderer.material = cardData.m_CardCover;
+        descriptionLevel01.text = cardData.buffLevel01Description;
+        descriptionLevel02.text = cardData.buffLevel02Description;
+        descriptionLevel03.text = cardData.buffLevel03Description;
+
+    }
+
     private void PickTheCard()
     {
         descriptionPad.SetActive(true);
-
+        DescriptionUpdate();
     }
 
     private void ReturnTheCard()

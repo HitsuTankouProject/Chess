@@ -3,28 +3,11 @@ using System.Collections;
 
 public class CardData
 {
-    public string name { get; private set; }
-
-    public Material m_CardCover { get; private set; }
-    public string buffLevel01Description { get; private set; }
-    public string buffLevel02Description { get; private set; }
-    public string buffLevel03Description { get; private set; }
-
-    public CardData(string cardName, Material cover, string level1, string level2, string level3)
-    {
-        name = cardName;
-        m_CardCover = cover;
-        buffLevel01Description = level1;
-        buffLevel02Description = level2;
-        buffLevel03Description = level3;
-    }
-    public void ChangeLanguage(string cardName, string level1, string level2, string level3)
-    {
-        name = cardName;
-        buffLevel01Description = level1;
-        buffLevel02Description = level2;
-        buffLevel03Description = level3;
-    }
+    public string name;
+    public Material m_CardCover;
+    public string buffLevel01Description;
+    public string buffLevel02Description;
+    public string buffLevel03Description;
 }
 
 
@@ -59,7 +42,7 @@ public class Card : MonoBehaviour
         if (buffCard == oldBuffCard) return;
         oldBuffCard = buffCard;
 
-        card_Front.material = _resourcesData.cardMaterialDict[buffCard];
+        card_Front.material = _resourcesData.cardDataDict[buffCard].m_CardCover;
     }
 
     private const float cardTurnTime = 0.35f;

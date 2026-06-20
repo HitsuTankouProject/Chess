@@ -27,8 +27,7 @@ public class GameManager : MonoBehaviour
 
     private void ResourcesInit()
     {
-        resourcesData.CardMaterialDictInit();
-        //resourcesData.CardDataInit();
+        resourcesData.CardDataDictInit();
     }
 
     #endregion

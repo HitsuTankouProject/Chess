@@ -1,13 +1,13 @@
 ﻿Buff Name,Level01,Level02,Level03
-SageKing,Cannot Respawn,Gain a Barrier when moving\nHigher chance vs Mad King.,The King wins upon reaching the \n enemy King's starting position.
-MadKing,Cannot Respawn,Gain 1 extra move after \ncapturing a piece.(Once per turn),Movement Range becomes 3.\nCapture all pieces in its path.
-Witcher,Immune to Curses.,"After moving, \ncan place curses on board cells.","After moving, curses all cells it can move to."
-Beauty,,,
-Sorcerer,,,
-Monk,,,
-Rusher,,,
-Guardian,,,
-Charger,,,
-Skirmisher,,,
-Scout,,,
-Substitute,,,
+SageKing,The King cannot respawn.,"After the King moves, it may gains a Barrier . \nHigher chance vs. Mad King.",Adds a new win condition.\nThe King wins upon reaching the enemy King's starting position.
+MadKing,The King cannot respawn.,The King gains 1 extra move after capturing a piece.\n(Once per turn),The King's Movement Range +2.\nCan pass through and capture all pieces in its path.
+Witcher,The Queen is immune to Curses.\nThe Queen's Movement Range becomes 3.,"After the Queen moves,\nplaces a Curse on the cell she moved to.","After the Queen moves,\ncurses all reachable cells."
+Beauty,"When the Queen is captured, if a Knight can reach her,\nthey swap positions and the Knight is captured instead.","Knights can take the Queen's place,\nregardless of range.","When the Queen captures a piece,\nit may be Charmed, transformed into a Knight,\nand spawned at the Queen's previous position."
+Sorcerer,The Bishop gains an additional movement direction.\nForward movement range +2.,The Bishop gains an additional movement direction.\nBackward movement range +2.,"The Bishop is immune to Curses.\nAfter moving, curse a random reachable piece."
+Monk,The Bishop gains an additional movement direction.\nLeftward movement range +2.,The Bishop gains an additional movement direction.\nRightward movement range +2.,"The Bishop is immune to Curses.\nAfter moving, purifies all pieces within range."
+Rusher,The Rook can pass through friendly pieces.,The Rook can pass through all pieces.,The Rook can pass through and capture enemy pieces in its path.
+Guardian,Pieces within the Rook's protection area cannot be captured.\nProtection area extends forward and backward.,Rook's protection area \nextends left and right.,Protection area extends diagonally.
+Charger,The Knight gains an additional movement direction.\nForward and Backward movement range +1.,The Knight's Forward and Backward movement range increases by 3.,The Knight  gains 1 extra move after capturing a piece.\n(Once per turn)
+Skirmisher,The Knight gains an additional movement direction.\nLeftward and Rightward movement range +1.,The Knight's Leftward and Rightward movement range increases by 3.,"After the Knight moves,\ncaptures enemy pieces on its left and right."
+Scout,The Pawn cannot promote.,The Pawn gains the movement range of captured pieces.,The Pawn's Movement Range +3.
+Substitute,The Pawn cannot promote.\nIts movement changes to that of a King.,The Pawn can only capture the King.,"As long as a Pawn remains alive,\nyour King cannot be captured."
