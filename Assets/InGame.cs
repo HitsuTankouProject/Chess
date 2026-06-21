@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static ChessBlock;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
@@ -81,6 +82,11 @@ public class InGame : MonoBehaviour
 
     public Player whiteChessPlayer;
     public Player blackChessPlayer;
+
+    public ChooseSkillManual skillManual;
+    public PauseManual pauseManual;
+
+
 
     public static InGame Instance { get; private set; }
     private void Awake()
@@ -209,12 +215,17 @@ public class InGame : MonoBehaviour
         whiteChessPlayer.Player_Init(ChessColor.White);
         blackChessPlayer.Player_Init(ChessColor.Black);
 
+        StartCoroutine(ChooseSkillProcess());
+
+    }
+
+    public void GameStart()
+    {
         StartCoroutine(TurnInit());
     }
 
     private IEnumerator TurnInit()
     {
-
         yield return StartCoroutine(_chessBoard.ChessBoard_TurnInit());
         Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
         Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
@@ -251,16 +262,33 @@ public class InGame : MonoBehaviour
             Debug.Log("Real GameSet");
             return;
         }
+        whiteChessPlayer.AllBuffLevelUp();
+        blackChessPlayer.AllBuffLevelUp();
 
-        inGameStage = InGameStage.Init;
-        StartCoroutine(TurnInit());
+        inGameStage = InGameStage.ChooseSkill;
+        StartCoroutine(ChooseSkillProcess());
     }
 
 
 
     #endregion
 
+    #region ChooseSkill
 
+    private IEnumerator ChooseSkillProcess()
+    {
+        inGameStage = InGameStage.ChooseSkill;
+        yield return null;
+        skillManual.gameObject.SetActive(true);
+        skillManual.Init();
+        whiteChessPlayer.playerInPut.inputStage = InputStage.ChooseSkill;
+        whiteChessPlayer.playerInPut.StartInput();
+    }
+
+
+
+
+    #endregion
 
     private void Start()
     {

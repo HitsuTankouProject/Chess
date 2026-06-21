@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using System.Collections;
 public enum ButtonAction
 {
     None = 0,
@@ -10,6 +10,11 @@ public enum ButtonAction
 
 public abstract class ButtonManual : MonoBehaviour
 {
+
+
+
+
+
     public virtual void PickTheCard(Card card) { }
 
     public virtual void Pause() { }

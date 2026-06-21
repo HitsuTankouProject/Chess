@@ -14,8 +14,6 @@ public class ChooseSkillManual : ButtonManual
         _inGame.whiteChessPlayer : _inGame.blackChessPlayer;
 
     public Card[] canPickCard;
-    private Card pickedCard;
-
     private readonly Dictionary<ChessType, AllBuffCard[]> buffChessDict = new()
     {
         [ChessType.King] = new[] { AllBuffCard.MadKing, AllBuffCard.SageKing },
@@ -26,72 +24,105 @@ public class ChooseSkillManual : ButtonManual
         [ChessType.Rook] = new[] { AllBuffCard.Rusher, AllBuffCard.Guardian },
         [ChessType.Pawn] = new[] { AllBuffCard.Scout, AllBuffCard.Substitute }
     };
+    public PickCardManual pickCardManual;
 
-    public override void PickTheCard(Card card)
+    public MyButton confirmButton;
+
+    [Header("PlayerTag")]
+    public SpriteRenderer spr_playerTag;
+    public Sprite sp_white_Tag;
+    public Sprite sp_black_Tag;
+    private Sprite sp_PlayerTag
     {
-        pickedCard = card;
-        PickTheCard();
-        Debug.Log("ChooseSkillManual: PickTheCard");
+        get
+        {
+            switch (chooseSkillPlayerColor)
+            {
+                case ChessColor.White: return sp_white_Tag;
+                case ChessColor.Black: return sp_black_Tag;
+                default: return null;
+            }
+        }
     }
+
+    [Header("DrawAgain")]
+    private bool canDrawAgain = true;
+    public MyButton button_DrawAgain;
+    public SpriteRenderer spr_DrawAgain;
+    private readonly Color c_Draw = Color.white;
+    private readonly Color c_Drawed = new Color(0.5f, 0.5f, 0.5f);
+    public Sprite sp_canDraw;
+    public Sprite sp_cantDraw;
 
     public override void Confirm()
     {
-        chooseSkillPlayer.ChooseBuff(pickedCard.buffCard);
-        chooseSkillPlayerColor =
-        chooseSkillPlayerColor == ChessColor.White ? ChessColor.Black : ChessColor.White;
-        if (chooseSkillPlayerColor == ChessColor.White) ChooseTurnOff();
+        if (pickCardManual == null) return;
+        chooseSkillPlayer.ChooseBuff(pickCardManual.pickedCard.buffCard);
+        pickCardManual.Return();
+        TurnSwitch(true);
 
         Debug.Log("ChooseSkillManual: Conform");
     }
 
-    public override void Return()
+    public override void DrawAgain()
     {
-        pickedCard = null;
-        ReturnTheCard();
-        Debug.Log("ChooseSkillManual: Return");
-    }
+        if (spr_DrawAgain == null || button_DrawAgain == null)
+        {
+            Debug.LogError("spr_DrawAgain == null");
+            return;
+        }
+        if (!canDrawAgain) return;
+        canDrawAgain = false;
+        button_DrawAgain.StopAllCoroutines();
+        button_DrawAgain.enabled = false;
 
-    public override void DrawAgain()=> StartCoroutine(CardReadyProcess());
+        spr_DrawAgain.color = c_Drawed;
+        spr_DrawAgain.sprite = sp_cantDraw;
 
-    [Header("Card's Description ")]
-    public GameObject descriptionPad;
-    public TMP_Text descriptionName;
-    public MeshRenderer pickCardCover_MeshRenderer;
-    public TMP_Text descriptionLevel01;
-    public TMP_Text descriptionLevel02;
-    public TMP_Text descriptionLevel03;
-
-
-    private void DescriptionUpdate()
-    {
-        if (pickedCard == null) return;
-        CardData cardData = _resourcesData.cardDataDict[pickedCard.buffCard];
-        descriptionName.text = cardData.name;
-        pickCardCover_MeshRenderer.material = cardData.m_CardCover;
-        descriptionLevel01.text = cardData.buffLevel01Description;
-        descriptionLevel02.text = cardData.buffLevel02Description;
-        descriptionLevel03.text = cardData.buffLevel03Description;
+        StartCoroutine(CardReadyProcess());
 
     }
 
-    private void PickTheCard()
+    private void EndOfChooseSkill()
     {
-        descriptionPad.SetActive(true);
-        DescriptionUpdate();
+        gameObject.SetActive(false);
+        _inGame.GameStart();
     }
 
-    private void ReturnTheCard()
-    {
-        descriptionPad.SetActive(false);
 
+    private void TurnSwitch(bool isSwitch)
+    {
+        if (spr_playerTag == null)
+        {
+            Debug.LogError("spr_playerTag == null");
+            return;
+        }
+        if (isSwitch)
+        {
+            chooseSkillPlayerColor =
+            chooseSkillPlayerColor == ChessColor.White ? 
+            ChessColor.Black : ChessColor.White;
+
+            if(chooseSkillPlayerColor == ChessColor.White)
+            {
+                EndOfChooseSkill();
+                return;
+            }
+
+        }
+        spr_playerTag.sprite = sp_PlayerTag;
+
+        canDrawAgain = true;
+        button_DrawAgain.enabled = true;
+        spr_DrawAgain.color = c_Draw;
+        spr_DrawAgain.sprite = sp_canDraw;
+
+
+        StartCoroutine(CardReadyProcess());
     }
 
-    private void ChooseTurnOff()
-    {
 
 
-
-    }
 
     private List<ChessType> PlayerCanPick()
     {
@@ -117,7 +148,6 @@ public class ChooseSkillManual : ButtonManual
 
         return playerCanPick;
     }
-
     private void PickThreeCard()
     {
         List<ChessType> playerCanPick = PlayerCanPick();
@@ -138,7 +168,6 @@ public class ChooseSkillManual : ButtonManual
             playerCanPick.RemoveAt(randomTypeIndex);
         }
     }
-
     private IEnumerator CardReadyProcess()
     {
         yield return null;
@@ -153,27 +182,42 @@ public class ChooseSkillManual : ButtonManual
         }
 
     }
-
     public void Init()
     {
-        StartCoroutine(CardReadyProcess());
+        chooseSkillPlayerColor = ChessColor.White;
+        for (int i = 0; i < canPickCard.Length; i++)
+        {
+            StartCoroutine(canPickCard[i].TurnTheCard(CardFace.Back));
+        }
+        TurnSwitch(false);
     }
-
 
     private void Start()
     {
-        Init();
+        
     }
 
-    public bool test;
 
     private void Update()
     {
-        if (test)
+        if (!pickCardManual.gameObject.activeSelf) 
         {
-            test = false;
-            DrawAgain();
+            if (confirmButton.gameObject.activeSelf|| button_DrawAgain.gameObject.activeSelf)
+            {
+                confirmButton.gameObject.SetActive(false);
+                button_DrawAgain.gameObject.SetActive(true);
+            }
         }
+        else
+        {
+            if (!confirmButton.gameObject.activeSelf|| !button_DrawAgain.gameObject.activeSelf)
+            {
+                confirmButton.gameObject.SetActive(true);
+                button_DrawAgain.gameObject.SetActive(false);
+
+            }
+        }
+
     }
 
 

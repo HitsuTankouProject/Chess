@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 public enum CanUseDevice { Mouse,Gamepad };
-public enum InputStage { None, Waiting, Picking, OneMoreMove }
+public enum InputStage { None, ChooseSkill,Waiting, Picking, OneMoreMove }
 
 public class PlayerInPut : MonoBehaviour
 {
@@ -73,7 +73,8 @@ public class PlayerInPut : MonoBehaviour
 
     #endregion
 
-    public void StartInPutSystem() => inputStage = InputStage.Waiting;
+    public void StartGame() => inputStage = InputStage.Waiting;
+    public void StartChoose() => inputStage = InputStage.ChooseSkill;
 
     [SerializeField] private ChessBasic pickIngChess;
     private readonly Vector2Int invalidBoardPos = new(-1, -1);
@@ -167,7 +168,7 @@ public class PlayerInPut : MonoBehaviour
         Debug.Log(hitObject.name);
 
         if (IsSameLayer(hitLayer, _inPutManager.buttonLayerMask)) Press_Button(hitObject);
-        else if (IsSameLayer(hitLayer, _inPutManager.cardLayerMask)) Press_Card(hitObject);
+        //else if (IsSameLayer(hitLayer, _inPutManager.cardLayerMask)) Press_Card(hitObject);
         else if (inputStage == InputStage.Waiting) Press_Chess(ChessBoardPosition(hitObject));
         else if (inputStage == InputStage.Picking) Press_ChessBoard(ChessBoardPosition(hitObject));
 
@@ -219,8 +220,8 @@ public class PlayerInPut : MonoBehaviour
     {
         while (true)
         {
-            if (inputStage == InputStage.None) yield break;
             yield return null;
+            if (inputStage! == InputStage.None) continue;
             PressAction();
         }
 
@@ -243,9 +244,9 @@ public class PlayerInPut : MonoBehaviour
     private void StartMouseInput()
     {
         if (inputUpdate != null) RejectInput();
-        inputStage = InputStage.Waiting;
         inputUpdate = StartCoroutine(MouseInPut());
     }
+
 
     #endregion
 

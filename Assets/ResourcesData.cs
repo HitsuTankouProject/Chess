@@ -178,8 +178,6 @@ public class ResourcesData : MonoBehaviour
                 continue;
             }
 
-
-
             if (values[0].Trim() != null) cardDataDict[buffCardName].name = values[0].Trim();
             if (values[1].Trim() != null) cardDataDict[buffCardName].buffLevel01Description = values[1].Trim();
             if (values[2].Trim() != null) cardDataDict[buffCardName].buffLevel02Description = values[2].Trim();

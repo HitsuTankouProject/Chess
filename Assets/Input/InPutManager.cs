@@ -92,7 +92,7 @@ public class InPutManager : MonoBehaviour
     public int gameBoardLayerMask { get; private set; } = -1;
     public int chessLayerMask { get; private set; } = -1;
     public int buttonLayerMask { get; private set; } = -1;
-    public int cardLayerMask { get; private set; } = -1;
+    //public int cardLayerMask { get; private set; } = -1;
 
     public Dictionary<InGameStage, int> hitLayerMasks;
 
@@ -249,14 +249,14 @@ public class InPutManager : MonoBehaviour
         gameBoardLayerMask = LayerMask.GetMask("GameBoard");
         chessLayerMask = LayerMask.GetMask("Chess");
         buttonLayerMask = LayerMask.GetMask("Button");
-        cardLayerMask = LayerMask.GetMask("Card");
+        //cardLayerMask = LayerMask.GetMask("Card");
 
         hitLayerMasks = new Dictionary<InGameStage, int>()
         {
             {   InGameStage.Init, -1 },
-            {   InGameStage.ChooseSkill, buttonLayerMask | cardLayerMask },
-            {   InGameStage.TurnStart, gameBoardLayerMask | chessLayerMask | buttonLayerMask | cardLayerMask },
-            {   InGameStage.TurnChanging, buttonLayerMask | cardLayerMask },
+            {   InGameStage.ChooseSkill, buttonLayerMask },
+            {   InGameStage.TurnStart, gameBoardLayerMask | chessLayerMask | buttonLayerMask },
+            {   InGameStage.TurnChanging, -1 },
             {   InGameStage.GameSet,buttonLayerMask},
         };
 

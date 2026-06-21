@@ -253,25 +253,30 @@ public class Player : MonoBehaviour
         };
     }
 
-    public void CurrentBuffLevelUp(ChessType chessType)
+    public void AllBuffLevelUp()
     {
-        BuffBasic buff = chessType switch
+        BuffBasic[] buffs =
         {
-            ChessType.King => TargetBuff_King(kingBuffType),
-            ChessType.Queen => TargetBuff_Queen(queenBuffType),
-            ChessType.Knight => TargetBuff_Knight(knightBuffType),
-            ChessType.Bishop => TargetBuff_Bishop(bishopBuffType),
-            ChessType.Rook => TargetBuff_Rook(rookBuffType),
-            ChessType.Pawn => TargetBuff_Pawn(pawnBuffType),
-            _ => null
+            TargetBuff_King(kingBuffType),
+            TargetBuff_Queen(queenBuffType),
+            TargetBuff_Bishop(bishopBuffType),
+            TargetBuff_Rook(rookBuffType),
+            TargetBuff_Knight(knightBuffType),
+            TargetBuff_Pawn(pawnBuffType),
         };
 
-        buff.LevelUp(out bool success);
-        if (!success)
+        foreach (BuffBasic buff in buffs)
         {
-            Debug.LogError(buff.buffName + " LevelUp No success");
-            return;
+            if (buff == null) continue;
+            buff.LevelUp(out bool success);
+            Debug.Log(buff.buffName + "'s Level :" + buff.nowBuffLevel);
+            if (!success)
+            {
+                Debug.LogWarning($"{buff.buffName} already at max level.");
+                continue;
+            }
         }
+
     }
 
     public void ChooseBuff(AllBuffCard choseBuff)
@@ -334,7 +339,7 @@ public class Player : MonoBehaviour
         yield return null;
         nowPlayerStage = PlayerStage.Ready;
         turnCanEnd = false;
-        playerInPut.StartInPutSystem();
+        playerInPut.StartGame();
         while (!turnCanEnd)
         {
             switch (nowPlayerStage)
