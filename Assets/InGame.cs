@@ -86,8 +86,6 @@ public class InGame : MonoBehaviour
     public ChooseSkillManual skillManual;
     public PauseManual pauseManual;
 
-
-
     public static InGame Instance { get; private set; }
     private void Awake()
     {
@@ -103,6 +101,8 @@ public class InGame : MonoBehaviour
 
     public InGameStage inGameStage { get; private set; } = InGameStage.Init;
     public ChessColor nowTurn { get; private set; } = ChessColor.White;
+
+
 
     #region Camera Turn
     private readonly CameraView whiteView = new CameraView(new Vector3(0, 70, -54), new Vector3(55, 0, 0));
@@ -214,6 +214,11 @@ public class InGame : MonoBehaviour
         _chessBoard.ChessBoard_Init();
         whiteChessPlayer.Player_Init(ChessColor.White);
         blackChessPlayer.Player_Init(ChessColor.Black);
+        InPutManager.Instance.InPutManager_Init();
+
+        whiteChessPlayer.playerInPut.StartInput();
+        blackChessPlayer.playerInPut.StartInput();
+
 
         StartCoroutine(ChooseSkillProcess());
 
@@ -242,8 +247,9 @@ public class InGame : MonoBehaviour
 
         yield return null;
         nowTurn = ChessColor.White;
-        whiteChessPlayer.Player_TurnStart();
         yield return StartCoroutine(CameraTurn());
+
+        whiteChessPlayer.Player_TurnStart();
         inGameStage = InGameStage.TurnStart;
     }
 
@@ -281,8 +287,7 @@ public class InGame : MonoBehaviour
         yield return null;
         skillManual.gameObject.SetActive(true);
         skillManual.Init();
-        whiteChessPlayer.playerInPut.inputStage = InputStage.ChooseSkill;
-        whiteChessPlayer.playerInPut.StartInput();
+
     }
 
 
@@ -293,7 +298,8 @@ public class InGame : MonoBehaviour
     private void Start()
     {
         InGameInit();
-        InPutManager.Instance.InPutManager_Init();
+
+
     }
 
     public bool test = false;

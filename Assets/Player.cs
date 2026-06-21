@@ -13,6 +13,7 @@ public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,Readyt
 public class Player : MonoBehaviour
 {
     private ChessBoard _chessBoard => ChessBoard.Instance;
+    private InPutManager _inPutManager => InPutManager.Instance;
 
 
     public ChessColor usingChess;
@@ -358,8 +359,9 @@ public class Player : MonoBehaviour
 
     public void Player_TurnStart()
     {
+        
         nowPlayerStage = PlayerStage.TurnInit;
-
+        _inPutManager.PlayerInputStage(usingChess, InputStage.Waiting);
         turnStart = StartCoroutine(TurnStart());
         playerInPut.StartInput();
     }

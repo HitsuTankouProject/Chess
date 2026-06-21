@@ -78,7 +78,6 @@ public class InPutManager : MonoBehaviour
 
     private PlayerInPut Player01Input =>
         InGame.Instance?.whiteChessPlayer?.playerInPut;
-
     private PlayerInPut Player02Input =>
         InGame.Instance?.blackChessPlayer?.playerInPut;
 
@@ -244,7 +243,24 @@ public class InPutManager : MonoBehaviour
 
     #endregion
 
-    public void LayerMask_Init()
+    public void PlayerInputStage(ChessColor player, InputStage stage)
+    {
+        if(player == ChessColor.White)
+        {
+            Player01Input.inputStage = stage;
+
+            Player02Input.inputStage = InputStage.None;
+        }
+        else if(player == ChessColor.Black)
+        {
+            Player01Input.inputStage = InputStage.None;
+            Player02Input.inputStage = stage;
+        }
+
+    }
+
+
+    private void LayerMask_Init()
     {
         gameBoardLayerMask = LayerMask.GetMask("GameBoard");
         chessLayerMask = LayerMask.GetMask("Chess");

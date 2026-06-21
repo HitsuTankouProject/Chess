@@ -103,13 +103,14 @@ public class ChooseSkillManual : ButtonManual
             chooseSkillPlayerColor == ChessColor.White ? 
             ChessColor.Black : ChessColor.White;
 
-            if(chooseSkillPlayerColor == ChessColor.White)
+            if (chooseSkillPlayerColor == ChessColor.White)
             {
                 EndOfChooseSkill();
                 return;
             }
 
         }
+        InPutManager.Instance.PlayerInputStage(chooseSkillPlayerColor, InputStage.ChooseSkill);
         spr_playerTag.sprite = sp_PlayerTag;
 
         canDrawAgain = true;
