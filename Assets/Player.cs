@@ -27,6 +27,18 @@ public class Player : MonoBehaviour
         if (allTheChess.ContainsKey(oldPos)) allTheChess.Remove(oldPos);
         allTheChess[newPos] = chess;
     }
+    public void SwapChessDict(ChessBasic aChess, ChessBasic bChess)
+    {
+        Vector2Int aChessPos = aChess.position;
+        Vector2Int bChessPos = bChess.position;
+
+        allTheChess[aChessPos] = bChess;
+        allTheChess[bChessPos] = aChess;
+
+    }
+
+
+
     public void AllChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
         allTheChess = targetDict;
@@ -163,7 +175,7 @@ public class Player : MonoBehaviour
         foreach(Vector2Int area in guardianProtectArea)
         {
             if (!_chessBoard.board.TryGetValue(area, out ChessBasic chess) || chess.color != usingChess) continue;
-            chess.haveExtraLife = false;
+            chess.GotExtraLife(false);
         }
         guardianProtectArea.Clear();
         

@@ -3,6 +3,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 /// <summary>　駒の色定義　</summary>
 public enum ChessColor
@@ -60,7 +61,21 @@ public abstract class ChessBasic : MonoBehaviour
     }
 
     public bool haveBuffed = false;
-    public bool haveExtraLife = false;
+
+
+
+    public bool haveExtraLife {  get; private set; }
+    public void GotExtraLife(bool isHaveExtraLife)
+    {
+        if(type == ChessType.Rook)
+        {
+            haveExtraLife = false;
+            return;
+        }
+        haveExtraLife = isHaveExtraLife;
+
+    }
+
 
     public bool gotCurse { get; private set; } = false;
     public void CurseThisChess()=>gotCurse = true;
@@ -117,7 +132,43 @@ public abstract class ChessBasic : MonoBehaviour
 
     }
 
-   
+    public HashSet<Vector2Int> PossibleMove()
+    {
+        HashSet<Vector2Int> vector2Ints = new HashSet<Vector2Int>();
+
+        FindCanMove(false);
+        ExtraFindPossibleMove(false);
+
+        return vector2Ints;
+    }
+
+    public void SwapPosition(ChessBasic swapChess)
+    {
+        Vector2Int thisChessPos = position;
+        Vector2Int swapChessPos = swapChess.position;
+
+        this.transform.position = _chessBoard.ReturnChessBlockPosition(swapChess.position);
+        swapChess.gameObject.transform.position = _chessBoard.ReturnChessBlockPosition(position);
+
+        _player.SwapChessDict(this, swapChess);
+        _chessBoard.BoardUpdate(ChessAction.Swap, this, swapChessPos, swapChess, thisChessPos);
+
+        if (_player.IsProTectedByRook_Guardian(position))
+        {
+            haveExtraLife = true;
+        }
+        else haveExtraLife = false;
+
+        if (_player.IsProTectedByRook_Guardian(swapChess.position))
+        {
+            swapChess.haveExtraLife = true;
+        }
+        else swapChess.haveExtraLife = false;
+
+    }
+
+
+
 
     private Vector3 pickAngle
     {
@@ -151,7 +202,7 @@ public abstract class ChessBasic : MonoBehaviour
     {
         if (chess.haveExtraLife)
         {
-            chess.haveExtraLife = false;
+            chess.GotExtraLife(false);
             return false;
         }
         bool isKing = chess.type == ChessType.King;

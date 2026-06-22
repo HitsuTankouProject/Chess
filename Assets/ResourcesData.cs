@@ -150,7 +150,7 @@ public class ResourcesData : MonoBehaviour
             Debug.LogError("CSV is Null");
             return;
         }
-        Debug.Log(languageFile.Length);
+        //Debug.Log(languageFile.Length);
         foreach (AllBuffCard buffCardName in Enum.GetValues(typeof(AllBuffCard)))
         {
             if (buffCardName == AllBuffCard.None) continue;
@@ -161,16 +161,16 @@ public class ResourcesData : MonoBehaviour
                 continue;
             }
 
-            Debug.Log($"RAW = [{languageFile[index]}]");
+            //Debug.Log($"RAW = [{languageFile[index]}]");
 
             string[] values = languageFile[index].Split(',');
 
-            Debug.Log($"Count = {values.Length}");
-            Debug.Log(string.Join(" | ", values));
-            Debug.Log(values[0].Trim());
-            Debug.Log(values[1].Trim());
-            Debug.Log(values[2].Trim());
-            Debug.Log(values[3].Trim());
+            //Debug.Log($"Count = {values.Length}");
+            //Debug.Log(string.Join(" | ", values));
+            //Debug.Log(values[0].Trim());
+            //Debug.Log(values[1].Trim());
+            //Debug.Log(values[2].Trim());
+            //Debug.Log(values[3].Trim());
 
             if (values.Length < dataIndexMax)
             {

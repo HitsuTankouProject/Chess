@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Witcher : BuffBasic
@@ -157,10 +158,9 @@ public class Queen : ChessBasic
         _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
 
         if (_player.IsProTectedByRook_Guardian(position))
-        {
-            haveExtraLife = true;
-        }
-        else haveExtraLife = false;
+            GotExtraLife(true);
+        else GotExtraLife(true);
+
 
 
 
@@ -169,6 +169,60 @@ public class Queen : ChessBasic
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
     }
+
+
+    private const float canCharmPercent = 50.0f;
+
+    private void CharmChess(ChessType chessType,Vector2Int spawnKnightPos)
+    {
+        float isCanCharm = Random.Range(0.0f, 100.0f);
+        if (isCanCharm > canCharmPercent) return;
+
+        
+
+
+    }
+
+    private bool CanProtectByKnight(out ChessBasic knight)
+    {
+        knight = null;
+        if (_player.queenBuffType != Player.QueenBuff.Beauty) return false;
+        List<ChessBasic> knightList = _player.ChessListByType(ChessType.Knight);
+        if (knightList.Count == 0) return false;
+
+        if(_player.beauty.nowBuffLevel == 1)
+        {
+            foreach (ChessBasic chess in knightList)
+            {
+                HashSet<Vector2Int> knightPossibleMove = chess.PossibleMove();
+
+                if (knightPossibleMove.Contains(position))
+                {
+                    knight = chess;
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            knight = knightList[Random.Range(0, knightList.Count)];
+            return true;
+        }
+        return false;
+
+    }
+
+    private void ProtectByKnight()
+    {
+        if(!CanProtectByKnight(out ChessBasic knight)) return;
+        SwapPosition(knight);
+        knight.GotEaten();
+    }
+
+
+
+
+
     private void Beauty_Move(Vector2Int moveTo)
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
@@ -186,16 +240,15 @@ public class Queen : ChessBasic
                 chess.GotEaten();
             }
         }
+
         // ワールド座標へ移動
         this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
         // 盤面情報更新
         _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
 
         if (_player.IsProTectedByRook_Guardian(position))
-        {
-            haveExtraLife = true;
-        }
-        else haveExtraLife = false;
+            GotExtraLife(true);
+        else GotExtraLife(false);
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
     }
 

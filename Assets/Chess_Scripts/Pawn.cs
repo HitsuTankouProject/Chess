@@ -198,7 +198,7 @@ public class Pawn : ChessBasic
     {
         if (chess.haveExtraLife)
         {
-            chess.haveExtraLife = false;
+            chess.GotExtraLife(false);
             return false;
         }
 
