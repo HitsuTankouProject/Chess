@@ -144,7 +144,7 @@ public class Rook : ChessBasic
             if (_chessBoard.IsOutOfBoard(spot)) continue;
             if (!_chessBoard.board.TryGetValue(spot, out ChessBasic chess)
                 || chess.color != this.color) continue;
-            chess.haveExtraLife = true;
+            chess.GotExtraLife(true);
             addToProtectArea.Add(spot);
         }
         Debug.Log(addToProtectArea.Count);

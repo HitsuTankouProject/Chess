@@ -4,6 +4,7 @@ using System.Collections;
 using UnityEngine;
 using static ChessBlock;
 using Unity.VisualScripting;
+using UnityEngine.UIElements;
 
 [Serializable]
 public class Col
@@ -20,7 +21,8 @@ public class ChessObject
 public enum ChessAction
 {
     Move,
-    GotEat
+    GotEat,
+    Swap
 }
 
 public class ChessBoard : MonoBehaviour
@@ -272,6 +274,43 @@ public class ChessBoard : MonoBehaviour
 
         return ChessBlock(position).transform.position;
     }
+
+
+    public void BoardUpdate(ChessAction chessAction,
+        ChessBasic aChess, Vector2Int aChessMoveTo, 
+        ChessBasic bChess = null, Vector2Int bChessMoveTo = default)
+    {
+        if (aChess == null) return;
+        switch (chessAction)
+        { 
+            case ChessAction.Move:
+                if (board.ContainsKey(aChess.position)) board.Remove(aChess.position);
+                board[aChessMoveTo] = aChess;
+                aChess.SetPosition(aChessMoveTo);
+                break;
+            case ChessAction.GotEat:
+                board.Remove(aChess.position);
+                break;
+
+            case ChessAction.Swap:
+
+                if (bChess == null)
+                {
+                    Debug.LogWarning("bChess == null");
+                    break;
+                }
+
+                board[aChessMoveTo] = aChess;
+                aChess.SetPosition(aChessMoveTo);
+
+                board[bChessMoveTo] = bChess;
+                bChess.SetPosition(bChessMoveTo);
+                break;
+        }
+
+
+    }
+
     public void BoardUpdate(ChessBasic chessBasic, Vector2Int position, ChessAction chessAction)
     {
         if (chessBasic == null) return;
@@ -284,6 +323,9 @@ public class ChessBoard : MonoBehaviour
                 break;
             case ChessAction.GotEat:
                 board.Remove(chessBasic.position);
+                break;
+            case ChessAction.Swap:
+
                 break;
 
         }
