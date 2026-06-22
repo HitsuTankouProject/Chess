@@ -223,8 +223,12 @@ public class King : ChessBasic
 
         MadKing_Level2_MoveAgain(isEatTheChess);
 
-
     }
+
+
+
+
+
 
     public override void FindPossibleMove()
     {

@@ -1,6 +1,7 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static UnityEditor.Experimental.GraphView.GraphView;
@@ -64,7 +65,7 @@ public abstract class ChessBasic : MonoBehaviour
 
 
 
-    public bool haveExtraLife {  get; private set; }
+    public bool haveExtraLife {  get; private set; } = false;
     public void GotExtraLife(bool isHaveExtraLife)
     {
         if(type == ChessType.Rook)
@@ -76,13 +77,10 @@ public abstract class ChessBasic : MonoBehaviour
 
     }
 
-
     public bool gotCurse { get; private set; } = false;
-    public void CurseThisChess()=>gotCurse = true;
-    public void PurifyThisChess()
-    {
-        gotCurse = false;
-    }
+    public void CurseThisChess() =>gotCurse = true;
+    public void PurifyThisChess()=> gotCurse = false;
+
 
     /// <summary>　 移動可能マス一覧　</summary>
     public HashSet<Vector2Int> possibleMoveList = new HashSet<Vector2Int>();
@@ -131,44 +129,21 @@ public abstract class ChessBasic : MonoBehaviour
         _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
 
     }
-
-    public HashSet<Vector2Int> PossibleMove()
+    public HashSet<Vector2Int> PossibleMove(bool isThrougt)
     {
-        HashSet<Vector2Int> vector2Ints = new HashSet<Vector2Int>();
+        possibleMoveList.Clear();
 
-        FindCanMove(false);
-        ExtraFindPossibleMove(false);
+        FindCanMove(isThrougt);
+        ExtraFindPossibleMove(isThrougt);
 
-        return vector2Ints;
+        return possibleMoveList;
     }
 
     public void SwapPosition(ChessBasic swapChess)
     {
-        Vector2Int thisChessPos = position;
-        Vector2Int swapChessPos = swapChess.position;
-
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(swapChess.position);
-        swapChess.gameObject.transform.position = _chessBoard.ReturnChessBlockPosition(position);
-
-        _player.SwapChessDict(this, swapChess);
-        _chessBoard.BoardUpdate(ChessAction.Swap, this, swapChessPos, swapChess, thisChessPos);
-
-        if (_player.IsProTectedByRook_Guardian(position))
-        {
-            haveExtraLife = true;
-        }
-        else haveExtraLife = false;
-
-        if (_player.IsProTectedByRook_Guardian(swapChess.position))
-        {
-            swapChess.haveExtraLife = true;
-        }
-        else swapChess.haveExtraLife = false;
-
+        if (swapChess.color != this.color) return;
+        _chessBoard.Swap(this, swapChess);
     }
-
-
-
 
     private Vector3 pickAngle
     {
@@ -178,20 +153,13 @@ public abstract class ChessBasic : MonoBehaviour
             return new Vector3 (angleX,0,0);
         }
     }
-    private Vector3 pickPosition
-    {
-        get
-        {
-            return new Vector3(transform.position.x, 5, transform.position.z);
-        }
-    }
+    private Vector3 pickPosition => new Vector3(transform.position.x, 5, transform.position.z);
 
     public virtual void GotPick()
     {
         transform.position = pickPosition;
         transform.rotation = Quaternion.Euler(pickAngle);
     }
-
     public virtual void ReturnPick()
     {
         transform.position = _chessBoard.ReturnChessBlockPosition(position);
@@ -220,6 +188,13 @@ public abstract class ChessBasic : MonoBehaviour
         if(!posHaveChess) return true;
         return CanEatChess(chess);
     }
+    public virtual void EatChess(ChessBasic chess)
+    {
+        if (chess == null) return;
+        _player.nowPlayerStage = PlayerStage.EatingChess;
+        _chessBoard.Swap(this, chess);
+        chess.GotEaten();
+    }
 
     public void MoveOnly(Vector2Int moveTo)
     {
@@ -230,19 +205,8 @@ public abstract class ChessBasic : MonoBehaviour
             _player.nowPlayerStage = PlayerStage.ReadytoEnd;
             return;
         }
-        else
-        {
-            if (chess != null)
-            {
-                _player.nowPlayerStage = PlayerStage.EatingChess;
-                chess.GotEaten();
-            }
-        }
-        // ワールド座標へ移動
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        // 盤面情報更新
-        _player.UpdateChessDict(position, moveTo, this);
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
+        if (chess == null) _chessBoard.MoveTo(this, moveTo);
+        else EatChess(chess);
 
         if (_player.IsProTectedByRook_Guardian(position))
         {
@@ -251,40 +215,13 @@ public abstract class ChessBasic : MonoBehaviour
         else haveExtraLife = false;
     }
 
-
     /// <summary>
     /// 駒移動処理
     /// </summary>
-    public virtual void Move(Vector2Int moveTo) 
+    public virtual void Move(Vector2Int moveTo)
     {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
-        ReturnPick();
-        if(!CanMoveTo(moveTo, out ChessBasic chess))
-        {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-            return;
-        }
-        else
-        {
-            if (chess != null)
-            {
-                _player.nowPlayerStage = PlayerStage.EatingChess;
-                chess.GotEaten();
-            }
-        }
-        // ワールド座標へ移動
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        // 盤面情報更新
-        _player.UpdateChessDict(position, moveTo, this);
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
-
-        if (_player.IsProTectedByRook_Guardian(position))
-        {
-            haveExtraLife = true;
-        }
-        else haveExtraLife = false;
+        MoveOnly(moveTo);
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-
     }
 
     /// <summary>
@@ -293,7 +230,7 @@ public abstract class ChessBasic : MonoBehaviour
     public virtual void GotEaten()
     {
         // 盤面から削除
-        _chessBoard.BoardUpdate(this, this.position, ChessAction.GotEat);
+        _chessBoard.GotEat(this);
         if (poolObject != null) poolObject.pool.Return(this.gameObject);
         else Debug.LogError("Not In Pool");
     }

@@ -15,30 +15,12 @@ public class Player : MonoBehaviour
     private ChessBoard _chessBoard => ChessBoard.Instance;
     private InPutManager _inPutManager => InPutManager.Instance;
 
-
     public ChessColor usingChess;
     public PlayerStage nowPlayerStage;
 
     public PlayerInPut playerInPut;
-    
 
-    public Dictionary<Vector2Int, ChessBasic> allTheChess { get; private set; } = new Dictionary<Vector2Int, ChessBasic>();
-    public void UpdateChessDict(Vector2Int oldPos, Vector2Int newPos, ChessBasic chess)
-    {
-        if (allTheChess.ContainsKey(oldPos)) allTheChess.Remove(oldPos);
-        allTheChess[newPos] = chess;
-    }
-    public void SwapChessDict(ChessBasic aChess, ChessBasic bChess)
-    {
-        Vector2Int aChessPos = aChess.position;
-        Vector2Int bChessPos = bChess.position;
-
-        allTheChess[aChessPos] = bChess;
-        allTheChess[bChessPos] = aChess;
-
-    }
-
-
+    public Dictionary<Vector2Int, ChessBasic> allTheChess { get; private set; } = new();
 
     public void AllChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
@@ -317,29 +299,14 @@ public class Player : MonoBehaviour
     public void Player_ChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
         AllChessInit(targetDict);
-
-        //rookBuffType = RookBuff.Rusher;
-        //rusher.LevelUpToTargetLevel(3, out bool a);
+        Player_ChessDictUpdate();
+        //queenBuffType = QueenBuff.Witcher;
+        //witcher.LevelUpToTargetLevel(3, out bool a);
     }
 
     private void Player_ChessDictUpdate()
     {
-        List<Vector2Int> removeKeys = new List<Vector2Int>();
-
-        foreach(Vector2Int pos in allTheChess.Keys)
-        {
-            if(!_chessBoard.board.ContainsKey(pos) || !allTheChess[pos].gameObject.activeSelf)
-            {
-                removeKeys.Add(pos);
-            }
-
-        }
-        foreach(Vector2Int pos in removeKeys)
-        {
-            allTheChess.Remove(pos);
-        }
-
-
+        allTheChess = _chessBoard.ColorChessDict(usingChess);
         UpdateGuardianProtectArea();
     }
 
@@ -348,7 +315,7 @@ public class Player : MonoBehaviour
     private bool turnCanEnd = false;
     private IEnumerator TurnStart()
     {
-        Player_ChessDictUpdate();
+        
         yield return null;
         nowPlayerStage = PlayerStage.Ready;
         turnCanEnd = false;
@@ -364,6 +331,8 @@ public class Player : MonoBehaviour
             yield return null;
 
         }
+
+        Player_ChessDictUpdate();
         nowPlayerStage = PlayerStage.End;
 
         InGame.Instance.StartTurnChange();

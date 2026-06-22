@@ -1600,7 +1600,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Intensity
-      value: 300000
+      value: 500000
       objectReference: {fileID: 0}
     - target: {fileID: 119817885099466718, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_LocalScale.x
@@ -3259,7 +3259,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Intensity
-      value: 300000
+      value: 500000
       objectReference: {fileID: 0}
     - target: {fileID: 119817885099466718, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_LocalScale.x
@@ -4073,7 +4073,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1286870461
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4443,7 +4443,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Intensity
-      value: 300000
+      value: 500000
       objectReference: {fileID: 0}
     - target: {fileID: 119817885099466718, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_LocalScale.x
@@ -5019,7 +5019,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Intensity
-      value: 300000
+      value: 500000
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Lightmapping
@@ -5941,7 +5941,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Intensity
-      value: 300000
+      value: 500000
       objectReference: {fileID: 0}
     - target: {fileID: 119817885099466718, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_LocalScale.x

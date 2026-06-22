@@ -223,19 +223,22 @@ public class Pawn : ChessBasic
         if (isFirstMove) isFirstMove = false;
         MoveOnly(moveTo);
         Promotion();
-
-
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
 
     }
 
+    private readonly List<ChessType> canPromotionChessTypes = new List<ChessType>()
+    {
+        ChessType.Queen,  ChessType.Bishop,
+        ChessType.Rook,   ChessType.Knight,
+    };
     private void Promotion()
     {
         if (_player.pawnBuffType != Player.PawnBuff.None) return;
         int targetY = (color == ChessColor.White) ? 7 : 0;
         if (position.y != targetY) return;
-        ChessType promotionType = ChessType.Queen;
-        Pair<ChessColor, ChessType> promotionInfo = new Pair<ChessColor, ChessType>(color, promotionType);
+        Pair<ChessColor, ChessType> promotionInfo = 
+            new Pair<ChessColor, ChessType>(color, canPromotionChessTypes[Random.Range(0, canPromotionChessTypes.Count)]);
         _chessBoard.GenChess(position, promotionInfo,out ChessBasic genChess);
         if(genChess!=null) genChess.ChessInit(_player);
         if (poolObject != null) poolObject.pool.Return(this.gameObject);

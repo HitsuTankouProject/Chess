@@ -9,7 +9,7 @@ public class Witcher : BuffBasic
     public override string buffName => "Witcher";
     public override void Choose() => _player.queenBuffType = Player.QueenBuff.Witcher;
 
-    public int canGoRange { get; private set; } = 3;
+    public int canGoRange { get; private set; } = 2;
     public bool cantGotCurse { get; private set; } = false;
     public bool canCurseBlock { get; private set; } = false;
     public bool canCurseAllTheBlockCanGo { get; private set; } = false;
@@ -85,58 +85,38 @@ public class Queen : ChessBasic
 {
     public override ChessType type => ChessType.Queen;
     public override string ChessName() { return "Queen"; }
-    public override int findRange { get; } = 8;
-    private int witcherFindRange => _player.witcher.canGoRange;
+    public override int findRange
+    {
+        get
+        {
+            if(_player.queenBuffType == Player.QueenBuff.Witcher)
+                return _player.witcher.canGoRange;
+             else return 8;
+        }
+    }
 
     public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>()
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
         new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
 
-    public override void FindPossibleMove()
+    
+    public override void EatChess(ChessBasic chess)
     {
-        possibleMoveList.Clear();
-        possibleEatList.Clear();
+        if (chess == null) return;
+        Vector2Int thisPos = position;
+        Vector2Int chessPos = chess.position;
+        ChessType chessType = chess.type;
 
-        int range = _player.queenBuffType == Player.QueenBuff.Witcher ? witcherFindRange : findRange;
+        base.EatChess(chess);
 
-        foreach (var dir in directions)
-        {
-            for (int i = 1; i < range; i++)
-            {
-                Vector2Int targetPos = position + dir * i;
+        if (_player.queenBuffType == Player.QueenBuff.Witcher) CurseBlock();
+        else if (_player.queenBuffType == Player.QueenBuff.Beauty) CharmChess(chessType, thisPos);
 
-                if (IsOutOfBoard(targetPos)) break;
-
-                if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
-                {
-                    if (chess.color != this.color)
-                    {
-                        possibleMoveList.Add(targetPos);
-                        possibleEatList.Add(targetPos);
-                    }
-
-                    break;
-                }
-                else
-                {
-                    possibleMoveList.Add(targetPos);
-                }
-            }
-        }
-
-        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
-        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
+        Player.QueenBuff queenBuff = _player.queenBuffType;
+        
     }
 
-    private void WitcherBuff()
-    {
-        if (_player.witcher.nowBuffLevel < 2) return;
-
-
-
-
-    }
-    private void Witcher_Move(Vector2Int moveTo)
+    public override void Move(Vector2Int moveTo)
     {
         _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
@@ -145,44 +125,23 @@ public class Queen : ChessBasic
             _player.nowPlayerStage = PlayerStage.ReadytoEnd;
             return;
         }
+        if (chess == null) _chessBoard.MoveTo(this, moveTo);
         else
         {
-            if (chess != null)
-            {
-                _player.nowPlayerStage = PlayerStage.EatingChess;
-                chess.GotEaten();
-            }
+            EatChess(chess);
+
         }
-        // ワールド座標へ移動
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
 
         if (_player.IsProTectedByRook_Guardian(position))
             GotExtraLife(true);
-        else GotExtraLife(true);
-
-
-
-
-
-
+        else GotExtraLife(false);
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-
     }
+
+
 
 
     private const float canCharmPercent = 50.0f;
-
-    private void CharmChess(ChessType chessType,Vector2Int spawnKnightPos)
-    {
-        float isCanCharm = Random.Range(0.0f, 100.0f);
-        if (isCanCharm > canCharmPercent) return;
-
-        
-
-
-    }
-
     private bool CanProtectByKnight(out ChessBasic knight)
     {
         knight = null;
@@ -194,7 +153,7 @@ public class Queen : ChessBasic
         {
             foreach (ChessBasic chess in knightList)
             {
-                HashSet<Vector2Int> knightPossibleMove = chess.PossibleMove();
+                HashSet<Vector2Int> knightPossibleMove = chess.PossibleMove(false);
 
                 if (knightPossibleMove.Contains(position))
                 {
@@ -211,56 +170,56 @@ public class Queen : ChessBasic
         return false;
 
     }
-
-    private void ProtectByKnight()
+    private void ProtectByKnight(ChessBasic knight)
     {
-        if(!CanProtectByKnight(out ChessBasic knight)) return;
         SwapPosition(knight);
         knight.GotEaten();
     }
-
-
-
-
-
-    private void Beauty_Move(Vector2Int moveTo)
+    private void CharmChess(ChessType chessType, Vector2Int spawnKnightPos)
     {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
-        ReturnPick();
-        if (!CanMoveTo(moveTo, out ChessBasic chess))
+        if (_player.queenBuffType != Player.QueenBuff.Beauty ||
+            !_player.beauty.canCharmChess
+            || _chessBoard.IsKingChessSpawn(spawnKnightPos)) return;
+
+        if (chessType != ChessType.Knight)
         {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-            return;
+            float isCanCharm = Random.Range(0.0f, 100.0f);
+            if (isCanCharm > canCharmPercent) return;
         }
-        else
+
+        Pair<ChessColor, ChessType> promotionInfo = new Pair<ChessColor, ChessType>(color, ChessType.Knight);
+        _chessBoard.GenChess(spawnKnightPos, promotionInfo, out ChessBasic genChess);
+
+        Debug.Log(genChess.name + " : " + spawnKnightPos);
+        Debug.Log(_chessBoard.board[spawnKnightPos].gameObject.name);
+
+        if (genChess != null) genChess.ChessInit(_player);
+
+    }
+
+    private void CurseBlock()
+    {
+        if (_player.queenBuffType != Player.QueenBuff.Witcher) return;
+        if (_player.witcher.nowBuffLevel == 2)
         {
-            if (chess != null)
+            _chessBoard.ChessBlock(position).CurseTheBlock(this);
+        }
+        else if(_player.witcher.nowBuffLevel == 3)
+        {
+            HashSet<Vector2Int> cursePossibleMove = PossibleMove(false);
+            foreach (Vector2Int pos in cursePossibleMove)
             {
-                _player.nowPlayerStage = PlayerStage.EatingChess;
-                chess.GotEaten();
+                _chessBoard.ChessBlock(pos).CurseTheBlock(this);
+
             }
         }
 
-        // ワールド座標へ移動
-        this.transform.position = _chessBoard.ReturnChessBlockPosition(moveTo);
-        // 盤面情報更新
-        _chessBoard.BoardUpdate(this, moveTo, ChessAction.Move);
-
-        if (_player.IsProTectedByRook_Guardian(position))
-            GotExtraLife(true);
-        else GotExtraLife(false);
-        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
     }
 
-    public override void Move(Vector2Int moveTo)
+    public override void GotEaten()
     {
-        Player.QueenBuff queenBuff = _player.queenBuffType;
-        switch (queenBuff)
-        {
-            case Player.QueenBuff.None:base.Move(moveTo); break;
-            case Player.QueenBuff.Witcher: Witcher_Move(moveTo); break;
-            case Player.QueenBuff.Beauty: Beauty_Move(moveTo); break;
-        }
+        if (!CanProtectByKnight(out ChessBasic knight)) base.GotEaten();
+        else ProtectByKnight(knight);
 
     }
 

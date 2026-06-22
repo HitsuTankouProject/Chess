@@ -210,6 +210,7 @@ public class InGame : MonoBehaviour
     private void InGameInit()
     {
         inGameStage = InGameStage.Init;
+        skillManual.gameObject.SetActive(false);
 
         _chessBoard.ChessBoard_Init();
         whiteChessPlayer.Player_Init(ChessColor.White);
@@ -219,8 +220,8 @@ public class InGame : MonoBehaviour
         whiteChessPlayer.playerInPut.StartInput();
         blackChessPlayer.playerInPut.StartInput();
 
-
-        StartCoroutine(ChooseSkillProcess());
+        GameStart();
+        //StartCoroutine(ChooseSkillProcess());
 
     }
 
@@ -271,8 +272,9 @@ public class InGame : MonoBehaviour
         whiteChessPlayer.AllBuffLevelUp();
         blackChessPlayer.AllBuffLevelUp();
 
-        inGameStage = InGameStage.ChooseSkill;
-        StartCoroutine(ChooseSkillProcess());
+        GameStart();
+        //inGameStage = InGameStage.ChooseSkill;
+        //StartCoroutine(ChooseSkillProcess());
     }
 
 

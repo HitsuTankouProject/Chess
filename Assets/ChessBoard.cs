@@ -17,14 +17,6 @@ public class ChessObject
     public List<GameObject> chessObjects;
 }
 
-[Serializable]
-public enum ChessAction
-{
-    Move,
-    GotEat,
-    Swap
-}
-
 public class ChessBoard : MonoBehaviour
 {
     public static ChessBoard Instance { get; private set; }
@@ -56,6 +48,9 @@ public class ChessBoard : MonoBehaviour
 
     public Vector2Int black_KingChessSpawn { get; private set; } = new Vector2Int(-1, -1);
     public Vector2Int white_KingChessSpawn { get; private set; } = new Vector2Int(-1, -1);
+    public bool IsKingChessSpawn(Vector2Int pos) => pos == black_KingChessSpawn || pos == white_KingChessSpawn;
+
+
     public Vector2Int playerChoseBlock { get; private set; } = new Vector2Int(-1, -1);
 
     [Header("Chess Board")]
@@ -70,8 +65,8 @@ public class ChessBoard : MonoBehaviour
             { new Vector2Int(0,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
             { new Vector2Int(1,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Knight )},
             { new Vector2Int(2,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Bishop)},
-            { new Vector2Int(3,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Queen)},
-            { new Vector2Int(4,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.King)},
+            { new Vector2Int(3,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.King)},
+            { new Vector2Int(4,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Queen)},
             { new Vector2Int(5,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Bishop)},
             { new Vector2Int(6,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Knight)},
             { new Vector2Int(7,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
@@ -220,6 +215,22 @@ public class ChessBoard : MonoBehaviour
     #endregion
 
     #region Normal Function
+
+    public Dictionary<Vector2Int, ChessBasic> ColorChessDict(ChessColor chessColor)
+    {
+        Dictionary<Vector2Int, ChessBasic> result = new();
+        foreach (Vector2Int pos in board.Keys)
+        {
+            if (board[pos].color == chessColor)
+            {
+                result[pos] = board[pos];
+            }
+        }
+        return result;
+
+
+    }
+
     //private bool BoardCheckError(ChessBasic chessBasic)
     //{
     //    if (chessBasic == null)
@@ -243,24 +254,25 @@ public class ChessBoard : MonoBehaviour
         }
 
         GameObject chess = _poolManager.Release(chessPrefabDictionary[pair]);
-        chess.transform.position = ReturnChessBlockPosition(position); // Example position, replace with actual logic
+        chess.transform.position = ReturnChessBlockPosition(position);
         ChessBasic target = chess.GetComponent<ChessBasic>();
-        BoardUpdate(target, position, ChessAction.Move);
+        MoveTo(target, position);
 
     }
     public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair, out ChessBasic genChess)
     {
+        genChess = null;
+
         if (chessPrefabDictionary[pair] == null)
         {
             Debug.LogError($"Prefab not found for {pair.first}_{pair.second}");
-            genChess = null;
             return;
         }
 
         GameObject chess = _poolManager.Release(chessPrefabDictionary[pair]);
         chess.transform.position = ReturnChessBlockPosition(position); // Example position, replace with actual logic
         ChessBasic target = chess.GetComponent<ChessBasic>();
-        BoardUpdate(target, position, ChessAction.Move);
+        MoveTo(target, position);
         genChess = target;
     }
 
@@ -275,62 +287,44 @@ public class ChessBoard : MonoBehaviour
         return ChessBlock(position).transform.position;
     }
 
-
-    public void BoardUpdate(ChessAction chessAction,
-        ChessBasic aChess, Vector2Int aChessMoveTo, 
-        ChessBasic bChess = null, Vector2Int bChessMoveTo = default)
+    public void MoveTo(ChessBasic chess, Vector2Int moveTo)
     {
-        if (aChess == null) return;
-        switch (chessAction)
-        { 
-            case ChessAction.Move:
-                if (board.ContainsKey(aChess.position)) board.Remove(aChess.position);
-                board[aChessMoveTo] = aChess;
-                aChess.SetPosition(aChessMoveTo);
-                break;
-            case ChessAction.GotEat:
-                board.Remove(aChess.position);
-                break;
-
-            case ChessAction.Swap:
-
-                if (bChess == null)
-                {
-                    Debug.LogWarning("bChess == null");
-                    break;
-                }
-
-                board[aChessMoveTo] = aChess;
-                aChess.SetPosition(aChessMoveTo);
-
-                board[bChessMoveTo] = bChess;
-                bChess.SetPosition(bChessMoveTo);
-                break;
-        }
-
-
-    }
-
-    public void BoardUpdate(ChessBasic chessBasic, Vector2Int position, ChessAction chessAction)
-    {
-        if (chessBasic == null) return;
-        switch (chessAction)
+        if (chess == null|| moveTo == new Vector2Int(-1, -1))
         {
-            case ChessAction.Move:
-                if (board.ContainsKey(chessBasic.position)) board.Remove(chessBasic.position);
-                board[position] = chessBasic;
-                chessBasic.SetPosition(position);
-                break;
-            case ChessAction.GotEat:
-                board.Remove(chessBasic.position);
-                break;
-            case ChessAction.Swap:
-
-                break;
-
+            Debug.LogError(chess.gameObject.name + " : " + moveTo);
+            return;
         }
 
+
+        board.Remove(chess.position);
+        board[moveTo] = chess;
+        chess.SetPosition(moveTo);
+        chess.transform.position = ReturnChessBlockPosition(moveTo);
+
+
     }
+    public void GotEat(ChessBasic chess) => board.Remove(chess.position);
+    public void Swap(ChessBasic aChess, ChessBasic bChess)
+    {
+        if(aChess == null || bChess == null)
+        {
+            Debug.LogError("aChess == null|| bChess == null ");
+            return;
+        }
+
+        Vector2Int aPos = aChess.position;
+        Vector2Int bPos = bChess.position;
+        board[aPos] = bChess;
+        board[bPos] = aChess;
+
+        aChess.SetPosition(bPos);
+        bChess.SetPosition(aPos);
+
+        aChess.transform.position = ReturnChessBlockPosition(bPos);
+        bChess.transform.position = ReturnChessBlockPosition(aPos);
+
+    }
+
     public void ShowActive(ChessBlockStage activeStage,HashSet<Vector2Int> canGoPos)
     {
         if (canGoPos.Count == 0) return;

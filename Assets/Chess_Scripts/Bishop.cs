@@ -145,11 +145,11 @@ public class Bishop : ChessBasic
 
                 if (!_chessBoard.IsOutOfBoard(targetPos)) break;
 
-
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
                     if (chess.color != this.color)
                     {
+                        possibleMoveList.Add(targetPos);
                         possibleMoveList.Add(targetPos);
                     }
                     if(!isThrougt) break;
