@@ -89,6 +89,21 @@ public class ChooseSkillManual : ButtonManual
         _inGame.GameStart();
     }
 
+    private bool isWhiteChose = false;
+    private bool isBlackChose = false;
+
+    private void TurnSwitch()
+    {
+
+    }
+
+
+
+
+
+
+
+
 
     private void TurnSwitch(bool isSwitch)
     {
