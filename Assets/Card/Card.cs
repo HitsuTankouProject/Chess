@@ -1,14 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-public class CardData
-{
-    public string name;
-    public Material m_CardCover;
-    public string buffLevel01Description;
-    public string buffLevel02Description;
-    public string buffLevel03Description;
-}
 
 
 

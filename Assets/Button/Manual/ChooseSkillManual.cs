@@ -14,6 +14,7 @@ public class ChooseSkillManual : ButtonManual
         _inGame.whiteChessPlayer : _inGame.blackChessPlayer;
 
     public Card[] canPickCard;
+    private Button_Card[] pickCardButton = new Button_Card[3];
     private readonly Dictionary<ChessType, AllBuffCard[]> buffChessDict = new()
     {
         [ChessType.King] = new[] { AllBuffCard.MadKing, AllBuffCard.SageKing },
@@ -30,20 +31,6 @@ public class ChooseSkillManual : ButtonManual
 
     [Header("PlayerTag")]
     public SpriteRenderer spr_playerTag;
-    public Sprite sp_white_Tag;
-    public Sprite sp_black_Tag;
-    private Sprite sp_PlayerTag
-    {
-        get
-        {
-            switch (chooseSkillPlayerColor)
-            {
-                case ChessColor.White: return sp_white_Tag;
-                case ChessColor.Black: return sp_black_Tag;
-                default: return null;
-            }
-        }
-    }
 
     [Header("DrawAgain")]
     private bool canDrawAgain = true;
@@ -59,9 +46,9 @@ public class ChooseSkillManual : ButtonManual
         if (pickCardManual == null) return;
         chooseSkillPlayer.ChooseBuff(pickCardManual.pickedCard.buffCard);
         pickCardManual.Return();
-        TurnSwitch(true);
+        TurnSwitch();
 
-        Debug.Log("ChooseSkillManual: Conform");
+        //Debug.Log("ChooseSkillManual: Conform");
     }
 
     public override void DrawAgain()
@@ -86,59 +73,51 @@ public class ChooseSkillManual : ButtonManual
     private void EndOfChooseSkill()
     {
         gameObject.SetActive(false);
+        isWhiteChose = false;
+        isBlackChose = false;
+
         _inGame.GameStart();
     }
 
     private bool isWhiteChose = false;
     private bool isBlackChose = false;
-
-    private void TurnSwitch()
+    private void OffChose()
     {
-
+        if (chooseSkillPlayerColor == ChessColor.White) isWhiteChose = true;
+        else isBlackChose = true;
     }
 
-
-
-
-
-
-
-
-
-    private void TurnSwitch(bool isSwitch)
+    private void ChooseSkillInit(ChessColor color)
     {
-        if (spr_playerTag == null)
-        {
-            Debug.LogError("spr_playerTag == null");
-            return;
-        }
-        if (isSwitch)
-        {
-            chooseSkillPlayerColor =
-            chooseSkillPlayerColor == ChessColor.White ? 
-            ChessColor.Black : ChessColor.White;
-
-            if (chooseSkillPlayerColor == ChessColor.White)
-            {
-                EndOfChooseSkill();
-                return;
-            }
-
-        }
+        chooseSkillPlayerColor = color;
+        OffChose();
         InPutManager.Instance.PlayerInputStage(chooseSkillPlayerColor, InputStage.ChooseSkill);
-        spr_playerTag.sprite = sp_PlayerTag;
+
+        spr_playerTag.sprite = _resourcesData.PlayerSprite(color);
 
         canDrawAgain = true;
         button_DrawAgain.enabled = true;
         spr_DrawAgain.color = c_Draw;
         spr_DrawAgain.sprite = sp_canDraw;
 
-
         StartCoroutine(CardReadyProcess());
     }
+    private void TurnSwitch()
+    {
+        if (isWhiteChose && !isBlackChose)
+        {
+            ChooseSkillInit(ChessColor.Black);
+            return;
+            
+        }
+        else if (isWhiteChose && isBlackChose)
+        {
+            EndOfChooseSkill();
+            return;
+        }
+        Debug.LogError("isWhiteChose == flase");
 
-
-
+    }
 
     private List<ChessType> PlayerCanPick()
     {
@@ -187,6 +166,12 @@ public class ChooseSkillManual : ButtonManual
     private IEnumerator CardReadyProcess()
     {
         yield return null;
+        pickCardButton[0].CanClick(false);
+        pickCardButton[1].CanClick(false);
+        pickCardButton[2].CanClick(false);
+
+
+
         for (int i = 0; i < canPickCard.Length; i++)
         {
             yield return canPickCard[i].TurnTheCard(CardFace.Back);
@@ -196,6 +181,9 @@ public class ChooseSkillManual : ButtonManual
         {
             yield return canPickCard[i].TurnTheCard(CardFace.Front);
         }
+        pickCardButton[0].CanClick(true);
+        pickCardButton[1].CanClick(true);
+        pickCardButton[2].CanClick(true);
 
     }
     public void Init()
@@ -203,22 +191,29 @@ public class ChooseSkillManual : ButtonManual
         chooseSkillPlayerColor = ChessColor.White;
         for (int i = 0; i < canPickCard.Length; i++)
         {
+            if (!canPickCard[i].gameObject.TryGetComponent<Button_Card>(out pickCardButton[i]))
+            {
+                Debug.LogError("No Button_Card here" + canPickCard[i].gameObject.name);
+                continue;
+            }
+
+            pickCardButton[i].CanClick(false);
             StartCoroutine(canPickCard[i].TurnTheCard(CardFace.Back));
         }
-        TurnSwitch(false);
-    }
 
-    private void Start()
-    {
-        
+        isWhiteChose = false;
+        isBlackChose = false;
+        ChooseSkillInit(ChessColor.White);
+
+    
     }
 
 
     private void Update()
     {
-        if (!pickCardManual.gameObject.activeSelf) 
+        if (!pickCardManual.gameObject.activeSelf)
         {
-            if (confirmButton.gameObject.activeSelf|| button_DrawAgain.gameObject.activeSelf)
+            if (confirmButton.gameObject.activeSelf || button_DrawAgain.gameObject.activeSelf)
             {
                 confirmButton.gameObject.SetActive(false);
                 button_DrawAgain.gameObject.SetActive(true);
@@ -226,14 +221,13 @@ public class ChooseSkillManual : ButtonManual
         }
         else
         {
-            if (!confirmButton.gameObject.activeSelf|| !button_DrawAgain.gameObject.activeSelf)
+            if (!confirmButton.gameObject.activeSelf || !button_DrawAgain.gameObject.activeSelf)
             {
                 confirmButton.gameObject.SetActive(true);
                 button_DrawAgain.gameObject.SetActive(false);
 
             }
         }
-
     }
 
 

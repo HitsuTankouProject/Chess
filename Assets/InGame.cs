@@ -8,44 +8,7 @@ using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
 
 
-[System.Serializable]
-public class Pair<F, S>
-{
-    public Pair()
-    { }
-    public Pair(F f, S s)
-    {
-        this.first = f;
-        this.second = s;
-    }
-    public F first;
-    public S second;
 
-    public override bool Equals(object obj)
-    {
-        if (obj is Pair<F, S> other)
-        {
-            return EqualityComparer<F>.Default.Equals(first, other.first)
-                && EqualityComparer<S>.Default.Equals(second, other.second);
-        }
-        return false;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(first, second);
-    }
-
-    public static bool operator == (Pair<F, S> a, Pair<F, S> b)
-    {
-        return a.first.Equals(b.first) && a.second.Equals(b.second);
-    }
-    public static bool operator !=(Pair<F, S> a, Pair<F, S> b)
-    {
-        return !a.first.Equals(b.first) || !a.second.Equals(b.second);
-    }
-
-}
 
 public class CameraView
 {
@@ -221,7 +184,7 @@ public class InGame : MonoBehaviour
         blackChessPlayer.playerInPut.StartInput();
 
         GameStart();
-        //StartCoroutine(ChooseSkillProcess());
+        StartCoroutine(ChooseSkillProcess());
 
     }
 
@@ -272,9 +235,9 @@ public class InGame : MonoBehaviour
         whiteChessPlayer.AllBuffLevelUp();
         blackChessPlayer.AllBuffLevelUp();
 
-        GameStart();
-        //inGameStage = InGameStage.ChooseSkill;
-        //StartCoroutine(ChooseSkillProcess());
+        //GameStart();
+        inGameStage = InGameStage.ChooseSkill;
+        StartCoroutine(ChooseSkillProcess());
     }
 
 

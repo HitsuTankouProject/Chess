@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -32,11 +33,19 @@ public abstract class ChessBasic : MonoBehaviour
 {
     /// <summary>　ChessBoard シングルトン参照　</summary>
     public ChessBoard _chessBoard => ChessBoard.Instance;
-    public PoolObject poolObject => this.gameObject.GetComponent< PoolObject>();
+    public PoolObject poolObject => this.gameObject.GetComponent<PoolObject>();
+    private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
+
+
     /// <summary>　駒の色 </summary>
     public ChessColor color;
-    public Material m_Black;
-    public Material m_White;
+    public MeshRenderer _meshRenderer;
+    public void ChangeChessColor(ChessColor chessColor)
+    {
+        color = chessColor;
+        _meshRenderer.material= _resourcesData.TargetColor(color);
+
+    }
 
 
     /// <summary>　駒タイプ　派生クラス側で定義　</summary>
@@ -59,6 +68,7 @@ public abstract class ChessBasic : MonoBehaviour
     public virtual void ChessInit(Player player)
     {
         _player = player;
+        ChangeChessColor(_player.usingChess);
     }
 
     public bool haveBuffed = false;

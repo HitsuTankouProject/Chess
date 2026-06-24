@@ -20,6 +20,8 @@ public class PoolObject : MonoBehaviour
 [System.Serializable]
 public class Pool
 {
+    public Pool(GameObject gameObject)=>prefab=gameObject;
+
     /// <summary>
     /// プー?の対象オブジェクト
     /// </summary>

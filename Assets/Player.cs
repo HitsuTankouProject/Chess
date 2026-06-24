@@ -16,6 +16,7 @@ public class Player : MonoBehaviour
     private InPutManager _inPutManager => InPutManager.Instance;
 
     public ChessColor usingChess;
+
     public PlayerStage nowPlayerStage;
 
     public PlayerInPut playerInPut;

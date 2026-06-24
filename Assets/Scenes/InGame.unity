@@ -1035,12 +1035,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_Name
-      value: Chess_Card (1)
+      value: Chess_Card_Black_01
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8936520514533113277, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1958,12 +1962,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_Name
-      value: Chess_Card (3)
+      value: Chess_Card_White_03
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8936520514533113277, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4e1b89e8dc9cc0b45a3cd18bf99372d2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2170,12 +2178,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_Name
-      value: Chess_Card (2)
+      value: Chess_Card_Black_02
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8936520514533113277, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2380,19 +2392,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f4cb9fe1647c6469cd1ca82fa5debb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourcesData
-  m_Card_King_SageKing: {fileID: 0}
-  m_Card_King_MadKing: {fileID: 0}
-  m_Card_Queen_Witcher: {fileID: 0}
-  m_Card_Queen_Beauty: {fileID: 0}
-  m_Card_Bishop_Sorcerer: {fileID: 0}
-  m_Card_Bishop_Monk: {fileID: 0}
-  m_Card_Rook_Rusher: {fileID: 0}
-  m_Card_Rook_Guardian: {fileID: 0}
-  m_Card_Knight_Charger: {fileID: 0}
-  m_Card_Knight_Skirmisher: {fileID: 0}
-  m_Card_Pawn_Scout: {fileID: 0}
-  m_Card_Pawn_Substitute: {fileID: 0}
+  sageKing:
+    m_CardCover: {fileID: 0}
+  madKing:
+    m_CardCover: {fileID: 0}
+  witcher:
+    m_CardCover: {fileID: 0}
+  beauty:
+    m_CardCover: {fileID: 0}
+  sorcerer:
+    m_CardCover: {fileID: 0}
+  monk:
+    m_CardCover: {fileID: 0}
+  rusher:
+    m_CardCover: {fileID: 0}
+  guardian:
+    m_CardCover: {fileID: 0}
+  charger:
+    m_CardCover: {fileID: 0}
+  skirmisher:
+    m_CardCover: {fileID: 0}
+  scout:
+    m_CardCover: {fileID: 0}
+  substitute:
+    m_CardCover: {fileID: 0}
   m_CardBack: {fileID: 0}
+  sp_WhiteColor: {fileID: 0}
+  sp_BlackColor: {fileID: 0}
+  king:
+    prefab: {fileID: 0}
+    model: {fileID: 0}
+  queen:
+    prefab: {fileID: 0}
+    model: {fileID: 0}
+  bishop:
+    prefab: {fileID: 0}
+    model: {fileID: 0}
+  rook:
+    prefab: {fileID: 0}
+    model: {fileID: 0}
+  knight:
+    prefab: {fileID: 0}
+    model: {fileID: 0}
+  pawn:
+    prefab: {fileID: 0}
+    model: {fileID: 0}
+  m_White: {fileID: 0}
+  m_Black: {fileID: 0}
+  m_GotCurse: {fileID: 0}
 --- !u!1 &929482134
 GameObject:
   m_ObjectHideFlags: 0
@@ -4177,8 +4224,6 @@ MonoBehaviour:
   pickCardManual: {fileID: 381686420}
   confirmButton: {fileID: 950304321}
   spr_playerTag: {fileID: 554511466}
-  sp_white_Tag: {fileID: 21300000, guid: f7bfe71ba1302b24a9b03c5436aa579d, type: 3}
-  sp_black_Tag: {fileID: 21300000, guid: 635c70a7e1fffbd4ba9b3baa26a3302c, type: 3}
   button_DrawAgain: {fileID: 1232249204}
   spr_DrawAgain: {fileID: 1232249203}
   sp_canDraw: {fileID: 21300000, guid: 5d2fb7e31a5cb6343a72daab3a4cacb6, type: 3}
@@ -4443,7 +4488,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Intensity
-      value: 500000
+      value: 150000
       objectReference: {fileID: 0}
     - target: {fileID: 119817885099466718, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_LocalScale.x
@@ -4963,12 +5008,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_Name
-      value: Chess_Card
+      value: Chess_Card_Black_03
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8936520514533113277, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -5770,32 +5819,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61236da11726ae2408f54ed7b9264f06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolManager
-  whiteChessPoolList:
-  - prefab: {fileID: 2070371414069498642, guid: 3e039976affd7d8408a16bb51a5f6726, type: 3}
-    size: 1
-  - prefab: {fileID: 6422178441675632176, guid: 891b8474d228e2343a7be24f81bbde42, type: 3}
-    size: 1
-  - prefab: {fileID: 4579162257496045062, guid: c4ecaa9fba1f66b41ad5dc521d1b2f6c, type: 3}
-    size: 2
-  - prefab: {fileID: 6901072830019063815, guid: 2d9b13e9f3b3cbf4bbde884692508938, type: 3}
-    size: 2
-  - prefab: {fileID: 887054320113266141, guid: 151c9bcb17848df42bbde8420961dea2, type: 3}
-    size: 2
-  - prefab: {fileID: 1369162934247364709, guid: 5ef9338c2fc0d334fb1139b6403726fb, type: 3}
-    size: 8
-  blockChessPoolList:
-  - prefab: {fileID: 967605213954917162, guid: 7bc5391375fc2274f91ea9b826cc5eea, type: 3}
-    size: 1
-  - prefab: {fileID: 5489137877066582039, guid: 3e4163c53e9fff9438ba0cd219f558c8, type: 3}
-    size: 1
-  - prefab: {fileID: 1465986773397141253, guid: 66d9fbe5a00f2f14fbc87983365b308e, type: 3}
-    size: 2
-  - prefab: {fileID: 2641475303949423855, guid: f1c2a56b43a42d243b92230f5e7bedd7, type: 3}
-    size: 2
-  - prefab: {fileID: 3351022430218971031, guid: bd2c7d5bcac052c4099a438365a01e75, type: 3}
-    size: 2
-  - prefab: {fileID: 3544521822845182484, guid: 6a9c8c55369dae448a477b16dadc0f24, type: 3}
-    size: 8
 --- !u!4 &1825143192
 Transform:
   m_ObjectHideFlags: 0
@@ -6273,12 +6296,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_Name
-      value: Chess_Card (4)
+      value: Chess_Card_White_02
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8936520514533113277, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4e1b89e8dc9cc0b45a3cd18bf99372d2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -6475,7 +6502,6 @@ MonoBehaviour:
   buffCard: 3
   cardLevel: 1
   chessMeshFilter: {fileID: 0}
-  chessMeshRenderer: {fileID: 0}
 --- !u!4 &2121075081 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 119817885099466718, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
@@ -6753,8 +6779,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1619352954022715494, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8936520514533113277, guid: 81a5e3f94907e8d4d8eff89953459442, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 4e1b89e8dc9cc0b45a3cd18bf99372d2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

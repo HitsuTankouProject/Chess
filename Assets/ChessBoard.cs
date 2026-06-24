@@ -11,17 +11,13 @@ public class Col
 {
     public List<ChessBlock> chessBlocks;
 }
-[Serializable]
-public class ChessObject
-{
-    public List<GameObject> chessObjects;
-}
 
 public class ChessBoard : MonoBehaviour
 {
     public static ChessBoard Instance { get; private set; }
     private PoolManager _poolManager => PoolManager.Instance;
     private InGame _InGame => InGame.Instance;
+    private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
     private void Awake()
     {
         if (Instance == null)
@@ -33,8 +29,6 @@ public class ChessBoard : MonoBehaviour
             Destroy(this);
         }
     }
-
-
 
     [Header("Board Block Material")]
     public Material m_Black;
@@ -55,78 +49,23 @@ public class ChessBoard : MonoBehaviour
 
     [Header("Chess Board")]
     public List<Col> cols;
-    public ChessObject chessPrefab;
     private readonly Vector2Int chessBoard_max = new Vector2Int(8, 8);
     private HashSet<Vector2Int> nowShowing = new HashSet<Vector2Int>();
-    public ChessBlock ChessBlock(Vector2Int targetPos) => cols[targetPos.x].chessBlocks[targetPos.y];
-    private readonly Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = 
-        new Dictionary<Vector2Int, Pair<ChessColor, ChessType>>()
+    private Dictionary<Vector2Int, Pair<ChessColor, ChessType>> GetBoardStartMap(string mapFileName)
     {
-            { new Vector2Int(0,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
-            { new Vector2Int(1,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Knight )},
-            { new Vector2Int(2,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Bishop)},
-            { new Vector2Int(3,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.King)},
-            { new Vector2Int(4,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Queen)},
-            { new Vector2Int(5,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Bishop)},
-            { new Vector2Int(6,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Knight)},
-            { new Vector2Int(7,0), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Rook)},
+        string fileName = mapFileName + ".csv";
 
-            { new Vector2Int(0,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(1,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn  )},
-            { new Vector2Int(2,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(3,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(4,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(5,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(6,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
-            { new Vector2Int(7,1), new Pair<ChessColor, ChessType> (ChessColor.White, ChessType.Pawn )},
+        return _resourcesData.GetBcoardInitData(fileName);
+    }
 
-            { new Vector2Int(0,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(1,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn  )},
-            { new Vector2Int(2,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(3,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(4,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(5,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(6,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
-            { new Vector2Int(7,6), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Pawn )},
+    public ChessBlock ChessBlock(Vector2Int targetPos)
+    {
+        return cols[targetPos.x].chessBlocks[targetPos.y];
+    }
 
-            { new Vector2Int(0,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
-            { new Vector2Int(1,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Knight )},
-            { new Vector2Int(2,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Bishop)},
-            { new Vector2Int(3,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Queen)},
-            { new Vector2Int(4,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.King)},
-            { new Vector2Int(5,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Bishop)},
-            { new Vector2Int(6,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Knight)},
-            { new Vector2Int(7,7), new Pair<ChessColor, ChessType> (ChessColor.Black, ChessType.Rook)},
-
-    };
     public Dictionary<Vector2Int, ChessBasic> board { get; private set; } = new Dictionary<Vector2Int, ChessBasic>();
-    public Dictionary<Pair<ChessColor, ChessType>, GameObject> chessPrefabDictionary { get; private set; }
-
 
     #region Game Initialization
-    private bool PrefabDictionaryInit()
-    {
-        chessPrefabDictionary = new Dictionary<Pair<ChessColor, ChessType>, GameObject>();
-        foreach (ChessColor chessColor in Enum.GetValues(typeof(ChessColor)))
-        {
-            foreach (ChessType chessType in Enum.GetValues(typeof(ChessType)))
-            {
-                string prefabName = $"Chess_{chessColor}_{chessType}";
-                GameObject prefab = chessPrefab.chessObjects.Find(obj => obj.name == prefabName);
-                if (prefab != null)
-                {
-                    chessPrefabDictionary.Add(new Pair<ChessColor, ChessType>(chessColor, chessType), prefab);
-                }
-                else
-                {
-                    Debug.LogError($"Prefab not found for {prefabName}");
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
 
     private void ChessBlockInit()
     {
@@ -180,6 +119,7 @@ public class ChessBoard : MonoBehaviour
         }
 
         board.Clear();
+        Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap("BoardInitData_Base");
         foreach (var entry in chessStartMap)
         {
             GenChess(entry.Key, entry.Value);
@@ -247,32 +187,24 @@ public class ChessBoard : MonoBehaviour
     //}
     public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair)
     {
-        if (chessPrefabDictionary[pair] == null)
-        {
-            Debug.LogError($"Prefab not found for {pair.first}_{pair.second}");
-            return;
-        }
+        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].prefab);
 
-        GameObject chess = _poolManager.Release(chessPrefabDictionary[pair]);
         chess.transform.position = ReturnChessBlockPosition(position);
         ChessBasic target = chess.GetComponent<ChessBasic>();
+        target.ChangeChessColor(pair.first);
         MoveTo(target, position);
 
     }
     public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair, out ChessBasic genChess)
     {
         genChess = null;
+        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].prefab);
 
-        if (chessPrefabDictionary[pair] == null)
-        {
-            Debug.LogError($"Prefab not found for {pair.first}_{pair.second}");
-            return;
-        }
-
-        GameObject chess = _poolManager.Release(chessPrefabDictionary[pair]);
-        chess.transform.position = ReturnChessBlockPosition(position); // Example position, replace with actual logic
+        chess.transform.position = ReturnChessBlockPosition(position);
         ChessBasic target = chess.GetComponent<ChessBasic>();
+        target.ChangeChessColor(pair.first);
         MoveTo(target, position);
+
         genChess = target;
     }
 
@@ -375,22 +307,18 @@ public class ChessBoard : MonoBehaviour
 
     public IEnumerator ChessBoard_TurnInit()
     {
-        bool prefabDictionaryInitSeccess =  PrefabDictionaryInit();
-        yield return null;
         bool genChessAtStartSeccess =  GenChessAtStart();
         yield return null;
         bool findRandomKingChessSpawnSeccess = FindRandomKingChessSpawn();
         yield return null;
 
-        if (!prefabDictionaryInitSeccess||!genChessAtStartSeccess||!findRandomKingChessSpawnSeccess)
+        if (!genChessAtStartSeccess||!findRandomKingChessSpawnSeccess)
         {
             Debug.LogError(
-                $"PrefabDictionaryInit : {prefabDictionaryInitSeccess}, " +
                 $"GenChessAtStart : {genChessAtStartSeccess}, " +
                 $"FindRandomKingChessSpawn : {findRandomKingChessSpawnSeccess}");
         }
         
-
     }
 
 

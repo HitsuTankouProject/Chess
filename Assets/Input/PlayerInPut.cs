@@ -165,7 +165,7 @@ public class PlayerInPut : MonoBehaviour
         bool isPressed = IsPressed(out GameObject hitObject);
         if (!isPressed) return;
         int hitLayer = hitObject.layer;
-        Debug.Log(hitObject.name);
+        //Debug.Log(hitObject.name);
 
         if (IsSameLayer(hitLayer, _inPutManager.buttonLayerMask)) Press_Button(hitObject);
         //else if (IsSameLayer(hitLayer, _inPutManager.cardLayerMask)) Press_Card(hitObject);

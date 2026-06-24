@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9010871141770333849}
+  - component: {fileID: 5954870058497381654}
+  - component: {fileID: 5551991912848571491}
   m_Layer: 0
   m_Name: Chess_Pawn
   m_TagString: Untagged
@@ -32,6 +34,43 @@ Transform:
   - {fileID: 1056423753712767556}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &5954870058497381654
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369259851351452256}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 5, y: 10.890025, z: 5}
+  m_Center: {x: 0, y: 5.482984, z: 0}
+--- !u!114 &5551991912848571491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 369259851351452256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1370dbd854e9034aa1fcf6a08eb21c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Pawn
+  color: 0
+  _meshRenderer: {fileID: 1785591401092794117}
+  _player: {fileID: 0}
+  haveBuffed: 0
 --- !u!1 &2959194701765085775
 GameObject:
   m_ObjectHideFlags: 0

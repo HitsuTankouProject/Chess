@@ -5,9 +5,11 @@ using System.Collections;
 public class CardEffect : MonoBehaviour
 {
     private InGame _inGame => InGame.Instance;
-    private bool isEffectActive => 
-        _inGame.inGameStage == InGameStage.TurnStart
-        || _inGame.inGameStage == InGameStage.TurnChanging;
+    private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
+
+    //private bool isEffectActive =>
+    //    _inGame.inGameStage == InGameStage.TurnStart
+    //    || _inGame.inGameStage == InGameStage.TurnChanging;
 
     [Header("Card Settings")]
     public Card card;
@@ -21,9 +23,6 @@ public class CardEffect : MonoBehaviour
 
     [Header("Chess Settings")]
     public MeshFilter chessMeshFilter;
-    public MeshRenderer chessMeshRenderer;
-
-
 
     public void CardEffectInit(AllBuffCard targetBuff, uint level)
     {
@@ -36,17 +35,17 @@ public class CardEffect : MonoBehaviour
         buffCard = targetBuff;
         cardLevel = level;
         card.SetCard(buffCard);
-        cardStartPos = card.transform.position;
+        cardStartPos = card.transform.localPosition;
 
 
     }
     private void Effect()
     {
-        if(!isEffectActive) return;
+        //if(!isEffectActive) return;
 
         float time = Time.time;
-        transform.position = cardStartPos + Vector3.up * Mathf.Sin(time * floatSpeed) * floatHeight;
-        transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime);
+        card.gameObject.transform.localPosition = cardStartPos + Vector3.up * Mathf.Sin(time * floatSpeed) * floatHeight;
+        card.gameObject.transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime);
 
     }
 
