@@ -11,30 +11,25 @@ public class Card : MonoBehaviour
     private GameManager _gameManager => GameManager.Instance;
     private ResourcesData _resourcesData => _gameManager.resourcesData;
 
-
     public AllBuffCard buffCard;
-    private AllBuffCard oldBuffCard = AllBuffCard.None;
 
     public MeshRenderer card_Front;
     public MeshRenderer card_back;
+    public MeshRenderer card_effectPrt;
 
-    public void SetCard(AllBuffCard card)
+
+    public void SetCard(AllBuffCard card, bool isOpenEffect = false, uint effectLevel = 0)
     {
         buffCard = card;
-        ChangeTheCard();
-    }
-
-    public void ChoseTheCard(Player player)
-    {
-        if (buffCard == AllBuffCard.None) return;
-    }
-
-    private void ChangeTheCard()
-    {
-        if (buffCard == oldBuffCard) return;
-        oldBuffCard = buffCard;
-
         card_Front.material = _resourcesData.cardDataDict[buffCard].m_CardCover;
+        if (!isOpenEffect) card_effectPrt.enabled = false;
+        else
+        {
+            card_effectPrt.enabled = true;
+            //card_effectPrt.material=
+        }
+
+
     }
 
     private const float cardTurnTime = 0.35f;

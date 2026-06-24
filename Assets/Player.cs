@@ -6,9 +6,9 @@ using static Player;
 using NUnit.Framework;
 using Unity.VisualScripting;
 using static UnityEditor.Experimental.GraphView.GraphView;
-
-
 public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,ReadytoEnd,End }
+
+
 
 public class Player : MonoBehaviour
 {
@@ -43,7 +43,6 @@ public class Player : MonoBehaviour
         }
         return chessList;
     }
-
 
     #region Buff Chess
 
@@ -199,6 +198,7 @@ public class Player : MonoBehaviour
     #endregion
 
     private Dictionary<AllBuffCard, BuffBasic> cardBuffMap;
+    public CardEffect[] buffCardEffects;
     private void BuffInit(ChessType chessType, BuffBasic buffBasic1, BuffBasic buffBasic2)
     {
         if(buffBasic1.buffChess!= chessType|| buffBasic2.buffChess != chessType)

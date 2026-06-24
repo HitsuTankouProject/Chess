@@ -7,7 +7,7 @@ public class Button_Card : MyButton
     public void CanClick(bool click) => canClick = click;
     public override void OnClick()
     {
-        if (!canClick) return;
+        if (!canClick || !buttonManual.gameObject.activeSelf) return;
         if (buttonManual != null && buttonManual is PickCardManual pickCardManual)
         {
             pickCardManual.gameObject.SetActive(true);
