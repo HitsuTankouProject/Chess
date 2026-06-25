@@ -6,6 +6,8 @@ using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
 public enum ChessBlockStage {Normal, CanGo, CanEat };
+public enum BlockStage { None, KingSpawn, GotChose };
+
 public class ChessBlock : MonoBehaviour
 {
     public enum ChessBoardColor
@@ -14,6 +16,9 @@ public class ChessBlock : MonoBehaviour
         Black
     }
     public ChessBoardColor color;
+
+
+
 
     private Material normalMaterial => color == ChessBoardColor.Black ? ChessBoard.Instance.m_Black : ChessBoard.Instance.m_White;
     private Material m_GotCurse =>ChessBoard.Instance.m_GotCurse;
@@ -33,6 +38,7 @@ public class ChessBlock : MonoBehaviour
     }
 
     public bool isKingChessSpawn;
+    public BlockStage blockStage { get; private set; } = BlockStage.None;
     public bool isGotCurse { get; private set; } = false;
     private ChessBasic curseChess;
     public Vector2Int position;
@@ -74,17 +80,55 @@ public class ChessBlock : MonoBehaviour
         Active(ChessBlockStage.Normal);
 
     }
-    public void CurseTheBlock(ChessBasic chess)
-    {
-        if (curseChess != null) return;
-        curseChess = chess;
-        StartCoroutine(GotCurse());
 
+    public MeshRenderer chessEffect;
+    public GameObject pickMark;
+    public MeshRenderer blockEffect;
+
+    private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
+    private Material m_GetChessEffect(ChessBlockStage chessBlockStage)
+    {
+        switch (chessBlockStage)
+        {
+            case ChessBlockStage.CanGo:return _resourcesData.m_BoardBlockCanGo;
+            case ChessBlockStage.CanEat: return _resourcesData.m_BoardBlockCanEat;
+            default: return null;
+        }
     }
+
+
     public void ShowChoseEffect(bool isShow)
     {
-        if (choseEffect == null) return;
-        choseEffect.SetActive(isShow);
+        if (pickMark == null) return;
+        pickMark.SetActive(isShow);
+    }
+
+    public void ChessEffectActive(ChessBlockStage chessBlockStage)
+    {
+        if(chessBlockStage== ChessBlockStage.Normal)
+        {
+            choseEffect.SetActive(false);
+            return;
+        }
+        if (!choseEffect.activeSelf) choseEffect.SetActive(true);
+        chessEffect.material = m_GetChessEffect(chessBlockStage);
+    }
+
+    public void CurseTheBlock(ChessBasic chess)
+    {
+        if (chess == null || blockStage == BlockStage.KingSpawn) return;
+        curseChess = chess;
+
+        blockStage = BlockStage.GotChose;
+        blockEffect.enabled = true;
+        blockEffect.material = _resourcesData.m_BoardBlockGotCurse;
+        StartCoroutine(GotCurse());
+    }
+    public void TurnToKingSpawn()
+    {
+        blockStage = BlockStage.KingSpawn;
+        blockEffect.enabled = true;
+        blockEffect.material = _resourcesData.m_BoardBlockGotCurse;
     }
 
     public void Init(Vector2Int targetPos)
@@ -93,5 +137,7 @@ public class ChessBlock : MonoBehaviour
         choseEffect = transform.GetChild(1).gameObject;
         choseEffect.SetActive(false);
     }
+
+
 
 }   

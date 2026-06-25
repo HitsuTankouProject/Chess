@@ -231,6 +231,7 @@ public class ResourcesData : MonoBehaviour
 
     #region BoardData
 
+    #region Chess Start Map
     private Dictionary<string, BoardInitData> boardData = new();
     private const int board_Width = 8;
     private const int board_Height = 8;
@@ -243,8 +244,6 @@ public class ResourcesData : MonoBehaviour
         }
         else return boardData[fileName].boardStartMap;
     }
-
-
     private void GetAllBoardDataFile()
     {
         string folderPath = Path.Combine(Application.streamingAssetsPath, "Csvs", "TurnStage");
@@ -283,6 +282,17 @@ public class ResourcesData : MonoBehaviour
 
         boardData[fileName] = data;
     }
+
+    #endregion
+
+    #region Board Block Material
+    public Material m_BoardBlockCanGo;
+    public Material m_BoardBlockCanEat;
+    public Material m_BoardBlockGotCurse;
+    public Material m_BoardBlockKingSpawn;
+
+
+    #endregion
 
     private void BoardDataInit()
     {
