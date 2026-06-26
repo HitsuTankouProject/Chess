@@ -288,8 +288,6 @@ public class Player : MonoBehaviour
 
 
     #endregion
-
-
     public void Player_Init(ChessColor targetChess)
     {
         usingChess = targetChess;
