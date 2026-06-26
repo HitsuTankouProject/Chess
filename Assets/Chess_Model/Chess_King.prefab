@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2930892282555413369}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -43,7 +43,7 @@ GameObject:
   - component: {fileID: 8549110317547274975}
   - component: {fileID: 733227852412629906}
   - component: {fileID: 60828926655836136}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Aura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 8368699215066898781}
   - component: {fileID: 6252779742298184913}
   - component: {fileID: 8169311506897095304}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Chess_King
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -206,7 +206,7 @@ GameObject:
   - component: {fileID: 6164655825044615146}
   - component: {fileID: 8833905429277749285}
   - component: {fileID: 3225149887097462321}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: King
   m_TagString: Untagged
   m_Icon: {fileID: 0}

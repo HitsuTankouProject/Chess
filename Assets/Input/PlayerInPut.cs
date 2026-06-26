@@ -146,6 +146,7 @@ public class PlayerInPut : MonoBehaviour
         }
 
         hitObject = hit.collider.gameObject;
+        Debug.Log(hitObject.name);
         return true;
     }
 

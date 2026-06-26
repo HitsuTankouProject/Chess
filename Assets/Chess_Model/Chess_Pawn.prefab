@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 9010871141770333849}
   - component: {fileID: 5954870058497381654}
   - component: {fileID: 5551991912848571491}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Chess_Pawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,7 +83,7 @@ GameObject:
   - component: {fileID: 5407014945083017223}
   - component: {fileID: 2187829976955275503}
   - component: {fileID: 4236574631730026368}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Aura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3875344186219451913}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -205,7 +205,7 @@ GameObject:
   - component: {fileID: 1056423753712767556}
   - component: {fileID: 3223414300604831376}
   - component: {fileID: 1785591401092794117}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Pawn
   m_TagString: Untagged
   m_Icon: {fileID: 0}

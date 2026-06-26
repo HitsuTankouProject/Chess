@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using UnityEngine;
-
+using Data;
 public enum AllBuffCard
 {
     SageKing, MadKing,
@@ -17,38 +17,7 @@ public enum AllBuffCard
 
     None = -1
 }
-public class BoardInitData
-{
-    public string[] boardStartData;
-
-    public Dictionary<Vector2Int, Pair<ChessColor, ChessType>> boardStartMap = new();
-}
-
-[System.Serializable]
-public class ChessData
-{
-    public GameObject prefab;
-    public Mesh model;
-    public AllBuffCard buff01 { get; private set; }
-    public AllBuffCard buff02 { get; private set; }
-    public void SetBuff(AllBuffCard first, AllBuffCard secondy)
-    {
-        buff01 = first;
-        buff02 = secondy;
-    }
-
-}
-[System.Serializable]
-public class CardData
-{
-    public Material m_CardCover;
-    public string name { get; set; }
-    public string buffLevel01Description { get; set; }
-    public string buffLevel02Description { get; set; }
-    public string buffLevel03Description { get; set; }
-}
-
-
+public enum Language { Japanese, English }
 
 public class ResourcesData : MonoBehaviour
 {
@@ -84,68 +53,50 @@ public class ResourcesData : MonoBehaviour
         return true;
 
     }
-    #region Card Data
-    [Header("Buff Card Data")]
-    public CardData sageKing;
-    public CardData madKing;
-    public CardData witcher;
-    public CardData beauty;
-    public CardData sorcerer;
-    public CardData monk;
-    public CardData rusher;
-    public CardData guardian;
-    public CardData charger;
-    public CardData skirmisher;
-    public CardData scout;
-    public CardData substitute;
 
-    [Header("Card's Back Materials")]
-    public Material m_CardBack;
+    #region ChessData
+    [Header("Chess Model")]
 
-    public Dictionary<AllBuffCard, CardData> cardDataDict { get; private set; } = new();
-    public void CardDataDictInit()
+    public AllChessModel allChessModel;
+    public Dictionary<ChessType, ChessData> chessModelDict => allChessModel.chessModelDict;
+    public ChessData FindChessDataByBuff(AllBuffCard targetBuff)
     {
-        cardDataDict = new Dictionary<AllBuffCard, CardData>()
+        foreach (ChessData chessData in chessModelDict.Values)
         {
-            // King
-            { AllBuffCard.SageKing, sageKing },
-            { AllBuffCard.MadKing, madKing },
+            if (chessData.buff01 == targetBuff ||
+                chessData.buff02 == targetBuff)
+            {
+                return chessData;
+            }
+        }
 
-            // Queen
-            { AllBuffCard.Witcher, witcher },
-            { AllBuffCard.Beauty, beauty },
+        return null;
+    }
+    private void ChessDataInit() => allChessModel.ChessDataInit();
 
-            // Bishop
-            { AllBuffCard.Sorcerer, sorcerer },
-            { AllBuffCard.Monk, monk },
-
-            // Rook
-            { AllBuffCard.Rusher, rusher },
-            { AllBuffCard.Guardian, guardian },
-
-            // Knight
-            { AllBuffCard.Charger, charger },
-            { AllBuffCard.Skirmisher, skirmisher },
-
-            // Pawn
-            { AllBuffCard.Scout, scout },
-            { AllBuffCard.Substitute, substitute },
-    };
+    public Material TargetColor(ChessColor color)
+    {
+        if (color == ChessColor.White) return allMaterial.m_White;
+        else return allMaterial.m_Black;
     }
 
-    public enum Language { Japanese, English }
-    private const string englishDescriptionPath = "Csvs/Card_Description/Card_Description_English";
-    private string[] englishDescriptionCsvLines;
+    #endregion
 
-    private const string japaneseDescriptionPath = "Csvs/Card_Description/Card_Description_Japanese";
-    private string[] japaneseDescriptionCsvLines;
+    #region Card Data
+    [Header("Buff Card Data")]
+    public AllCradData cradDataList;
+    public Dictionary<AllBuffCard, CardData> cardDataDict => cradDataList.cardDataDict;
+    public void CardDataDictInit()=> cradDataList.CardDataDictInit();
+    private AllBoardInitData allBoardInitData = new();
+    private Dictionary<Language, string[]> allDescriptionCsvLines => allBoardInitData.allDescriptionCsvLines;
 
     private const int dataIndexMax = 4;
 
-    private string[] LanguageCsv(Language language) =>
-        language == Language.Japanese ? japaneseDescriptionCsvLines : englishDescriptionCsvLines;
+    private string[] LanguageCsv(Language language) => allDescriptionCsvLines[language];
+    private string DescriptionPath(Language language)
+        => $"Csvs/Card_Description/Card_Description_{language.ToString()}";
 
-    private void CardDataUpdate(Language language)
+    public void CardDataUpdate(Language language)
     {
         string[] languageFile = LanguageCsv(language);
 
@@ -154,7 +105,6 @@ public class ResourcesData : MonoBehaviour
             Debug.LogError("CSV is Null");
             return;
         }
-        //Debug.Log(languageFile.Length);
         foreach (AllBuffCard buffCardName in Enum.GetValues(typeof(AllBuffCard)))
         {
             if (buffCardName == AllBuffCard.None) continue;
@@ -165,23 +115,13 @@ public class ResourcesData : MonoBehaviour
                 continue;
             }
 
-            //Debug.Log($"RAW = [{languageFile[index]}]");
-
             string[] values = languageFile[index].Split(',');
-
-            //Debug.Log($"Count = {values.Length}");
-            //Debug.Log(string.Join(" | ", values));
-            //Debug.Log(values[0].Trim());
-            //Debug.Log(values[1].Trim());
-            //Debug.Log(values[2].Trim());
-            //Debug.Log(values[3].Trim());
 
             if (values.Length < dataIndexMax)
             {
                 Debug.LogWarning($"{buffCardName} CSV format error");
                 continue;
             }
-
             if (values[0].Trim() != null) cardDataDict[buffCardName].name = values[0].Trim();
             if (values[1].Trim() != null) cardDataDict[buffCardName].buffLevel01Description = values[1].Trim();
             if (values[2].Trim() != null) cardDataDict[buffCardName].buffLevel02Description = values[2].Trim();
@@ -190,39 +130,39 @@ public class ResourcesData : MonoBehaviour
         }
     }
 
-    private bool LanguageDataInit()
+    private void LanguageDataInit()
     {
-        bool haveEnglishLanguage = LoadCSV(englishDescriptionPath, out englishDescriptionCsvLines);
-        bool haveJapaneseLanguage = LoadCSV(japaneseDescriptionPath, out japaneseDescriptionCsvLines);
+        foreach (Language language in Enum.GetValues(typeof(Language)))
+        {
+            bool haveLanguage = LoadCSV(DescriptionPath(language), out string[] descriptionCsvLines);
+            if (!haveLanguage)
+            {
+                Debug.LogError($"{language.ToString()} Failed");
+                return;
+            }
+            else allBoardInitData.AddToDescriptionCsvLines(language, descriptionCsvLines);
 
-        return haveEnglishLanguage && haveJapaneseLanguage;
+
+        }
+
     }
 
     private void CardDataInit()
     {
         CardDataDictInit();
-        bool isAllLanguageDataInit = LanguageDataInit();
-        if (!isAllLanguageDataInit)
-        {
-            Debug.LogError("AllLanguageDataInit Failed");
-            return;
-        }
-
+        LanguageDataInit();
         CardDataUpdate(Language.Japanese);
-        
-
     }
 
     #endregion
 
     #region PlayerSprite
-    [Header("PlayerSprite")]
-    public Sprite sp_WhiteColor;
-    public Sprite sp_BlackColor;
+    [Header("All Sprite")]
+    public AllSprite allSprite;
     public Sprite PlayerSprite(ChessColor color)
     {
-        if (color == ChessColor.White) return sp_WhiteColor;
-        else if (color == ChessColor.Black) return sp_BlackColor;
+        if (color == ChessColor.White) return allSprite.sp_WhiteColor;
+        else if (color == ChessColor.Black) return allSprite.sp_BlackColor;
 
         return null;
     }
@@ -285,13 +225,9 @@ public class ResourcesData : MonoBehaviour
 
     #endregion
 
-    #region Board Block Material
-    public Material m_BoardBlockCanGo;
-    public Material m_BoardBlockCanEat;
-    public Material m_BoardBlockGotCurse;
-    public Material m_BoardBlockKingSpawn;
-
-
+    #region Material
+    [Header("All Material")]
+    public AllMaterial allMaterial;
     #endregion
 
     private void BoardDataInit()
@@ -300,67 +236,6 @@ public class ResourcesData : MonoBehaviour
     }
 
 
-    #endregion
-
-    #region ChessData
-    [Header("Chess Model")]
-
-    public ChessData king;
-    public ChessData queen;
-    public ChessData bishop;
-    public ChessData rook;
-    public ChessData knight;
-    public ChessData pawn;
-
-    public Dictionary<ChessType, ChessData> chessModelDict { get; private set; } = new();
-    public ChessData FindChessDataByBuff(AllBuffCard targetBuff)
-    {
-        foreach (ChessData chessData in chessModelDict.Values)
-        {
-            if (chessData.buff01 == targetBuff ||
-                chessData.buff02 == targetBuff)
-            {
-                return chessData;
-            }
-        }
-
-        return null;
-    }
-
-
-    private void ChessDataInit()
-    {
-        king.SetBuff(AllBuffCard.SageKing, AllBuffCard.MadKing);
-        queen.SetBuff(AllBuffCard.Witcher, AllBuffCard.Beauty);
-        bishop.SetBuff(AllBuffCard.Sorcerer, AllBuffCard.Monk);
-        rook.SetBuff(AllBuffCard.Rusher, AllBuffCard.Guardian);
-        knight.SetBuff(AllBuffCard.Charger, AllBuffCard.Skirmisher);
-        pawn.SetBuff(AllBuffCard.Scout, AllBuffCard.Substitute);
-
-        chessModelDict = new()
-        {
-            [ChessType.King] = king,
-            [ChessType.Queen] = queen,
-            [ChessType.Bishop] = bishop,
-            [ChessType.Rook] = rook,
-            [ChessType.Knight] = knight,
-            [ChessType.Pawn] = pawn,
-        };
-    }
-
-    [Header("Chess Material")]
-    public Material m_White;
-    public Material m_Black;
-    public Material TargetColor(ChessColor color)
-    {
-        if(color== ChessColor.White) return m_White;
-        else if (color == ChessColor.Black) return m_Black;
-
-        Debug.LogError("Why in here");
-        return null;
-
-    }
-    public Material m_GotCurse;
     #endregion
 
     public void ResourcesInit()

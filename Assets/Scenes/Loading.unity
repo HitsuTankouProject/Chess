@@ -165,6 +165,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   resourcesData: {fileID: 779031648}
+  isTest: 0
 --- !u!1001 &64295095
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -538,54 +539,114 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f4cb9fe1647c6469cd1ca82fa5debb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourcesData
-  sageKing:
-    m_CardCover: {fileID: 2100000, guid: 15109750232824e4cb0d9fd44c7a737a, type: 2}
-  madKing:
-    m_CardCover: {fileID: 2100000, guid: d5f23b66c8d15534a8f7f5109aff8cf0, type: 2}
-  witcher:
-    m_CardCover: {fileID: 2100000, guid: 2ba4f384dd0284f4f80f492c0d62df03, type: 2}
-  beauty:
-    m_CardCover: {fileID: 2100000, guid: fb7c70feb2cf27746bf2cab826380f18, type: 2}
-  sorcerer:
-    m_CardCover: {fileID: 2100000, guid: 55f891e82ade74c499bbd04eb4e86363, type: 2}
-  monk:
-    m_CardCover: {fileID: 2100000, guid: ae583504d2f73f244840ca77df4cf4d0, type: 2}
-  rusher:
-    m_CardCover: {fileID: 2100000, guid: 6e8cd9051b9faf54fb2492eb9843d62a, type: 2}
-  guardian:
-    m_CardCover: {fileID: 2100000, guid: 78b07b6b5f34f7947a3f3b933d2cbb3b, type: 2}
-  charger:
-    m_CardCover: {fileID: 2100000, guid: edfe93fd8f148bb4ab1419f9547491c7, type: 2}
-  skirmisher:
-    m_CardCover: {fileID: 2100000, guid: 2a9bb990921fa394098475e8bdc912c8, type: 2}
-  scout:
-    m_CardCover: {fileID: 2100000, guid: e2523446d1852cc4086fd0f482b266b0, type: 2}
-  substitute:
-    m_CardCover: {fileID: 2100000, guid: 26d6a5075237f9f4dbdf882678e795c5, type: 2}
-  m_CardBack: {fileID: 2100000, guid: 7695027412df97b4db25d6faffd30e24, type: 2}
-  sp_WhiteColor: {fileID: 21300000, guid: f7bfe71ba1302b24a9b03c5436aa579d, type: 3}
-  sp_BlackColor: {fileID: 21300000, guid: 635c70a7e1fffbd4ba9b3baa26a3302c, type: 3}
-  king:
-    prefab: {fileID: 7934165057480354544, guid: 620331901de52d746bf2a069daeef861, type: 3}
-    model: {fileID: 4300000, guid: b0d116e9f78530d478c1a09b38140c8c, type: 2}
-  queen:
-    prefab: {fileID: 8850071498296562618, guid: 43ec27fdd5e3e1c4e905ba83c6e2696e, type: 3}
-    model: {fileID: 4300000, guid: d81072b94c3d68b44855906aea82fac9, type: 2}
-  bishop:
-    prefab: {fileID: 8459677512333239083, guid: 2d85ac5de5f8574418b820b9bc3bc19e, type: 3}
-    model: {fileID: 4300000, guid: e5195603808e5214d9423b73351a489d, type: 2}
-  rook:
-    prefab: {fileID: 635408685441980965, guid: aa3552e20f999e040baeed46eeee2829, type: 3}
-    model: {fileID: 4300000, guid: 1ca449cef00d40348871bb22ecbeea08, type: 2}
-  knight:
-    prefab: {fileID: 5272293581533002671, guid: 046408882877b634a8035bebfc930d56, type: 3}
-    model: {fileID: 4300000, guid: 4b02b975e335a2a41b4d0b8487c8ddd7, type: 2}
-  pawn:
-    prefab: {fileID: 369259851351452256, guid: c99d7b6ed0de0cc459ead83319885a98, type: 3}
-    model: {fileID: 4300000, guid: 78244915927846d4a8510bfcff645091, type: 2}
-  m_White: {fileID: 2100000, guid: 4e1b89e8dc9cc0b45a3cd18bf99372d2, type: 2}
-  m_Black: {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
-  m_GotCurse: {fileID: 2100000, guid: bea8b7a5e6b6770418150af2584344b9, type: 2}
+  allChessModel:
+    king:
+      prefab: {fileID: 7934165057480354544, guid: 620331901de52d746bf2a069daeef861, type: 3}
+      model: {fileID: 4300000, guid: b0d116e9f78530d478c1a09b38140c8c, type: 2}
+    queen:
+      prefab: {fileID: 8850071498296562618, guid: 43ec27fdd5e3e1c4e905ba83c6e2696e, type: 3}
+      model: {fileID: 4300000, guid: d81072b94c3d68b44855906aea82fac9, type: 2}
+    bishop:
+      prefab: {fileID: 8459677512333239083, guid: 2d85ac5de5f8574418b820b9bc3bc19e, type: 3}
+      model: {fileID: 4300000, guid: e5195603808e5214d9423b73351a489d, type: 2}
+    rook:
+      prefab: {fileID: 635408685441980965, guid: aa3552e20f999e040baeed46eeee2829, type: 3}
+      model: {fileID: 4300000, guid: 1ca449cef00d40348871bb22ecbeea08, type: 2}
+    knight:
+      prefab: {fileID: 5272293581533002671, guid: 046408882877b634a8035bebfc930d56, type: 3}
+      model: {fileID: 4300000, guid: 4b02b975e335a2a41b4d0b8487c8ddd7, type: 2}
+    pawn:
+      prefab: {fileID: 369259851351452256, guid: c99d7b6ed0de0cc459ead83319885a98, type: 3}
+      model: {fileID: 4300000, guid: 78244915927846d4a8510bfcff645091, type: 2}
+  cradDataList:
+    sageKing:
+      m_CardCover: {fileID: 2100000, guid: 15109750232824e4cb0d9fd44c7a737a, type: 2}
+    madKing:
+      m_CardCover: {fileID: 2100000, guid: d5f23b66c8d15534a8f7f5109aff8cf0, type: 2}
+    witcher:
+      m_CardCover: {fileID: 2100000, guid: 2ba4f384dd0284f4f80f492c0d62df03, type: 2}
+    beauty:
+      m_CardCover: {fileID: 2100000, guid: fb7c70feb2cf27746bf2cab826380f18, type: 2}
+    sorcerer:
+      m_CardCover: {fileID: 2100000, guid: 55f891e82ade74c499bbd04eb4e86363, type: 2}
+    monk:
+      m_CardCover: {fileID: 2100000, guid: ae583504d2f73f244840ca77df4cf4d0, type: 2}
+    rusher:
+      m_CardCover: {fileID: 2100000, guid: 6e8cd9051b9faf54fb2492eb9843d62a, type: 2}
+    guardian:
+      m_CardCover: {fileID: 2100000, guid: 78b07b6b5f34f7947a3f3b933d2cbb3b, type: 2}
+    charger:
+      m_CardCover: {fileID: 2100000, guid: edfe93fd8f148bb4ab1419f9547491c7, type: 2}
+    skirmisher:
+      m_CardCover: {fileID: 2100000, guid: 2a9bb990921fa394098475e8bdc912c8, type: 2}
+    scout:
+      m_CardCover: {fileID: 2100000, guid: e2523446d1852cc4086fd0f482b266b0, type: 2}
+    substitute:
+      m_CardCover: {fileID: 2100000, guid: 26d6a5075237f9f4dbdf882678e795c5, type: 2}
+    m_CardBack: {fileID: 2100000, guid: 7695027412df97b4db25d6faffd30e24, type: 2}
+  allSprite:
+    sp_WhiteColor: {fileID: 21300000, guid: f7bfe71ba1302b24a9b03c5436aa579d, type: 3}
+    sp_BlackColor: {fileID: 21300000, guid: 635c70a7e1fffbd4ba9b3baa26a3302c, type: 3}
+    sp_Return: {fileID: 21300000, guid: 9e4345b2340c9a54ca11cbf729eb94a0, type: 3}
+  allMaterial:
+    m_BoardBlockCanGo: {fileID: 2100000, guid: 9798fe1578802004f93427da74b9d814, type: 2}
+    m_BoardBlockCanEat: {fileID: 2100000, guid: afe28a8608eb83b44ba4063906f5aa7f, type: 2}
+    e_BoardBlockGotCurse: {fileID: 2100000, guid: cc607e5526f9320459bea6b3d072462f, type: 2}
+    e_BoardBlockKingSpawn: {fileID: 2100000, guid: 5b17d661cc181394890908d5154c28db, type: 2}
+    m_BoardBlockKingSpawn: {fileID: 2100000, guid: 43e1e73dde1b1d940873c80814b86c7d, type: 2}
+    m_ChessHaveExtraLife: {fileID: 2100000, guid: 47dd7cc29365b5e4eaf324a83ed6c431, type: 2}
+    m_White: {fileID: 2100000, guid: 4e1b89e8dc9cc0b45a3cd18bf99372d2, type: 2}
+    m_Black: {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
+    m_GotCurse: {fileID: 2100000, guid: c357f8115a3bc694eb5903016f2345a9, type: 2}
+--- !u!1 &1413284584
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1413284586}
+  - component: {fileID: 1413284585}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1413284585
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1413284584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea6b4bad14fb836498b6ca31c83a3b44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::aaa
+  sss: {fileID: 0}
+  black: {fileID: 0}
+  white: {fileID: 0}
+  asss:
+    sss: 0
+--- !u!4 &1413284586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1413284584}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -7.60249, y: 29.62423, z: 20.09344}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2023683151
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -726,3 +787,4 @@ SceneRoots:
   - {fileID: 3232164880753811743}
   - {fileID: 64295095}
   - {fileID: 2023683151}
+  - {fileID: 1413284586}

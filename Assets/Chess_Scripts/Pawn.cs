@@ -184,8 +184,8 @@ public class Pawn : ChessBasic
         FindCanEat();
         ExtraFindPossibleMove(false);
 
-        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
-        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, type, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, type, possibleEatList);
     }
 
     private void ScoutSecondBuff(ChessBasic chess)

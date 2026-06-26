@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Collections;
-using UnityEngine;
-using static ChessBlock;
+using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 [Serializable]
@@ -29,14 +28,6 @@ public class ChessBoard : MonoBehaviour
             Destroy(this);
         }
     }
-
-    [Header("Board Block Material")]
-    public Material m_Black;
-    public Material m_White;
-    public Material m_CanGo;
-    public Material m_CanEat;
-    public Material m_GotCurse;
-
 
     [Header("Players")]
 
@@ -142,13 +133,16 @@ public class ChessBoard : MonoBehaviour
         {
             foreach (var block in col.chessBlocks)
             {
-                if (block.color == ChessBoardColor.Black) blackChessBlocks.Add(block);
+                if (block.color == ChessColor.Black) blackChessBlocks.Add(block);
                 else whiteChessBlocks.Add(block);
             }
         }
 
         black_KingChessSpawn = blackChessBlocks[UnityEngine.Random.Range(0, blackChessBlocks.Count)].position;
+        ChessBlock(black_KingChessSpawn).ChangeBlockStage(BlockStage.KingSpawn);
         white_KingChessSpawn = whiteChessBlocks[UnityEngine.Random.Range(0, whiteChessBlocks.Count)].position;
+        ChessBlock(white_KingChessSpawn).ChangeBlockStage(BlockStage.KingSpawn);
+
         return true;
     }
 
@@ -257,18 +251,22 @@ public class ChessBoard : MonoBehaviour
 
     }
 
-    public void ShowActive(ChessBlockStage activeStage,HashSet<Vector2Int> canGoPos)
+    public void ShowActive(ChessBlockStage activeStage, ChessType chessType, HashSet<Vector2Int> canGoPos)
     {
         if (canGoPos.Count == 0) return;
         nowShowing.AddRange(canGoPos);
-        foreach (var pos in canGoPos) ChessBlock(pos).Active(activeStage);
+        foreach (var pos in canGoPos) ChessBlock(pos).ChangeChessBlockEffect(activeStage, chessType);
     }
+
     public void ReSetActive()
     {
         if (nowShowing.Count == 0) return;
-        foreach (var pos in nowShowing) ChessBlock(pos).Active(ChessBlockStage.Normal);
+        foreach (var pos in nowShowing) ChessBlock(pos).ChangeChessBlockEffect(ChessBlockStage.Normal);
         nowShowing.Clear();
     }
+
+    public void CurseTheBlock(Vector2Int position, ChessBasic chess)
+        => ChessBlock(position).ChangeBlockStage(BlockStage.GotCurse, chess);
 
     public bool IsOutOfBoard(Vector2Int position)
     {

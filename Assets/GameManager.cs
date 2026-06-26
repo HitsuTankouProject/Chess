@@ -7,10 +7,10 @@ using UnityEngine.SceneManagement;
 public enum Scene { Loading,GameTitle,InGame,Release,Error}
 
 [System.Serializable]
-public class Pair<F, S>
+public struct Pair<F, S>
 {
-    public Pair()
-    { }
+    //public Pair()
+    //{ }
     public Pair(F f, S s)
     {
         this.first = f;
@@ -62,11 +62,12 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-
-
+    public bool isTest = false;
+    
     private void Start()
     {
         resourcesData.ResourcesInit();
+        if (isTest) return;
         SceneManager.LoadScene("InGame", LoadSceneMode.Single);
     }
 }

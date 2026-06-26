@@ -17,7 +17,7 @@ public class PickCardManual : ButtonManual
     {
         pickedCard = card;
 
-        CardData cardData = _resourcesData.cardDataDict[pickedCard.buffCard];
+        Data.CardData cardData = _resourcesData.cardDataDict[pickedCard.buffCard];
         descriptionName.text = cardData.name;
         pickCardCover_MeshRenderer.material = cardData.m_CardCover;
         descriptionLevel01.text = cardData.buffLevel01Description;

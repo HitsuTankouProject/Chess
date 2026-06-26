@@ -1,11 +1,18 @@
 using UnityEngine;
 
+[System.Serializable]
+public struct Adddd
+{
+    public int sss;
+}
+
 public class aaa : MonoBehaviour
 {
     public GameObject sss;
     public Material black;
     public Material white;
 
+    public Adddd asss;
 
     private void Start()
     {

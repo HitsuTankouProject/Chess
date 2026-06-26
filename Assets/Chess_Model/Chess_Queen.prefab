@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7799825346533320651}
   - component: {fileID: 7493957040757196487}
   - component: {fileID: 5235081678310413164}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Aura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 8125245327912951481}
   - component: {fileID: 8926330182991090116}
   - component: {fileID: 7101026003049596784}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Chess_Queen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2008417401390925130}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -205,7 +205,7 @@ GameObject:
   - component: {fileID: 8857405629393311759}
   - component: {fileID: 8058779420123719791}
   - component: {fileID: 6334222028079370060}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Queeen
   m_TagString: Untagged
   m_Icon: {fileID: 0}

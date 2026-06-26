@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 419529161275417089}
   - component: {fileID: 3053332435877529813}
   - component: {fileID: 4850653856493888698}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Aura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 3983317917986752183}
   - component: {fileID: 2474999770840172480}
   - component: {fileID: 4315051591284962426}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bishop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -189,7 +189,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3514504107827511109}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 5037342108308857606}
   - component: {fileID: 3289075630814855856}
   - component: {fileID: 5494757575212692270}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Chess_Bishop
   m_TagString: Untagged
   m_Icon: {fileID: 0}

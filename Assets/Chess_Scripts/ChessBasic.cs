@@ -135,8 +135,8 @@ public abstract class ChessBasic : MonoBehaviour
         FindCanMove(false);
         ExtraFindPossibleMove(false);
 
-        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
-        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, type, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, type, possibleEatList);
 
     }
     public HashSet<Vector2Int> PossibleMove(bool isThrougt)

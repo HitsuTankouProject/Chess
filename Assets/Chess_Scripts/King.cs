@@ -239,8 +239,8 @@ public class King : ChessBasic
         if (isMadKing) MadKing_FindPossibleMove();
         else FindCanMove(false);
 
-        _chessBoard.ShowActive(ChessBlockStage.CanGo, possibleMoveList);
-        _chessBoard.ShowActive(ChessBlockStage.CanEat, possibleEatList);
+        _chessBoard.ShowActive(ChessBlockStage.CanGo, type, possibleMoveList);
+        _chessBoard.ShowActive(ChessBlockStage.CanEat, type, possibleEatList);
     }
 
     private ChessType CanKillKingType()

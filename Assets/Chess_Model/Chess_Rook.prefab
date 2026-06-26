@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4053250534985185602}
   - component: {fileID: 7002386999097073300}
   - component: {fileID: 5262762066692594470}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Chess_Rook
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -83,7 +83,7 @@ GameObject:
   - component: {fileID: 7106065635867741919}
   - component: {fileID: 7755665648184037174}
   - component: {fileID: 6389492013209605086}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Aura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8350482551941051810}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -205,7 +205,7 @@ GameObject:
   - component: {fileID: 4817663048816216116}
   - component: {fileID: 7107814579402529947}
   - component: {fileID: 7088199260981871931}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Rook
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -184,7 +184,7 @@ public class InGame : MonoBehaviour
         blackChessPlayer.playerInPut.StartInput();
 
         GameStart();
-        StartCoroutine(ChooseSkillProcess());
+        //StartCoroutine(ChooseSkillProcess());
 
     }
 

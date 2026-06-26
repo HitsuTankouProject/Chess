@@ -2925,54 +2925,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f4cb9fe1647c6469cd1ca82fa5debb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourcesData
-  sageKing:
-    m_CardCover: {fileID: 0}
-  madKing:
-    m_CardCover: {fileID: 0}
-  witcher:
-    m_CardCover: {fileID: 0}
-  beauty:
-    m_CardCover: {fileID: 0}
-  sorcerer:
-    m_CardCover: {fileID: 0}
-  monk:
-    m_CardCover: {fileID: 0}
-  rusher:
-    m_CardCover: {fileID: 0}
-  guardian:
-    m_CardCover: {fileID: 0}
-  charger:
-    m_CardCover: {fileID: 0}
-  skirmisher:
-    m_CardCover: {fileID: 0}
-  scout:
-    m_CardCover: {fileID: 0}
-  substitute:
-    m_CardCover: {fileID: 0}
-  m_CardBack: {fileID: 0}
-  sp_WhiteColor: {fileID: 0}
-  sp_BlackColor: {fileID: 0}
-  king:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  queen:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  bishop:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  rook:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  knight:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  pawn:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  m_White: {fileID: 0}
-  m_Black: {fileID: 0}
-  m_GotCurse: {fileID: 0}
+  allChessModel:
+    king:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    queen:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    bishop:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    rook:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    knight:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    pawn:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+  cradDataList:
+    sageKing:
+      m_CardCover: {fileID: 0}
+    madKing:
+      m_CardCover: {fileID: 0}
+    witcher:
+      m_CardCover: {fileID: 0}
+    beauty:
+      m_CardCover: {fileID: 0}
+    sorcerer:
+      m_CardCover: {fileID: 0}
+    monk:
+      m_CardCover: {fileID: 0}
+    rusher:
+      m_CardCover: {fileID: 0}
+    guardian:
+      m_CardCover: {fileID: 0}
+    charger:
+      m_CardCover: {fileID: 0}
+    skirmisher:
+      m_CardCover: {fileID: 0}
+    scout:
+      m_CardCover: {fileID: 0}
+    substitute:
+      m_CardCover: {fileID: 0}
+    m_CardBack: {fileID: 0}
+  allSprite:
+    sp_WhiteColor: {fileID: 0}
+    sp_BlackColor: {fileID: 0}
+    sp_Return: {fileID: 0}
+  allMaterial:
+    m_BoardBlockCanGo: {fileID: 0}
+    m_BoardBlockCanEat: {fileID: 0}
+    e_BoardBlockGotCurse: {fileID: 0}
+    e_BoardBlockKingSpawn: {fileID: 0}
+    m_BoardBlockKingSpawn: {fileID: 0}
+    m_ChessHaveExtraLife: {fileID: 0}
+    m_White: {fileID: 0}
+    m_Black: {fileID: 0}
+    m_GotCurse: {fileID: 0}
 --- !u!1 &929482134
 GameObject:
   m_ObjectHideFlags: 0
@@ -4748,7 +4759,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1286870461
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5206,11 +5217,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 471094815, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.068
+      value: 2.08
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Range
-      value: 831
+      value: 797.28
       objectReference: {fileID: 0}
     - target: {fileID: 471094816, guid: 47ab20d515feb2c43bd7467e2a495051, type: 3}
       propertyPath: m_Intensity
@@ -6741,7 +6752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1847909143
 RectTransform:
   m_ObjectHideFlags: 0

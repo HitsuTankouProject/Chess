@@ -301,8 +301,8 @@ public class Player : MonoBehaviour
     {
         AllChessInit(targetDict);
         Player_ChessDictUpdate();
-        //queenBuffType = QueenBuff.Witcher;
-        //witcher.LevelUpToTargetLevel(3, out bool a);
+        queenBuffType = QueenBuff.Witcher;
+        witcher.LevelUpToTargetLevel(3, out bool a);
     }
 
     private void Player_ChessDictUpdate()

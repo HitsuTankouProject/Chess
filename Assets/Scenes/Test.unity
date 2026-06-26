@@ -131,6 +131,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_Rook
       objectReference: {fileID: 0}
+    - target: {fileID: 635408685441980965, guid: aa3552e20f999e040baeed46eeee2829, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4053250534985185602, guid: aa3552e20f999e040baeed46eeee2829, type: 3}
       propertyPath: m_LocalPosition.x
       value: -35
@@ -1190,6 +1194,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_Rook (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 635408685441980965, guid: aa3552e20f999e040baeed46eeee2829, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4053250534985185602, guid: aa3552e20f999e040baeed46eeee2829, type: 3}
       propertyPath: m_LocalPosition.x
       value: -35
@@ -1886,6 +1894,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_Queen
       objectReference: {fileID: 0}
+    - target: {fileID: 8850071498296562618, guid: 43ec27fdd5e3e1c4e905ba83c6e2696e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8927474209658848392, guid: 43ec27fdd5e3e1c4e905ba83c6e2696e, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -2099,6 +2111,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_Queen (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8850071498296562618, guid: 43ec27fdd5e3e1c4e905ba83c6e2696e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8927474209658848392, guid: 43ec27fdd5e3e1c4e905ba83c6e2696e, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -2167,6 +2183,10 @@ PrefabInstance:
     - target: {fileID: 8459677512333239083, guid: 2d85ac5de5f8574418b820b9bc3bc19e, type: 3}
       propertyPath: m_Name
       value: Chess_Bishop (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8459677512333239083, guid: 2d85ac5de5f8574418b820b9bc3bc19e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2708,6 +2728,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_King (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 7934165057480354544, guid: 620331901de52d746bf2a069daeef861, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8368699215066898781, guid: 620331901de52d746bf2a069daeef861, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5
@@ -3224,54 +3248,65 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69f4cb9fe1647c6469cd1ca82fa5debb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ResourcesData
-  sageKing:
-    m_CardCover: {fileID: 0}
-  madKing:
-    m_CardCover: {fileID: 0}
-  witcher:
-    m_CardCover: {fileID: 0}
-  beauty:
-    m_CardCover: {fileID: 0}
-  sorcerer:
-    m_CardCover: {fileID: 0}
-  monk:
-    m_CardCover: {fileID: 0}
-  rusher:
-    m_CardCover: {fileID: 0}
-  guardian:
-    m_CardCover: {fileID: 0}
-  charger:
-    m_CardCover: {fileID: 0}
-  skirmisher:
-    m_CardCover: {fileID: 0}
-  scout:
-    m_CardCover: {fileID: 0}
-  substitute:
-    m_CardCover: {fileID: 0}
-  m_CardBack: {fileID: 0}
-  sp_WhiteColor: {fileID: 0}
-  sp_BlackColor: {fileID: 0}
-  king:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  queen:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  bishop:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  rook:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  knight:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  pawn:
-    prefab: {fileID: 0}
-    model: {fileID: 0}
-  m_White: {fileID: 0}
-  m_Black: {fileID: 0}
-  m_GotCurse: {fileID: 0}
+  allChessModel:
+    king:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    queen:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    bishop:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    rook:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    knight:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+    pawn:
+      prefab: {fileID: 0}
+      model: {fileID: 0}
+  cradDataList:
+    sageKing:
+      m_CardCover: {fileID: 0}
+    madKing:
+      m_CardCover: {fileID: 0}
+    witcher:
+      m_CardCover: {fileID: 0}
+    beauty:
+      m_CardCover: {fileID: 0}
+    sorcerer:
+      m_CardCover: {fileID: 0}
+    monk:
+      m_CardCover: {fileID: 0}
+    rusher:
+      m_CardCover: {fileID: 0}
+    guardian:
+      m_CardCover: {fileID: 0}
+    charger:
+      m_CardCover: {fileID: 0}
+    skirmisher:
+      m_CardCover: {fileID: 0}
+    scout:
+      m_CardCover: {fileID: 0}
+    substitute:
+      m_CardCover: {fileID: 0}
+    m_CardBack: {fileID: 0}
+  allSprite:
+    sp_WhiteColor: {fileID: 0}
+    sp_BlackColor: {fileID: 0}
+    sp_Return: {fileID: 0}
+  allMaterial:
+    m_BoardBlockCanGo: {fileID: 0}
+    m_BoardBlockCanEat: {fileID: 0}
+    e_BoardBlockGotCurse: {fileID: 0}
+    e_BoardBlockKingSpawn: {fileID: 0}
+    m_BoardBlockKingSpawn: {fileID: 0}
+    m_ChessHaveExtraLife: {fileID: 0}
+    m_White: {fileID: 0}
+    m_Black: {fileID: 0}
+    m_GotCurse: {fileID: 0}
 --- !u!1 &929482134
 GameObject:
   m_ObjectHideFlags: 0
@@ -4223,6 +4258,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_Pawn
       objectReference: {fileID: 0}
+    - target: {fileID: 369259851351452256, guid: c99d7b6ed0de0cc459ead83319885a98, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1475829069397193835, guid: c99d7b6ed0de0cc459ead83319885a98, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -4708,6 +4747,10 @@ PrefabInstance:
     - target: {fileID: 5272293581533002671, guid: 046408882877b634a8035bebfc930d56, type: 3}
       propertyPath: m_Name
       value: Chess_Knight (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5272293581533002671, guid: 046408882877b634a8035bebfc930d56, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -7379,6 +7422,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_Pawn (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 369259851351452256, guid: c99d7b6ed0de0cc459ead83319885a98, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1475829069397193835, guid: c99d7b6ed0de0cc459ead83319885a98, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -7989,6 +8036,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_King
       objectReference: {fileID: 0}
+    - target: {fileID: 7934165057480354544, guid: 620331901de52d746bf2a069daeef861, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8368699215066898781, guid: 620331901de52d746bf2a069daeef861, type: 3}
       propertyPath: m_LocalPosition.x
       value: 5
@@ -8345,6 +8396,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Chess_Knight
       objectReference: {fileID: 0}
+    - target: {fileID: 5272293581533002671, guid: 046408882877b634a8035bebfc930d56, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -8409,6 +8464,10 @@ PrefabInstance:
     - target: {fileID: 8459677512333239083, guid: 2d85ac5de5f8574418b820b9bc3bc19e, type: 3}
       propertyPath: m_Name
       value: Chess_Bishop
+      objectReference: {fileID: 0}
+    - target: {fileID: 8459677512333239083, guid: 2d85ac5de5f8574418b820b9bc3bc19e, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

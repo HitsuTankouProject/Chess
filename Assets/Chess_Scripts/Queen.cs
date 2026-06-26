@@ -202,14 +202,14 @@ public class Queen : ChessBasic
         if (_player.queenBuffType != Player.QueenBuff.Witcher) return;
         if (_player.witcher.nowBuffLevel == 2)
         {
-            _chessBoard.ChessBlock(position).CurseTheBlock(this);
+            _chessBoard.CurseTheBlock(position,this);
         }
         else if(_player.witcher.nowBuffLevel == 3)
         {
             HashSet<Vector2Int> cursePossibleMove = PossibleMove(false);
             foreach (Vector2Int pos in cursePossibleMove)
             {
-                _chessBoard.ChessBlock(pos).CurseTheBlock(this);
+                _chessBoard.CurseTheBlock(position, this);
 
             }
         }
