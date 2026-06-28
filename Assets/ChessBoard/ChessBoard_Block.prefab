@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6783403352093325509}
   - component: {fileID: 394872660541581805}
   - component: {fileID: 8256727987953530268}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Smoke Particle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4848,7 +4848,7 @@ GameObject:
   - component: {fileID: 4589669312188374737}
   - component: {fileID: 4107032292995546003}
   - component: {fileID: 8696903851793140584}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Plane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4958,7 +4958,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5330911975025295824}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Chess Effect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4991,6 +4991,7 @@ GameObject:
   - component: {fileID: 8201238268441643844}
   - component: {fileID: 4083608700296240866}
   - component: {fileID: 7694502627190324393}
+  - component: {fileID: 4448966410955593071}
   m_Layer: 6
   m_Name: Chess Effect
   m_TagString: Untagged
@@ -5070,6 +5071,27 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4448966410955593071
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5041283369225323191}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Size: {x: 0.8592582, y: 1.0799999, z: 0.83739334}
+  m_Center: {x: 0.27066258, y: 0.53999996, z: 0.2536684}
 --- !u!1 &6027180150029210484
 GameObject:
   m_ObjectHideFlags: 0
@@ -5081,7 +5103,7 @@ GameObject:
   - component: {fileID: 3426177303451443962}
   - component: {fileID: 2353218440509814182}
   - component: {fileID: 7489141457236985100}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Aura
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5171,7 +5193,8 @@ GameObject:
   - component: {fileID: 9190531718321623001}
   - component: {fileID: 5859353682772422049}
   - component: {fileID: 9094906529221044949}
-  m_Layer: 0
+  - component: {fileID: 465174405483331800}
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5252,6 +5275,27 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &465174405483331800
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6448838730376306714}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.9999999, y: 0.1866356, z: 0.9999999}
+  m_Center: {x: 0, y: 0.62, z: 0}
 --- !u!1 &8229746508813973892
 GameObject:
   m_ObjectHideFlags: 0
@@ -5333,8 +5377,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 9.5, y: 1, z: 9.5}
-  m_Center: {x: 0, y: -0.08, z: 0}
+  m_Size: {x: 9.5, y: 15.220041, z: 9.5}
+  m_Center: {x: 0, y: 7.0300198, z: 0}
 --- !u!1001 &8967446182785925812
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5402,6 +5446,10 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: b6f2207f8e81ad64f92a2fa2885dfe3b, type: 3}
       propertyPath: m_Name
       value: PickMark
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: b6f2207f8e81ad64f92a2fa2885dfe3b, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: b6f2207f8e81ad64f92a2fa2885dfe3b, type: 3}
       propertyPath: m_IsActive

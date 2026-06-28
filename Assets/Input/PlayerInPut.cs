@@ -84,7 +84,7 @@ public class PlayerInPut : MonoBehaviour
         bool haveChess = _chessBoard.board.TryGetValue(boardPos, out ChessBasic chess);
         if (!haveChess) return;
         if (chess.color != _inGame.nowTurn) return;
-
+        _inGame.CameraTurnToPickView(true);
         pickIngChess = chess;
         pickIngChess.FindPossibleMove();
         pickIngChess.GotPick();
@@ -207,9 +207,11 @@ public class PlayerInPut : MonoBehaviour
     {
         if (!PutChess(boardPos))
         {
+            _inGame.CameraTurnToPickView(false);
             pickIngChess.ReturnPick();
             pickIngChess = null;
             inputStage = InputStage.Waiting;
+
             return;
         }
 

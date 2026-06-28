@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -110,7 +111,7 @@ public class ChessBoard : MonoBehaviour
         }
 
         board.Clear();
-        Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap("BoardInitData_Base");
+        Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap("BoardInitData_Test");
         foreach (var entry in chessStartMap)
         {
             GenChess(entry.Key, entry.Value);
@@ -124,15 +125,17 @@ public class ChessBoard : MonoBehaviour
         return true;
     }
 
-    private bool FindRandomKingChessSpawn()
+    private void FindRandomKingChessSpawn()
     {
         List<ChessBlock> blackChessBlocks = new List<ChessBlock>();
         List<ChessBlock> whiteChessBlocks = new List<ChessBlock>();
 
-        foreach (var col in cols)
+        for (int x = 0; x < cols.Count; x++) 
         {
-            foreach (var block in col.chessBlocks)
+            for (int y = 2; y <= 5; y++)
             {
+                ChessBlock block = cols[x].chessBlocks[y];
+
                 if (block.color == ChessColor.Black) blackChessBlocks.Add(block);
                 else whiteChessBlocks.Add(block);
             }
@@ -142,8 +145,6 @@ public class ChessBoard : MonoBehaviour
         ChessBlock(black_KingChessSpawn).ChangeBlockStage(BlockStage.KingSpawn);
         white_KingChessSpawn = whiteChessBlocks[UnityEngine.Random.Range(0, whiteChessBlocks.Count)].position;
         ChessBlock(white_KingChessSpawn).ChangeBlockStage(BlockStage.KingSpawn);
-
-        return true;
     }
 
     #endregion
@@ -179,11 +180,19 @@ public class ChessBoard : MonoBehaviour
     //    }
     //    return true;
     //}
+
+    private Quaternion ChessRotation(ChessColor color)
+    {
+        Vector3 angle = Vector3.zero;
+        if (color == ChessColor.Black) angle = new Vector3(0, 180, 0);
+        return Quaternion.Euler(angle); 
+    }
+
     public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair)
     {
-        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].prefab);
-
-        chess.transform.position = ReturnChessBlockPosition(position);
+        Vector3 chessGenPos = ReturnChessBlockPosition(position);
+        Quaternion chessRotation = ChessRotation(pair.first);
+        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].prefab, chessGenPos, chessRotation);
         ChessBasic target = chess.GetComponent<ChessBasic>();
         target.ChangeChessColor(pair.first);
         MoveTo(target, position);
@@ -192,15 +201,25 @@ public class ChessBoard : MonoBehaviour
     public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair, out ChessBasic genChess)
     {
         genChess = null;
-        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].prefab);
+        Vector3 chessGenPos = ReturnChessBlockPosition(position);
+        Quaternion chessRotation = ChessRotation(pair.first);
+        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].prefab, chessGenPos, chessRotation);
 
-        chess.transform.position = ReturnChessBlockPosition(position);
         ChessBasic target = chess.GetComponent<ChessBasic>();
         target.ChangeChessColor(pair.first);
         MoveTo(target, position);
 
         genChess = target;
     }
+
+    public void PlayEffect(ChessBasic targetChess)
+    {
+        Vector3 boardPosition = ReturnChessBlockPosition(targetChess.position);
+        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[targetChess.type].chessEffect, boardPosition);
+        ChessEffect chessEffect = chess.gameObject.GetComponent<ChessEffect>();
+        chessEffect.PlayEffect(targetChess.color);
+    }
+
 
     public Vector3 ReturnChessBlockPosition(Vector2Int position)
     {
@@ -264,7 +283,6 @@ public class ChessBoard : MonoBehaviour
         foreach (var pos in nowShowing) ChessBlock(pos).ChangeChessBlockEffect(ChessBlockStage.Normal);
         nowShowing.Clear();
     }
-
     public void CurseTheBlock(Vector2Int position, ChessBasic chess)
         => ChessBlock(position).ChangeBlockStage(BlockStage.GotCurse, chess);
 
@@ -307,16 +325,14 @@ public class ChessBoard : MonoBehaviour
     {
         bool genChessAtStartSeccess =  GenChessAtStart();
         yield return null;
-        bool findRandomKingChessSpawnSeccess = FindRandomKingChessSpawn();
-        yield return null;
 
-        if (!genChessAtStartSeccess||!findRandomKingChessSpawnSeccess)
+        if (!genChessAtStartSeccess)
         {
-            Debug.LogError(
-                $"GenChessAtStart : {genChessAtStartSeccess}, " +
-                $"FindRandomKingChessSpawn : {findRandomKingChessSpawnSeccess}");
+            Debug.LogError($"GenChessAtStart : {genChessAtStartSeccess} ");
+            yield break;
         }
-        
+
+        FindRandomKingChessSpawn();
     }
 
 

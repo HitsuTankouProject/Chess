@@ -209,9 +209,9 @@ public class Pawn : ChessBasic
         if (canOnlyKillKing && !isKing) return false;
         if (!isKing) return true;
 
-        if (chess is King king && king.haveBarrier)
+        if (chess.haveExtraLife)
         {
-            king.haveBarrier = false;
+            chess.GotExtraLife(false);
             return false;
         }
         return true;

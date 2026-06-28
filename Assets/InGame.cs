@@ -6,11 +6,7 @@ using UnityEngine.InputSystem;
 using static ChessBlock;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
-
-
-
-
-public class CameraView
+public struct CameraView
 {
     public Vector3 position {  get; private set; }
     public Vector3 angle { get; private set; }
@@ -20,6 +16,7 @@ public class CameraView
         position = targetPos;
         angle = targetAngle;
     }
+
 
 }
 
@@ -68,12 +65,18 @@ public class InGame : MonoBehaviour
 
 
     #region Camera Turn
-    private readonly CameraView whiteView = new CameraView(new Vector3(0, 70, -54), new Vector3(55, 0, 0));
-    private readonly CameraView blackView = new CameraView(new Vector3(0, 70, 54), new Vector3(55, 180, 0));
+    private readonly CameraView whiteView = new CameraView(new Vector3(0, 70, -44), new Vector3(55, 0, 0));
+    private readonly CameraView pickView_White = new CameraView(new Vector3(0, 90, 0), new Vector3(90, 0, 0));
+    private readonly CameraView blackView = new CameraView(new Vector3(0, 70, 44), new Vector3(55, 180, 0));
+    private readonly CameraView pickView_Black = new CameraView(new Vector3(0, 90, 0), new Vector3(90, 180, 0));
+
     private float radius => Math.Abs(whiteView.position.z - blackView.position.z) / 2;
     private readonly Vector3 center = new Vector3(0, 70, 0);
 
-    private readonly Dictionary<ChessColor, CameraView> turnView = new Dictionary<ChessColor, CameraView>();
+    private Dictionary<ChessColor, CameraView> turnView = new();
+
+    private readonly Dictionary<ChessColor, CameraView> pickView = new();
+
     private CameraView nowCameraView => turnView[nowTurn];
 
     private const float cameraTurnTime = 2.0f;
@@ -87,6 +90,7 @@ public class InGame : MonoBehaviour
         }
 
         float timer = 0;
+        yield return new WaitForSeconds(0.15f);
 
         CameraView basicView = nowTurn == ChessColor.White ? blackView : whiteView;
         if(Vector3.Distance(_camera.transform.position, nowCameraView.position) < 0.1f)
@@ -101,11 +105,11 @@ public class InGame : MonoBehaviour
 
             float turnAngle = 180 * (timer / cameraTurnTime);
             turnAngle += basicView.angle.y;
-            _camera.transform.rotation = Quaternion.Euler(55, turnAngle, 0);
+            _camera.transform.rotation = Quaternion.Euler(55, -turnAngle, 0);
 
             float radian = turnAngle * Mathf.Deg2Rad;
-            float targetX = center.x + 54 * Mathf.Sin(radian);
-            float targetZ = center.z - 54 * Mathf.Cos(radian);
+            float targetX = center.x + 44 * Mathf.Sin(radian);
+            float targetZ = center.z - 44 * Mathf.Cos(radian);
 
             _camera.transform.position = new Vector3(targetX, basicView.position.y, targetZ);
 
@@ -115,8 +119,61 @@ public class InGame : MonoBehaviour
         _camera.transform.position = nowCameraView.position;
         _camera.transform.rotation = Quaternion.Euler(nowCameraView.angle);
     }
+
+    private IEnumerator ChangePickView(bool isPick)
+    {
+        if (pickView.Count == 0)
+        {
+            pickView[ChessColor.White] = pickView_White;
+            pickView[ChessColor.Black] = pickView_Black;
+
+        }
+
+        CameraView cameraView = isPick ? pickView[nowTurn] : nowCameraView;
+
+        float timer = 0f;
+        if (Vector3.Distance(_camera.transform.position, cameraView.position) < 0.1f)
+        {
+            _camera.transform.position = cameraView.position;
+            _camera.transform.rotation = Quaternion.Euler(cameraView.angle);
+            yield break;
+        }
+
+        CameraView basicView = isPick ? nowCameraView : pickView[nowTurn];
+
+        while (timer < 0.2f)
+        {
+            timer += Time.deltaTime;
+
+            float t = timer / 0.2f;
+            float turnAngle = Mathf.Lerp(basicView.angle.x, cameraView.angle.x, t);
+
+            _camera.transform.rotation = Quaternion.Euler(turnAngle, basicView.angle.y, 0);
+
+            float radian = turnAngle * Mathf.Deg2Rad;
+            float targetX = center.x + 90 * Mathf.Sin(radian);
+            float targetZ = center.z - 54 * Mathf.Cos(radian);
+
+
+            _camera.transform.position = new Vector3(0, targetX, targetZ);
+
+            yield return null;
+        }
+
+        _camera.transform.position = cameraView.position;
+        _camera.transform.rotation = Quaternion.Euler(cameraView.angle);
+    }
+
+    public void CameraTurnToPickView(bool isPicking)
+    {
+        StartCoroutine(ChangePickView(isPicking));
+    }
+
+
+
     #endregion
 
+    #region Turn
 
     private Coroutine turnChange;
 
@@ -148,6 +205,7 @@ public class InGame : MonoBehaviour
             StopCoroutine(blackChessPlayer.turnStart);
             blackChessPlayer.turnStart = null;
         }
+        yield return StartCoroutine(ChangePickView(false));
 
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
 
@@ -216,6 +274,8 @@ public class InGame : MonoBehaviour
         whiteChessPlayer.Player_TurnStart();
         inGameStage = InGameStage.TurnStart;
     }
+
+    #endregion
 
     #region GameSet
 

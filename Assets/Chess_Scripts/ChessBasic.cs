@@ -160,7 +160,7 @@ public abstract class ChessBasic : MonoBehaviour
         get
         {
             float angleX = color==ChessColor.White?-15.0f:15.0f;
-            return new Vector3 (angleX,0,0);
+            return new Vector3 (0,0,0);
         }
     }
     private Vector3 pickPosition => new Vector3(transform.position.x, 5, transform.position.z);
@@ -183,13 +183,7 @@ public abstract class ChessBasic : MonoBehaviour
             chess.GotExtraLife(false);
             return false;
         }
-        bool isKing = chess.type == ChessType.King;
-        if(!isKing) return true;
-        if (chess is King king && king.haveBarrier)
-        {
-            king.haveBarrier = false;
-            return false;
-        }
+       
         return true;
     }
     public bool CanMoveTo(Vector2Int moveTo, out ChessBasic chess)
@@ -202,6 +196,7 @@ public abstract class ChessBasic : MonoBehaviour
     {
         if (chess == null) return;
         _player.nowPlayerStage = PlayerStage.EatingChess;
+        _chessBoard.PlayEffect(chess);
         _chessBoard.Swap(this, chess);
         chess.GotEaten();
     }

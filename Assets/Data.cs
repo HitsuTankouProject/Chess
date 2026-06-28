@@ -91,6 +91,8 @@ namespace Data
     {
         public GameObject prefab;
         public Mesh model;
+        [Header("Chess Effect -- Got Eat")]
+        public GameObject chessEffect;
         public AllBuffCard buff01 { get; private set; }
         public AllBuffCard buff02 { get; private set; }
         public void SetBuff(AllBuffCard first, AllBuffCard secondy)

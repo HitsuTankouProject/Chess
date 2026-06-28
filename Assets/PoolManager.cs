@@ -30,54 +30,30 @@ public class PoolManager : MonoBehaviour
                 continue;
             }
 
-            Pool pool = new Pool(pair.Value.prefab);
-            Transform parent = new GameObject($"Pool : {pair.Key}").transform;
+            Pool modelPool = new Pool(pair.Value.prefab);
+            Pool effectPool = new Pool(pair.Value.chessEffect);
 
-            parent.SetParent(transform);
-            pool.Initialize(parent);
+            Transform modelPoolParent = new GameObject($"Pool : {pair.Key}").transform;
+            Transform effectPoolParent = new GameObject($"Pool : {pair.Key}'s Effect").transform;
 
-            dictionary[pair.Value.prefab] = pool;
+            modelPoolParent.SetParent(transform);
+            effectPoolParent.SetParent(transform);
+
+            modelPool.Initialize(modelPoolParent);
+            effectPool.Initialize(effectPoolParent);
+
+            dictionary[pair.Value.prefab] = modelPool;
+            dictionary[pair.Value.chessEffect] = effectPool;
+
         }
     }
-
-    //public void AllPoolInit()
-    //{
-
-
-
-    //    foreach (GameObject chess in GameManager.Instance.resourcesData.chessModelDict.Values)
-    //    {
-    //        if (chess == null)
-    //        {
-    //            Debug.LogError("Chess Model is null");
-    //            continue;
-    //        }
-    //        Pool pool = new Pool();
-    //        dictionary.Add(chess, pool);
-    //        Transform poolParent = new GameObject("Pool: " + chess.name).transform;
-    //        poolParent.parent = transform;
-    //        pool.Initialize(poolParent);
-
-    //    }
-
-    //    foreach (var pool in chessPoolList)
-    //    {
-
-    //        dictionary.Add(pool.Prefab, pool);          
-
-    //        Transform poolParent = new GameObject("Pool: " + pool.Prefab.name).transform;
-    //        poolParent.parent = transform;              
-
-    //        pool.Initialize(poolParent);                
-    //    }
-    //}
 
     public  GameObject Release(GameObject prefab)
     {
 
         return dictionary[prefab].PreparedObject(); 
     }
-    public  GameObject Release(GameObject prefab, Vector3 position)
+    public GameObject Release(GameObject prefab, Vector3 position)
     {
 
         return dictionary[prefab].PreparedObject(position);    
