@@ -20,6 +20,8 @@ public class Player : MonoBehaviour
     public PlayerStage nowPlayerStage;
 
     public PlayerInPut playerInPut;
+    public PlayerCanvas playerCanvas;
+
 
     public Dictionary<Vector2Int, ChessBasic> allTheChess { get; private set; } = new();
 
@@ -155,17 +157,17 @@ public class Player : MonoBehaviour
     public void UpdateGuardianProtectArea()
     {
         if (rookBuffType != RookBuff.Guardian) return;
-        foreach(Vector2Int area in guardianProtectArea)
+        foreach (Vector2Int area in guardianProtectArea)
         {
             if (!_chessBoard.board.TryGetValue(area, out ChessBasic chess) || chess.color != usingChess) continue;
             chess.GotExtraLife(false);
         }
         guardianProtectArea.Clear();
-        
+
         List<ChessBasic> rookList = ChessListByType(ChessType.Rook);
 
         if (rookList.Count == 0) return;
-        foreach(ChessBasic chess in rookList)
+        foreach (ChessBasic chess in rookList)
         {
             Debug.Log("4");
             if (!chess.TryGetComponent<Rook>(out Rook rook))
@@ -197,8 +199,8 @@ public class Player : MonoBehaviour
     }
     #endregion
 
-    private Dictionary<AllBuffCard, BuffBasic> cardBuffMap;
-    public CardEffect[] buffCardEffects;
+    public Dictionary<AllBuffCard, BuffBasic> cardBuffMap {  get; private set; } = new();
+    public List<AllBuffCard> choseBuffs { get; private set; } = new();
     private void BuffInit(ChessType chessType, BuffBasic buffBasic1, BuffBasic buffBasic2)
     {
         if(buffBasic1.buffChess!= chessType|| buffBasic2.buffChess != chessType)
@@ -279,6 +281,7 @@ public class Player : MonoBehaviour
     {
         cardBuffMap[choseBuff].Choose();
         cardBuffMap[choseBuff].LevelUpToTargetLevel(1, out bool success);
+        choseBuffs.Add(choseBuff);
         if (!success)
         {
             Debug.LogError(cardBuffMap[choseBuff].buffName+" LevelUp No success");
@@ -299,11 +302,12 @@ public class Player : MonoBehaviour
     {
         AllChessInit(targetDict);
         Player_ChessDictUpdate();
+        playerCanvas.Init(this, choseBuffs);
         //queenBuffType = QueenBuff.Witcher;
         //witcher.LevelUpToTargetLevel(3, out bool a);
 
-        kingBuffType = KingBuff.MadKing;
-        madKing.LevelUpToTargetLevel(3, out bool a);
+        //kingBuffType = KingBuff.MadKing;
+        //madKing.LevelUpToTargetLevel(3, out bool a);
 
     }
 

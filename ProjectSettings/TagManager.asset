@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 3
   tags:
   - subCamera
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
@@ -16,8 +17,8 @@ TagManager:
   - Chess
   - Card
   - Button
-  - WhiteSideCanSeeOnly
-  - BlackSideCanSeeOnly
+  - 
+  - 
   - 
   - 
   - 

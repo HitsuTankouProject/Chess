@@ -26,6 +26,7 @@ namespace Data
     [System.Serializable]
     public class CardData
     {
+        public Sprite sp_CardCover;
         public Material m_CardCover;
         public string name { get; set; }
         public string buffLevel01Description { get; set; }
@@ -51,6 +52,7 @@ namespace Data
         public CardData substitute;
 
         [Header("Card's Back Materials")]
+        public Sprite sp_CardBack;
         public Material m_CardBack;
 
         public Dictionary<AllBuffCard, CardData> cardDataDict = new();

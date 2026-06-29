@@ -566,29 +566,42 @@ MonoBehaviour:
       chessEffect: {fileID: 5435333876468096296, guid: 10f85d4c20cadd84ab1ed54a7606a564, type: 3}
   cradDataList:
     sageKing:
+      sp_CardCover: {fileID: 21300000, guid: 50a66eeeaa708ef40a12782661b4a137, type: 3}
       m_CardCover: {fileID: 2100000, guid: 15109750232824e4cb0d9fd44c7a737a, type: 2}
     madKing:
+      sp_CardCover: {fileID: 21300000, guid: 1063d8470f3e13347ab2370608c7b357, type: 3}
       m_CardCover: {fileID: 2100000, guid: d5f23b66c8d15534a8f7f5109aff8cf0, type: 2}
     witcher:
+      sp_CardCover: {fileID: 21300000, guid: d28630524b60c974bb61c94c1aec32a4, type: 3}
       m_CardCover: {fileID: 2100000, guid: 2ba4f384dd0284f4f80f492c0d62df03, type: 2}
     beauty:
+      sp_CardCover: {fileID: 21300000, guid: dfb0df42c9318ce45a3595dc6619bd3f, type: 3}
       m_CardCover: {fileID: 2100000, guid: fb7c70feb2cf27746bf2cab826380f18, type: 2}
     sorcerer:
+      sp_CardCover: {fileID: 21300000, guid: c1930ba9c576108438d39de0acce667c, type: 3}
       m_CardCover: {fileID: 2100000, guid: 55f891e82ade74c499bbd04eb4e86363, type: 2}
     monk:
+      sp_CardCover: {fileID: 21300000, guid: 51a1cc43053b9b44998d5d652783fa08, type: 3}
       m_CardCover: {fileID: 2100000, guid: ae583504d2f73f244840ca77df4cf4d0, type: 2}
     rusher:
+      sp_CardCover: {fileID: 21300000, guid: 4325a8eeb4434334299f5c331e9ff14c, type: 3}
       m_CardCover: {fileID: 2100000, guid: 6e8cd9051b9faf54fb2492eb9843d62a, type: 2}
     guardian:
+      sp_CardCover: {fileID: 21300000, guid: 5cb7a3380bea45649a50cf575800bbe7, type: 3}
       m_CardCover: {fileID: 2100000, guid: 78b07b6b5f34f7947a3f3b933d2cbb3b, type: 2}
     charger:
+      sp_CardCover: {fileID: 21300000, guid: a067f5b9fb8c311428e7d785c28ba7b2, type: 3}
       m_CardCover: {fileID: 2100000, guid: edfe93fd8f148bb4ab1419f9547491c7, type: 2}
     skirmisher:
+      sp_CardCover: {fileID: 21300000, guid: 2e2e9176575d492458d96fe6073a8f3e, type: 3}
       m_CardCover: {fileID: 2100000, guid: 2a9bb990921fa394098475e8bdc912c8, type: 2}
     scout:
+      sp_CardCover: {fileID: 21300000, guid: f9316a57fdb8e7b4f91c4b52d810a1c6, type: 3}
       m_CardCover: {fileID: 2100000, guid: e2523446d1852cc4086fd0f482b266b0, type: 2}
     substitute:
+      sp_CardCover: {fileID: 21300000, guid: f1a15f3eeac3e804d9d93b0d77d067c1, type: 3}
       m_CardCover: {fileID: 2100000, guid: 26d6a5075237f9f4dbdf882678e795c5, type: 2}
+    sp_CardBack: {fileID: 21300000, guid: ca355069dab19814985722308aa77ea0, type: 3}
     m_CardBack: {fileID: 2100000, guid: 7695027412df97b4db25d6faffd30e24, type: 2}
   allSprite:
     sp_WhiteColor: {fileID: 21300000, guid: f7bfe71ba1302b24a9b03c5436aa579d, type: 3}
@@ -633,7 +646,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea6b4bad14fb836498b6ca31c83a3b44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::aaa
-  fragmentEffect: {fileID: 0}
   t: 0
 --- !u!4 &1413284586
 Transform:

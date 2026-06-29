@@ -63,6 +63,19 @@ public class InGame : MonoBehaviour
     public ChessColor nowTurn { get; private set; } = ChessColor.White;
 
 
+    #region ChooseSkills
+
+    public Camera mainPanelCamera;
+
+    public void StartChooseSkill()
+    {
+        mainPanelCamera.gameObject.SetActive(true);
+
+    }
+
+
+
+    #endregion
 
     #region Camera Turn
     private readonly CameraView whiteView = new CameraView(new Vector3(0, 70, -44), new Vector3(55, 0, 0));
