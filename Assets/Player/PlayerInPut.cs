@@ -12,7 +12,7 @@ public class PlayerInPut : MonoBehaviour
 {
     private ChessBoard _chessBoard => ChessBoard.Instance;
 
-    private InPutManager _inPutManager => InPutManager.Instance;
+    private InPutManager _inPutManager => GameManager.Instance.inPutManager;
 
     private int gameBoardLayerMask;
     private InGame _inGame => InGame.Instance;
@@ -22,30 +22,39 @@ public class PlayerInPut : MonoBehaviour
 
     public InputStage inputStage/* { get; private set; } */= InputStage.None;
 
+
+
     public void Init(Player player)
     {
         _player = player;
         inputStage = InputStage.None;
-        _camera = Camera.main;
+        _camera = player.playerCanvas.playerCamera;
         gameBoardLayerMask = LayerMask.GetMask("GameBoard");
 
     }
 
 
     #region Using Device
-    public CanUseDevice nowUsingDevice/* { get; private set; } */= CanUseDevice.Mouse;
-    public Gamepad nowUsingGamepad { get; private set; } = null;
-    public Mouse nowUsingMouse => Mouse.current;
-
-    public void ChangeToGamepad(Gamepad targetGamepad)
+    public CanUseDevice nowUsingDevice { get; private set; } = CanUseDevice.Mouse;
+    [SerializeField] private GamepadType useGamepadType = GamepadType.None;
+    public void SetUseGamepadType(GamepadType gamepadType)
     {
-        if (targetGamepad == null || !targetGamepad.added)
+        useGamepadType = gamepadType;
+        if(gamepadType != GamepadType.None) nowUsingDevice = CanUseDevice.Gamepad;
+        else nowUsingDevice = CanUseDevice.Mouse;
+    }
+    public Gamepad nowUsingGamepad;
+    public Mouse nowUsingMouse => Mouse.current; 
+
+    public void ChangeToGamepad()
+    {
+        Gamepad gamepad = _inPutManager.GetGamepad(useGamepadType);
+        if (useGamepadType== GamepadType.None|| gamepad == null)
         {
             ChangeToMouse();
             return;
         }
-
-        nowUsingGamepad = targetGamepad;
+        nowUsingGamepad = gamepad;
         nowUsingDevice = CanUseDevice.Gamepad;
         if(inputStage == InputStage.OneMoreMove)StartCoroutine(OneMoreMove(pickIngChess));
         else ChangeInput(CanUseDevice.Gamepad);
@@ -84,7 +93,8 @@ public class PlayerInPut : MonoBehaviour
         bool haveChess = _chessBoard.board.TryGetValue(boardPos, out ChessBasic chess);
         if (!haveChess) return;
         if (chess.color != _inGame.nowTurn) return;
-        _inGame.CameraTurnToPickView(true);
+        _player.playerCanvas.TurnCamera(CameraStage.Pick);
+
         pickIngChess = chess;
         pickIngChess.FindPossibleMove();
         pickIngChess.GotPick();
@@ -131,7 +141,7 @@ public class PlayerInPut : MonoBehaviour
     #region Mouse
     private bool IsPressed(out GameObject hitObject)
     {
-        if (!nowUsingMouse.rightButton.wasPressedThisFrame)
+        if (!nowUsingMouse.leftButton.wasPressedThisFrame)
         {
             hitObject = null;
             return false;
@@ -168,31 +178,9 @@ public class PlayerInPut : MonoBehaviour
         int hitLayer = hitObject.layer;
         //Debug.Log(hitObject.name);
 
-        if (IsSameLayer(hitLayer, _inPutManager.buttonLayerMask)) Press_Button(hitObject);
-        //else if (IsSameLayer(hitLayer, _inPutManager.cardLayerMask)) Press_Card(hitObject);
-        else if (inputStage == InputStage.Waiting) Press_Chess(ChessBoardPosition(hitObject));
+        if (inputStage == InputStage.Waiting) Press_Chess(ChessBoardPosition(hitObject));
         else if (inputStage == InputStage.Picking) Press_ChessBoard(ChessBoardPosition(hitObject));
 
-    }
-
-
-    private void Press_Card(GameObject cardObject)
-    {
-        if(!cardObject.TryGetComponent<Card>(out Card card))
-        {
-            Debug.LogError("hit card but no Card");
-            return;
-        }
-    }
-    private void Press_Button(GameObject buttonObject)
-    {
-        if (!buttonObject.TryGetComponent<MyButton>(out MyButton button))
-        {
-            Debug.LogError("hit button but no MyButton");
-            return;
-        }
-
-        button.OnClick();
     }
 
     private void Press_Chess(Vector2Int boardPos)
@@ -207,14 +195,14 @@ public class PlayerInPut : MonoBehaviour
     {
         if (!PutChess(boardPos))
         {
-            _inGame.CameraTurnToPickView(false);
+            _player.playerCanvas.TurnCamera(CameraStage.Normal);
             pickIngChess.ReturnPick();
             pickIngChess = null;
             inputStage = InputStage.Waiting;
 
             return;
         }
-
+        _player.playerCanvas.TurnCamera(CameraStage.Normal);
         inputStage = InputStage.None;
 
     }
@@ -227,7 +215,6 @@ public class PlayerInPut : MonoBehaviour
             if (inputStage! == InputStage.None) continue;
             PressAction();
         }
-
 
     }
 
@@ -456,7 +443,6 @@ public class PlayerInPut : MonoBehaviour
     private void StartGamepadInput()
     {
         if (inputUpdate != null) RejectInput();
-        inputStage = InputStage.Waiting;
         inputUpdate = StartCoroutine(GamePadInPut());
     }
 
@@ -486,5 +472,20 @@ public class PlayerInPut : MonoBehaviour
         }
     }
 
+    public void InputWatcher()
+    {
+        if (useGamepadType == GamepadType.None) return;
+
+        if (nowUsingDevice == CanUseDevice.Mouse && nowUsingGamepad != null)
+            StartGamepadInput();
+        else if (nowUsingDevice == CanUseDevice.Gamepad && nowUsingGamepad == null)
+            StartMouseInput();
+
+    }
+
+    private void Update()
+    {
+        InputWatcher();
+    }
 
 }

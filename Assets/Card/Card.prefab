@@ -280,7 +280,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6297451244542940318}
   - component: {fileID: 2791840251085453885}
-  - component: {fileID: 6502835971987967613}
   - component: {fileID: 2847992822997539650}
   - component: {fileID: 3928976144303291447}
   m_Layer: 9
@@ -328,22 +327,6 @@ MonoBehaviour:
   card_Front: {fileID: 9101791760001972311}
   card_back: {fileID: 9121735505528527586}
   card_effectPrt: {fileID: 4254601939156917958}
---- !u!114 &6502835971987967613
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4632063172955640779}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69fe62c93fcae354c9742469c95e102b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Button_Card
-  buttonManual: {fileID: 0}
-  buttonAction: 0
-  spriteRenderer: {fileID: 3928976144303291447}
-  card: {fileID: 2791840251085453885}
 --- !u!65 &2847992822997539650
 BoxCollider:
   m_ObjectHideFlags: 0

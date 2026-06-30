@@ -13,7 +13,7 @@ public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,Readyt
 public class Player : MonoBehaviour
 {
     private ChessBoard _chessBoard => ChessBoard.Instance;
-    private InPutManager _inPutManager => InPutManager.Instance;
+    private InPutManager _inPutManager => GameManager.Instance.inPutManager;
 
     public ChessColor usingChess;
 
@@ -303,6 +303,7 @@ public class Player : MonoBehaviour
         AllChessInit(targetDict);
         Player_ChessDictUpdate();
         playerCanvas.Init(this, choseBuffs);
+
         //queenBuffType = QueenBuff.Witcher;
         //witcher.LevelUpToTargetLevel(3, out bool a);
 
@@ -342,7 +343,7 @@ public class Player : MonoBehaviour
         Player_ChessDictUpdate();
         nowPlayerStage = PlayerStage.End;
 
-        InGame.Instance.StartTurnChange();
+        InGame.Instance.EndTurn();
     }
 
     public void Player_TurnStart()

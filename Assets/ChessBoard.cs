@@ -316,22 +316,17 @@ public class ChessBoard : MonoBehaviour
 
     public void ChessBoard_Init()
     {
-        //CheckChessBoardError();
         _poolManager.AllPoolInit();
         ChessBlockInit();
     }
 
-    public IEnumerator ChessBoard_TurnInit()
+    public void ChessBoard_TurnInit()
     {
-        bool genChessAtStartSeccess =  GenChessAtStart();
-        yield return null;
-
-        if (!genChessAtStartSeccess)
+        if (!GenChessAtStart())
         {
-            Debug.LogError($"GenChessAtStart : {genChessAtStartSeccess} ");
-            yield break;
+            Debug.LogError($"GenChessAtStart Failed ");
+            return;
         }
-
         FindRandomKingChessSpawn();
     }
 

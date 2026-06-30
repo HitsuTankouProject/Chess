@@ -6,19 +6,30 @@ using UnityEngine.InputSystem;
 using static ChessBlock;
 using static UnityEngine.InputSystem.LowLevel.InputStateHistory;
 
-public struct CameraView
-{
-    public Vector3 position {  get; private set; }
-    public Vector3 angle { get; private set; }
 
-    public CameraView(Vector3 targetPos, Vector3 targetAngle)
+
+public enum CameraStage { Normal, Pick }
+
+public struct PlayerViewData
+{
+    private CameraView normalView;
+    private CameraView pickView;
+
+    public PlayerViewData(CameraView view01, CameraView view02)
     {
-        position = targetPos;
-        angle = targetAngle;
+        normalView = view01;
+        pickView = view02;
     }
 
+    public CameraView TargetView(CameraStage cameraStage)
+    {
+        if(cameraStage== CameraStage.Normal) return normalView;
+        else return pickView;
+    }
 
 }
+
+
 
 public enum InGameStage
 {
@@ -43,9 +54,6 @@ public class InGame : MonoBehaviour
     public Player whiteChessPlayer;
     public Player blackChessPlayer;
 
-    public ChooseSkillManual skillManual;
-    public PauseManual pauseManual;
-
     public static InGame Instance { get; private set; }
     private void Awake()
     {
@@ -62,231 +70,173 @@ public class InGame : MonoBehaviour
     public InGameStage inGameStage { get; private set; } = InGameStage.Init;
     public ChessColor nowTurn { get; private set; } = ChessColor.White;
 
-
-    #region ChooseSkills
-
-    public Camera mainPanelCamera;
-
-    public void StartChooseSkill()
+    #region InGameInit
+    private void InGameInit()
     {
-        mainPanelCamera.gameObject.SetActive(true);
+        inGameStage = InGameStage.Init;
+
+        _chessBoard.ChessBoard_Init();
+        whiteChessPlayer.Player_Init(ChessColor.White);
+        blackChessPlayer.Player_Init(ChessColor.Black);
+        PlayerViewDataInit();
+        whiteChessPlayer.playerInPut.StartInput();
+        blackChessPlayer.playerInPut.StartInput();
+
+
+        StartChooseSkill();
 
     }
-
 
 
     #endregion
 
-    #region Camera Turn
-    private readonly CameraView whiteView = new CameraView(new Vector3(0, 70, -44), new Vector3(55, 0, 0));
-    private readonly CameraView pickView_White = new CameraView(new Vector3(0, 90, 0), new Vector3(90, 0, 0));
-    private readonly CameraView blackView = new CameraView(new Vector3(0, 70, 44), new Vector3(55, 180, 0));
-    private readonly CameraView pickView_Black = new CameraView(new Vector3(0, 90, 0), new Vector3(90, 180, 0));
-
-    private float radius => Math.Abs(whiteView.position.z - blackView.position.z) / 2;
-    private readonly Vector3 center = new Vector3(0, 70, 0);
-
-    private Dictionary<ChessColor, CameraView> turnView = new();
-
-    private readonly Dictionary<ChessColor, CameraView> pickView = new();
-
-    private CameraView nowCameraView => turnView[nowTurn];
-
-    private const float cameraTurnTime = 2.0f;
-
-    private IEnumerator CameraTurn()
+    #region ChooseSkills
+    [Header("ChooseSkills")]
+    public Camera mainPanelCamera;
+    public ChooseSkillPanel chooseSkillPanel;
+    private void StartChooseSkill()
     {
-        if (turnView.Count == 0)
-        {
-            turnView[ChessColor.White] = whiteView;
-            turnView[ChessColor.Black] = blackView;
-        }
-
-        float timer = 0;
-        yield return new WaitForSeconds(0.15f);
-
-        CameraView basicView = nowTurn == ChessColor.White ? blackView : whiteView;
-        if(Vector3.Distance(_camera.transform.position, nowCameraView.position) < 0.1f)
-        {
-            _camera.transform.rotation = Quaternion.Euler(nowCameraView.angle);
-            yield break;
-        }
-
-        while (timer < cameraTurnTime)
-        {
-            timer += Time.deltaTime;
-
-            float turnAngle = 180 * (timer / cameraTurnTime);
-            turnAngle += basicView.angle.y;
-            _camera.transform.rotation = Quaternion.Euler(55, -turnAngle, 0);
-
-            float radian = turnAngle * Mathf.Deg2Rad;
-            float targetX = center.x + 44 * Mathf.Sin(radian);
-            float targetZ = center.z - 44 * Mathf.Cos(radian);
-
-            _camera.transform.position = new Vector3(targetX, basicView.position.y, targetZ);
-
-            yield return null;
-        }
-
-        _camera.transform.position = nowCameraView.position;
-        _camera.transform.rotation = Quaternion.Euler(nowCameraView.angle);
+        inGameStage = InGameStage.ChooseSkill;
+        mainPanelCamera.gameObject.SetActive(true);
+        chooseSkillPanel.gameObject.SetActive(true);
+        chooseSkillPanel.Init();
     }
 
-    private IEnumerator ChangePickView(bool isPick)
+    public void EndOfChooseSkill()
     {
-        if (pickView.Count == 0)
-        {
-            pickView[ChessColor.White] = pickView_White;
-            pickView[ChessColor.Black] = pickView_Black;
+        mainPanelCamera.gameObject.SetActive(false);
+        chooseSkillPanel.gameObject.SetActive(false);
 
-        }
-
-        CameraView cameraView = isPick ? pickView[nowTurn] : nowCameraView;
-
-        float timer = 0f;
-        if (Vector3.Distance(_camera.transform.position, cameraView.position) < 0.1f)
-        {
-            _camera.transform.position = cameraView.position;
-            _camera.transform.rotation = Quaternion.Euler(cameraView.angle);
-            yield break;
-        }
-
-        CameraView basicView = isPick ? nowCameraView : pickView[nowTurn];
-
-        while (timer < 0.2f)
-        {
-            timer += Time.deltaTime;
-
-            float t = timer / 0.2f;
-            float turnAngle = Mathf.Lerp(basicView.angle.x, cameraView.angle.x, t);
-
-            _camera.transform.rotation = Quaternion.Euler(turnAngle, basicView.angle.y, 0);
-
-            float radian = turnAngle * Mathf.Deg2Rad;
-            float targetX = center.x + 90 * Mathf.Sin(radian);
-            float targetZ = center.z - 54 * Mathf.Cos(radian);
-
-
-            _camera.transform.position = new Vector3(0, targetX, targetZ);
-
-            yield return null;
-        }
-
-        _camera.transform.position = cameraView.position;
-        _camera.transform.rotation = Quaternion.Euler(cameraView.angle);
+        GameStart();
     }
-
-    public void CameraTurnToPickView(bool isPicking)
-    {
-        StartCoroutine(ChangePickView(isPicking));
-    }
-
-
 
     #endregion
 
     #region Turn
-
-    private Coroutine turnChange;
-
-    public void StartTurnChange()
-    {
-        if (turnChange != null) return;
-        turnChange = StartCoroutine(TurnChange());
-    }
-
-    private IEnumerator TurnChange()
+    public void EndTurn()
     {
         _chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
-        if (inGameStage == InGameStage.TurnChanging)
-        {
-            yield break;
-        } 
         inGameStage = InGameStage.TurnChanging;
         whiteChessPlayer.nowPlayerStage = PlayerStage.NoMyTurn;
-        blackChessPlayer.nowPlayerStage = PlayerStage.NoMyTurn;
-
         if (whiteChessPlayer.turnStart != null)
         {
             StopCoroutine(whiteChessPlayer.turnStart);
             whiteChessPlayer.turnStart = null;
         }
-
+        blackChessPlayer.nowPlayerStage = PlayerStage.NoMyTurn;
         if (blackChessPlayer.turnStart != null)
         {
             StopCoroutine(blackChessPlayer.turnStart);
             blackChessPlayer.turnStart = null;
         }
-        yield return StartCoroutine(ChangePickView(false));
 
+        TurnChange();
+    }
+
+    private void TurnChange()
+    {
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
 
-        yield return StartCoroutine(CameraTurn());
-
-        switch (nowTurn)
-        {
-            case ChessColor.White:
-                whiteChessPlayer.Player_TurnStart();
-                break;
-
-            case ChessColor.Black:
-                blackChessPlayer.Player_TurnStart();
-                break;
-        }
+        if (nowTurn == ChessColor.White) whiteChessPlayer.Player_TurnStart();
+        else blackChessPlayer.Player_TurnStart();
 
         inGameStage = InGameStage.TurnStart;
 
-        turnChange = null;
-
-
-    }
-    private void InGameInit()
-    {
-        inGameStage = InGameStage.Init;
-        skillManual.gameObject.SetActive(false);
-
-        _chessBoard.ChessBoard_Init();
-        whiteChessPlayer.Player_Init(ChessColor.White);
-        blackChessPlayer.Player_Init(ChessColor.Black);
-        InPutManager.Instance.InPutManager_Init();
-
-        whiteChessPlayer.playerInPut.StartInput();
-        blackChessPlayer.playerInPut.StartInput();
-
-        GameStart();
-        //StartCoroutine(ChooseSkillProcess());
-
     }
 
-    public void GameStart()
+    private void TurnInit()
     {
-        StartCoroutine(TurnInit());
-    }
-
-    private IEnumerator TurnInit()
-    {
-        yield return StartCoroutine(_chessBoard.ChessBoard_TurnInit());
+        _chessBoard.ChessBoard_TurnInit();
         Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
         Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
 
         foreach (Vector2Int chessPos in _chessBoard.board.Keys)
         {
-            if (_chessBoard.board[chessPos].color == ChessColor.White) whiteChess[chessPos] = _chessBoard.board[chessPos];
+            if (_chessBoard.board[chessPos].color == ChessColor.White)
+                whiteChess[chessPos] = _chessBoard.board[chessPos];
             else blackChess[chessPos] = _chessBoard.board[chessPos];
         }
-        yield return null;
 
         whiteChessPlayer.Player_ChessInit(whiteChess);
         blackChessPlayer.Player_ChessInit(blackChess);
-
-        yield return null;
-        nowTurn = ChessColor.White;
-        yield return StartCoroutine(CameraTurn());
-
-        whiteChessPlayer.Player_TurnStart();
-        inGameStage = InGameStage.TurnStart;
     }
+
+    #endregion
+
+    #region Camera Turn
+
+    private readonly CameraView whiteView = new CameraView(new Vector3(0, 70, -44), new Vector3(55, 0, 0));
+    private readonly CameraView pickView_White = new CameraView(new Vector3(0, 90, 0), new Vector3(90, 0, 0));
+
+    private readonly CameraView blackView = new CameraView(new Vector3(0, 70, 44), new Vector3(55, 180, 0));
+    private readonly CameraView pickView_Black = new CameraView(new Vector3(0, 90, 0), new Vector3(90, 180, 0));
+
+    public Dictionary<ChessColor, PlayerViewData> playerCameraView {  get; private set; } = new();
+    private readonly Vector3 center = new Vector3(0, 0, 0);
+    private const float cameraTurnTime = 0.75f;
+
+    private void PlayerViewDataInit()
+    {
+        playerCameraView.Clear();
+        playerCameraView[ChessColor.White] = new PlayerViewData(whiteView, pickView_White);
+        playerCameraView[ChessColor.Black] = new PlayerViewData(blackView, pickView_Black);
+
+    }
+    public IEnumerator TurnCamera(Camera camera, ChessColor color , CameraStage cameraStage)
+    {
+        CameraView targetView = playerCameraView[color].TargetView(cameraStage);
+
+        if (Vector3.Distance(camera.transform.position, targetView.position) < 0.01f)
+        {
+            camera.transform.position = targetView.position;
+            camera.transform.rotation = Quaternion.Euler(targetView.angle);
+            yield break;
+        }
+
+        CameraStage nowStage = cameraStage == CameraStage.Normal
+            ? CameraStage.Pick : CameraStage.Normal;
+
+        CameraView nowView = playerCameraView[color].TargetView(nowStage);
+
+        float timer = 0f;
+
+        Vector3 startOffset = nowView.position - center;
+        Vector3 endOffset = targetView.position - center;
+
+        float startRadius = startOffset.magnitude;
+        float endRadius = endOffset.magnitude;
+
+        float startAngle = nowView.angle.x;
+        float endAngle = targetView.angle.x;
+
+        float side = color == ChessColor.White ? -1f : 1f;
+
+        while (timer < cameraTurnTime)
+        {
+            timer += Time.deltaTime;
+
+            float t = Mathf.Clamp01(timer / cameraTurnTime);
+
+            float angle = Mathf.Lerp(startAngle, endAngle, t);
+            float radius = Mathf.Lerp(startRadius, endRadius, t);
+
+            float rad = angle * Mathf.Deg2Rad;
+
+            float y = center.y + Mathf.Sin(rad) * radius;
+            float z = center.z + side * Mathf.Cos(rad) * radius;
+
+            camera.transform.position = new Vector3(center.x, y, z);
+
+            float rotateY = Mathf.Lerp(nowView.angle.y, targetView.angle.y, t);
+            camera.transform.rotation = Quaternion.Euler(angle, rotateY, 0);
+
+            yield return null;
+        }
+
+        camera.transform.position = targetView.position;
+        camera.transform.rotation = Quaternion.Euler(targetView.angle);
+    }
+
 
     #endregion
 
@@ -308,30 +258,19 @@ public class InGame : MonoBehaviour
         whiteChessPlayer.AllBuffLevelUp();
         blackChessPlayer.AllBuffLevelUp();
 
-        //GameStart();
-        inGameStage = InGameStage.ChooseSkill;
-        StartCoroutine(ChooseSkillProcess());
+        StartChooseSkill();
     }
 
 
 
     #endregion
-
-    #region ChooseSkill
-
-    private IEnumerator ChooseSkillProcess()
+    public void GameStart()
     {
-        inGameStage = InGameStage.ChooseSkill;
-        yield return null;
-        skillManual.gameObject.SetActive(true);
-        skillManual.Init();
-
+        TurnInit();
+        nowTurn = ChessColor.White;
+        whiteChessPlayer.Player_TurnStart();
+        inGameStage = InGameStage.TurnStart;
     }
-
-
-
-
-    #endregion
 
     private void Start()
     {

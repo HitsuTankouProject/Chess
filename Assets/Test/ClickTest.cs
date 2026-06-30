@@ -21,11 +21,7 @@ public class ClickTest : MonoBehaviour
             if (Physics.Raycast(ray, out RaycastHit hit, 100f, buttonLayer, QueryTriggerInteraction.Collide))
             {
                 Debug.Log($"Hit {hit.collider.name}");
-                if (hit.collider.TryGetComponent<MyButton>(out var button))
-                {
-                    Debug.Log($"Clicked on button: {button.name}");
-                    button.OnClick();
-                }
+                
             }
         }
     }

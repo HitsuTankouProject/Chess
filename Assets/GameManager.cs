@@ -4,7 +4,7 @@ using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public enum Scene { Loading,GameTitle,InGame,Release,Error}
+public enum Scene { Loading, GameTitle, InGame, Release, Error}
 
 [System.Serializable]
 public struct Pair<F, S>
@@ -45,10 +45,27 @@ public struct Pair<F, S>
 
 }
 
+[System.Serializable]
+public struct CameraView
+{
+    public Vector3 position { get; private set; }
+    public Vector3 angle { get; private set; }
+
+    public CameraView(Vector3 targetPos, Vector3 targetAngle)
+    {
+        position = targetPos;
+        angle = targetAngle;
+    }
+}
+
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance {  get; private set; }
     public ResourcesData resourcesData;
+    public InPutManager inPutManager;
+    public Player player01;
+    public Player player02;
+
 
     private void Awake()
     {
@@ -67,6 +84,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         resourcesData.ResourcesInit();
+        inPutManager.Init();
+
         if (isTest) return;
         SceneManager.LoadScene("InGame", LoadSceneMode.Single);
     }

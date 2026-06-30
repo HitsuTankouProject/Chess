@@ -8,6 +8,7 @@ public class ChooseSkillPanel : MonoBehaviour
 {
     private InGame _inGame => InGame.Instance;
     private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
+    private InPutManager _inPutManager => GameManager.Instance.inPutManager;
     private ChessColor chooseSkillPlayerColor = ChessColor.White;
 
     private Player chooseSkillPlayer => chooseSkillPlayerColor == ChessColor.White ?
@@ -17,7 +18,7 @@ public class ChooseSkillPanel : MonoBehaviour
 
 
     public Card[] canPickCard;
-    private Button[] pickCardButton;
+    public Button[] pickCardButton;
     private readonly Dictionary<ChessType, AllBuffCard[]> buffChessDict = new()
     {
         [ChessType.King] = new[] { AllBuffCard.MadKing, AllBuffCard.SageKing },
@@ -46,14 +47,7 @@ public class ChooseSkillPanel : MonoBehaviour
     public Sprite sp_canDraw;
     public Sprite sp_cantDraw;
 
-    public void DrawAgain()
-    {
-        if (!canDrawAgain) return;
-        canDrawAgain = false;
-        image_drawAgain.sprite = sp_cantDraw;
-        image_drawAgain.color = c_Drawed;
-        StartCoroutine(CardReadyProcess());
-    }
+
 
     private List<ChessType> PlayerCanPick()
     {
@@ -136,7 +130,7 @@ public class ChooseSkillPanel : MonoBehaviour
     private void StartPlayerTurn(ChessColor color)
     {
         chooseSkillPlayerColor = color;
-        InPutManager.Instance.PlayerInputStage(chooseSkillPlayerColor, InputStage.ChooseSkill);
+        _inPutManager.PlayerInputStage(chooseSkillPlayerColor, InputStage.ChooseSkill);
         playerTag.sprite = _resourcesData.PlayerSprite(color);
         canDrawAgain = true;
         image_drawAgain.sprite = sp_canDraw;
@@ -151,16 +145,22 @@ public class ChooseSkillPanel : MonoBehaviour
         skillDescriptionPanel.gameObject.SetActive(false);
 
     }
-
-
     public void Button_ConFirm()
     {
         chooseSkillPlayer.ChooseBuff(pickedCard);
         if (chooseSkillPlayerColor == ChessColor.White) isWhiteChessPlayerPick = true;
         else isBlackChessPlayerPick = true;
         Button_Return();
+        TurnSwitch();
     }
-
+    public void Button_DrawAgain()
+    {
+        if (!canDrawAgain) return;
+        canDrawAgain = false;
+        image_drawAgain.sprite = sp_cantDraw;
+        image_drawAgain.color = c_Drawed;
+        StartCoroutine(CardReadyProcess());
+    }
     private void TurnSwitch()
     {
         if (isWhiteChessPlayerPick && !isBlackChessPlayerPick)
@@ -179,11 +179,11 @@ public class ChooseSkillPanel : MonoBehaviour
     }
     private void EndOfChooseSkill()
     {
-        gameObject.SetActive(false);
         isWhiteChessPlayerPick = false;
         isBlackChessPlayerPick = false;
-
-        _inGame.GameStart();
+        skillDescriptionPanel.gameObject.SetActive(false);
+        showCanPickPanel.gameObject.SetActive(false);
+        _inGame.EndOfChooseSkill();
     }
 
 
@@ -191,13 +191,10 @@ public class ChooseSkillPanel : MonoBehaviour
 
     public void Init()
     {
-
-
         isWhiteChessPlayerPick = false;
         isBlackChessPlayerPick = false;
-        StartPlayerTurn(ChessColor.White)
-
-
+        Button_Return();
+        StartPlayerTurn(ChessColor.White);
     }
 
 

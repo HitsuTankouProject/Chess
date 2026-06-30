@@ -149,6 +149,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   resourcesData: {fileID: 168378893}
+  player01: {fileID: 0}
+  player02: {fileID: 0}
   isTest: 1
 --- !u!4 &48994865
 Transform:
@@ -199,46 +201,65 @@ MonoBehaviour:
     king:
       prefab: {fileID: 7934165057480354544, guid: 620331901de52d746bf2a069daeef861, type: 3}
       model: {fileID: 4300000, guid: b0d116e9f78530d478c1a09b38140c8c, type: 2}
+      chessEffect: {fileID: 0}
     queen:
       prefab: {fileID: 8850071498296562618, guid: 43ec27fdd5e3e1c4e905ba83c6e2696e, type: 3}
       model: {fileID: 4300000, guid: d81072b94c3d68b44855906aea82fac9, type: 2}
+      chessEffect: {fileID: 0}
     bishop:
       prefab: {fileID: 8459677512333239083, guid: 2d85ac5de5f8574418b820b9bc3bc19e, type: 3}
       model: {fileID: 4300000, guid: e5195603808e5214d9423b73351a489d, type: 2}
+      chessEffect: {fileID: 0}
     rook:
       prefab: {fileID: 635408685441980965, guid: aa3552e20f999e040baeed46eeee2829, type: 3}
       model: {fileID: 4300000, guid: 1ca449cef00d40348871bb22ecbeea08, type: 2}
+      chessEffect: {fileID: 0}
     knight:
       prefab: {fileID: 5272293581533002671, guid: 046408882877b634a8035bebfc930d56, type: 3}
       model: {fileID: 4300000, guid: 4b02b975e335a2a41b4d0b8487c8ddd7, type: 2}
+      chessEffect: {fileID: 0}
     pawn:
       prefab: {fileID: 369259851351452256, guid: c99d7b6ed0de0cc459ead83319885a98, type: 3}
       model: {fileID: 4300000, guid: 78244915927846d4a8510bfcff645091, type: 2}
+      chessEffect: {fileID: 0}
   cradDataList:
     sageKing:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: 15109750232824e4cb0d9fd44c7a737a, type: 2}
     madKing:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: d5f23b66c8d15534a8f7f5109aff8cf0, type: 2}
     witcher:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: 2ba4f384dd0284f4f80f492c0d62df03, type: 2}
     beauty:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: fb7c70feb2cf27746bf2cab826380f18, type: 2}
     sorcerer:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: 55f891e82ade74c499bbd04eb4e86363, type: 2}
     monk:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: ae583504d2f73f244840ca77df4cf4d0, type: 2}
     rusher:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: 6e8cd9051b9faf54fb2492eb9843d62a, type: 2}
     guardian:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: 78b07b6b5f34f7947a3f3b933d2cbb3b, type: 2}
     charger:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: edfe93fd8f148bb4ab1419f9547491c7, type: 2}
     skirmisher:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: 2a9bb990921fa394098475e8bdc912c8, type: 2}
     scout:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: e2523446d1852cc4086fd0f482b266b0, type: 2}
     substitute:
+      sp_CardCover: {fileID: 0}
       m_CardCover: {fileID: 2100000, guid: 26d6a5075237f9f4dbdf882678e795c5, type: 2}
+    sp_CardBack: {fileID: 0}
     m_CardBack: {fileID: 2100000, guid: 7695027412df97b4db25d6faffd30e24, type: 2}
   allSprite:
     sp_WhiteColor: {fileID: 21300000, guid: f7bfe71ba1302b24a9b03c5436aa579d, type: 3}
@@ -5443,6 +5464,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1124323258
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1124323260}
+  - component: {fileID: 1124323259}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1124323259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124323258}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea6b4bad14fb836498b6ca31c83a3b44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::aaa
+--- !u!4 &1124323260
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1124323258}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -244.60284, y: 143.4775, z: 73.44435}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1643672957
 GameObject:
   m_ObjectHideFlags: 0
@@ -5569,19 +5634,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea6b4bad14fb836498b6ca31c83a3b44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::aaa
-  fragmentEffect: {fileID: 1864879434}
-  t: 0
---- !u!114 &1864879434 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7151586631276573523, guid: 4dc010013ca7b184eb0e04b300db3ed6, type: 3}
-  m_PrefabInstance: {fileID: 184621968}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7fc51af68105c144a56fd65d404ec46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FragmentEffect
 --- !u!1 &2065365349
 GameObject:
   m_ObjectHideFlags: 0
@@ -5730,3 +5782,4 @@ SceneRoots:
   - {fileID: 1643672961}
   - {fileID: 184621968}
   - {fileID: 405567888}
+  - {fileID: 1124323260}
