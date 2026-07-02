@@ -6,17 +6,20 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class ChooseSkillPanel : MonoBehaviour
 {
-    private InGame _inGame => InGame.Instance;
-    private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
-    private InPutManager _inPutManager => GameManager.Instance.inPutManager;
+    private GameManager _gameManager => GameManager.Instance;
+
+    private ResourcesData _resourcesData => _gameManager.resourcesData;
+    private InPutManager _inPutManager => _gameManager.inPutManager;
+
     private ChessColor chooseSkillPlayerColor = ChessColor.White;
 
     private Player chooseSkillPlayer => chooseSkillPlayerColor == ChessColor.White ?
-        _inGame.whiteChessPlayer : _inGame.blackChessPlayer;
+        _gameManager.player01 : _gameManager.player02;
+
     private bool isWhiteChessPlayerPick = false;
     private bool isBlackChessPlayerPick = false;
 
-
+    [Header("Pick Cards")]
     public Card[] canPickCard;
     public Button[] pickCardButton;
     private readonly Dictionary<ChessType, AllBuffCard[]> buffChessDict = new()
@@ -30,11 +33,14 @@ public class ChooseSkillPanel : MonoBehaviour
         [ChessType.Pawn] = new[] { AllBuffCard.Scout, AllBuffCard.Substitute }
     };
 
+    [Header("Picking Card")]
     public SkillDescriptionPanel skillDescriptionPanel;
     public GameObject showCanPickPanel;
 
+    [Header("Picking Tag")]
     public Image playerTag;
-    private AllBuffCard pickedCard;
+    [SerializeField] private AllBuffCard picking;
+    private List<AllBuffCard> pickedCards;
 
     [Header("DrawAgain")]
     private bool canDrawAgain = true;
@@ -44,10 +50,8 @@ public class ChooseSkillPanel : MonoBehaviour
     private readonly Color c_Draw = Color.white;
     private readonly Color c_Drawed = new Color(0.5f, 0.5f, 0.5f);
 
-    public Sprite sp_canDraw;
-    public Sprite sp_cantDraw;
-
-
+    private Sprite sp_canDraw => _resourcesData.allSprite.sp_canDraw;
+    private Sprite sp_cantDraw => _resourcesData.allSprite.sp_canDraw;
 
     private List<ChessType> PlayerCanPick()
     {
@@ -104,7 +108,6 @@ public class ChooseSkillPanel : MonoBehaviour
         pickCardButton[1].enabled = false;
         pickCardButton[2].enabled = false;
 
-
         for (int i = 0; i < canPickCard.Length; i++)
         {
             yield return canPickCard[i].TurnTheCard(CardFace.Back);
@@ -122,6 +125,7 @@ public class ChooseSkillPanel : MonoBehaviour
 
     private void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
     {
+        picking = targetBuff;
         showCanPickPanel.gameObject.SetActive(false);
         skillDescriptionPanel.ChangeDescription(targetBuff, 0);
         skillDescriptionPanel.gameObject.SetActive(true);
@@ -141,13 +145,14 @@ public class ChooseSkillPanel : MonoBehaviour
 
     public void Button_Return()
     {
+        picking = AllBuffCard.None;
         showCanPickPanel.gameObject.SetActive(true);
         skillDescriptionPanel.gameObject.SetActive(false);
 
     }
     public void Button_ConFirm()
     {
-        chooseSkillPlayer.ChooseBuff(pickedCard);
+        pickedCards.Add(picking);
         if (chooseSkillPlayerColor == ChessColor.White) isWhiteChessPlayerPick = true;
         else isBlackChessPlayerPick = true;
         Button_Return();
@@ -183,7 +188,9 @@ public class ChooseSkillPanel : MonoBehaviour
         isBlackChessPlayerPick = false;
         skillDescriptionPanel.gameObject.SetActive(false);
         showCanPickPanel.gameObject.SetActive(false);
-        _inGame.EndOfChooseSkill();
+
+
+        _gameManager.EndSkillChoose(pickedCards[0], pickedCards[1]);
     }
 
 

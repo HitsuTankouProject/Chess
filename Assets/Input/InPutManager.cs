@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public enum GamepadType { None, PlayStation, Xbox, Switch }
+public enum GamepadType { None = 0, PlayStation, Xbox, Switch, }
 
 public class InPutManager : MonoBehaviour
 {
@@ -21,7 +21,7 @@ public class InPutManager : MonoBehaviour
     private int gameBoardAndChessLayerMask = -1;
     public int CanHitLayerMask() => gameBoardAndChessLayerMask;
 
-    private Dictionary<GamepadType, Gamepad> recodingGamePads = new();
+    public Dictionary<GamepadType, Gamepad> recodingGamePads { get; private set; } = new();
     public Gamepad GetGamepad(GamepadType gamepadType)
     {
         if(!recodingGamePads.TryGetValue(gamepadType,out Gamepad gamepad)) return null;
@@ -29,20 +29,21 @@ public class InPutManager : MonoBehaviour
     }
 
     private HashSet<GamepadType> removedGamepad = new();
-    private int oldConnectingGamePad = 0;
+    public int oldConnectingGamePad = 0;
 
     private GamepadType GetControllerType(Gamepad gamepad)
     {
         if (gamepad == null) return GamepadType.None;
 
         string name = gamepad.name?.ToLower() ?? "";
+        string interfaceName = gamepad.description.interfaceName?.ToLower() ?? "";
         string manufacturer = gamepad.description.manufacturer?.ToLower() ?? "";
         string product = gamepad.description.product?.ToLower() ?? "";
 
         if (name.Contains("dual") || manufacturer.Contains("sony") || product.Contains("wireless controller"))
             return GamepadType.PlayStation;
 
-        if (name.Contains("xinput") || product.Contains("xbox"))
+        if (name.Contains("xinput") || interfaceName.Contains("xinput"))
             return GamepadType.Xbox;
 
         if (name.Contains("switch") || manufacturer.Contains("nintendo") || product.Contains("pro controller"))
@@ -53,7 +54,8 @@ public class InPutManager : MonoBehaviour
 
     private void RecodeGamePad()
     {
-        foreach(Gamepad gamepad in Gamepad.all)
+        recodingGamePads.Clear();
+        foreach (Gamepad gamepad in Gamepad.all)
         {
             GamepadType controllerType = GetControllerType(gamepad);
             if (controllerType == GamepadType.None|| recodingGamePads.ContainsKey(controllerType)) continue;
@@ -61,29 +63,11 @@ public class InPutManager : MonoBehaviour
         }
     }
 
-    private void UpdateRecodingGamePads(out bool isNeedRecode)
-    {
-        isNeedRecode = false;
-        removedGamepad.Clear();
-        foreach (var pair in recodingGamePads)
-        {
-            if (pair.Value == null) removedGamepad.Add(pair.Key);
-        }
-        foreach (GamepadType controllerType in removedGamepad)
-        {
-            Debug.Log(controllerType.ToString());
-            recodingGamePads.Remove(controllerType);
-        }
-        isNeedRecode = removedGamepad.Count > 0;
-        if (recodingGamePads.ContainsKey(GamepadType.None)) recodingGamePads.Remove(GamepadType.None);
-
-    }
     private void CurrentGamepadWatcher()
     {
         if (oldConnectingGamePad == Gamepad.all.Count) return;
+        Debug.Log(Gamepad.all.Count);
         oldConnectingGamePad = Gamepad.all.Count;
-        UpdateRecodingGamePads(out bool isNeedRecode);
-        if (!isNeedRecode) return;
         RecodeGamePad();
     }
 
@@ -116,6 +100,8 @@ public class InPutManager : MonoBehaviour
     public void Init()
     {
         gameBoardAndChessLayerMask = LayerMask.GetMask("GameBoard") | LayerMask.GetMask("Chess");
+        oldConnectingGamePad = Gamepad.all.Count;
+        RecodeGamePad();
 
     }
 

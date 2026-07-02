@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
+using static UnityEngine.Rendering.DebugUI;
 public enum CanUseDevice { Mouse,Gamepad };
 public enum InputStage { None, ChooseSkill,Waiting, Picking, OneMoreMove }
 
@@ -40,7 +41,8 @@ public class PlayerInPut : MonoBehaviour
     public void SetUseGamepadType(GamepadType gamepadType)
     {
         useGamepadType = gamepadType;
-        if(gamepadType != GamepadType.None) nowUsingDevice = CanUseDevice.Gamepad;
+        nowUsingGamepad = _inPutManager.GetGamepad(useGamepadType);
+        if (gamepadType != GamepadType.None) nowUsingDevice = CanUseDevice.Gamepad;
         else nowUsingDevice = CanUseDevice.Mouse;
     }
     public Gamepad nowUsingGamepad;
@@ -106,8 +108,10 @@ public class PlayerInPut : MonoBehaviour
         bool canMove = pickIngChess.possibleMoveList.Contains(boardPos);
         _chessBoard.ReSetActive();
 
-        if (!canMove) return false;
-
+        if (!canMove)
+        {
+            return false;
+        }
         ChessBasic moveChess = pickIngChess;
 
         pickIngChess = null;
@@ -186,22 +190,14 @@ public class PlayerInPut : MonoBehaviour
     private void Press_Chess(Vector2Int boardPos)
     {
         if (boardPos == invalidBoardPos) return;
-
         _chessBoard.UpdatePlayerChose(boardPos);
         PickChess(boardPos);
     }
 
     private void Press_ChessBoard(Vector2Int boardPos)
     {
-        if (!PutChess(boardPos))
-        {
-            _player.playerCanvas.TurnCamera(CameraStage.Normal);
-            pickIngChess.ReturnPick();
-            pickIngChess = null;
-            inputStage = InputStage.Waiting;
+        if (!PutChess(boardPos)) return;
 
-            return;
-        }
         _player.playerCanvas.TurnCamera(CameraStage.Normal);
         inputStage = InputStage.None;
 
@@ -247,80 +243,43 @@ public class PlayerInPut : MonoBehaviour
     private const float GamepadInputCd = 0.075f;
 
     private const float stickInputThreshold = 0.4f;
+
     private bool StickInput(float targetIndex) => targetIndex > stickInputThreshold;
-    private bool IsConformedKey()
+    private bool IsLeftStickInputed(Vector2 input, out Vector2Int dir)
     {
-        if (nowUsingGamepad == null) return false;
-        return nowUsingGamepad.buttonSouth.wasPressedThisFrame;
+        dir = Vector2Int.zero;
+        bool result =
+            Mathf.Abs(input.x) > stickInputThreshold &&
+            Mathf.Abs(input.y) > stickInputThreshold;
+
+        if (result)
+            dir = new Vector2Int(Mathf.CeilToInt(input.x), Mathf.CeilToInt(input.y));
+
+        return result;
     }
-    private bool IsCancelKey()
+
+    private void Confirm()
     {
-        if (nowUsingGamepad == null) return false;
-        return nowUsingGamepad.buttonEast.wasPressedThisFrame;
-    }
-    private void Conform(Vector2Int boardPos)
-    {
-        //switch (inputStage)
-        //{
-        //    case InputStage.Waiting:
-
-        //        if (PickChess(boardPos))
-        //        {
-        //            inputStage = InputStage.Picking;
-        //        }
-
-        //        break;
-
-        //    case InputStage.Picking:
-
-        //        if (PutChess(boardPos))
-        //        {
-        //            inputStage = InputStage.None;
-        //        }
-        //        else
-        //        {
-        //            inputStage = InputStage.Waiting;
-        //        }
-
-        //        break;
-        //}
-
         switch (inputStage)
         {
-            case InputStage.Waiting: PickChess(boardPos); break;         
+            case InputStage.Waiting: PickChess(nowPos); break;         
             case InputStage.Picking:
 
-                if (PutChess(boardPos)) inputStage = InputStage.None;
-                else inputStage = InputStage.Waiting;
+                if (PutChess(nowPos)) inputStage = InputStage.None;
+                //else 
+                //{
+                //    _player.playerCanvas.TurnCamera(CameraStage.Normal);
+                //    pickIngChess.ReturnPick();
+                //    pickIngChess = null;
+                //    inputStage = InputStage.Waiting;
+                //}
 
             break;
         }
     }
-   
-    private Vector2Int GamepadLeftStick()
+
+    private void TryMoveCursor(Vector2Int inputDirection)
     {
-        if (nowUsingGamepad == null) return Vector2Int.zero;
-
-        if (!nowUsingGamepad.added)
-        {
-            ChangeToMouse();
-            return Vector2Int.zero;
-        }
-
-        Vector2Int result = Vector2Int.zero;
-        Vector2 leftStickValue = nowUsingGamepad.leftStick.ReadValue();
-        float x = Mathf.Abs(leftStickValue.x);
-        float y = Mathf.Abs(leftStickValue.y);
-
-        int resultX = StickInput(x)? (leftStickValue.x > 0 ? 1 : -1) : 0;
-        int resultY = StickInput(y) ? (leftStickValue.y > 0 ? 1 : -1) : 0;
-        result = new Vector2Int(resultX, resultY);
-        int offset = InGame.Instance.nowTurn == ChessColor.White ? 1 : -1;
-        return result * offset;
-    }
-    private bool TryMoveCursor(Vector2Int inputDirection)
-    {
-        if (inputDirection == Vector2Int.zero) return false;
         Vector2 searchDirection = ((Vector2)inputDirection).normalized; 
         Vector2Int bestPos = nowPos;
         float bestScore = float.MinValue;
@@ -342,11 +301,9 @@ public class PlayerInPut : MonoBehaviour
             }
 
         }
-        if (bestPos == nowPos) return false;
+        if (bestPos == nowPos) return;
         nowPos = bestPos;
         _chessBoard.UpdatePlayerChose(nowPos);
-        return true;
-
     }
     private IEnumerable<Vector2Int> GetAreas()
     {
@@ -362,79 +319,74 @@ public class PlayerInPut : MonoBehaviour
         return Enumerable.Empty<Vector2Int>();
     }
 
+    private void ReturnToBoardPosition(Vector2Int dir)
+    {
+        if (dir == Vector2Int.zero) return;
+        int offset = _player.usingChess == ChessColor.White ? 1 : -1;
+        TryMoveCursor(dir * offset);
+    }
+
     private IEnumerator GamePadInPut()
     {
-        if (_player.allTheChess.Count == 0) yield break;
-
-        bool isGamepadInputAccessible = true;
-        nowPos = _player.allTheChess.Keys.First();
-        _chessBoard.UpdatePlayerChose(nowPos);
-
         while (true)
         {
-            if (inputStage == InputStage.None) yield break;
-
-            if (!isGamepadInputAccessible)
+            yield return null;
+            if (inputStage! == InputStage.None|| _player.playerCanvas.isPause)
             {
-                yield return new WaitForSeconds(GamepadInputCd);
-                isGamepadInputAccessible = true;
+                if (nowUsingGamepad.startButton.wasPressedThisFrame)
+                {
+                    _player.playerCanvas.Button_Pause();
+                }
                 continue;
             }
-            Vector2Int inputDirection = GamepadLeftStick();
 
-            if (inputDirection != Vector2Int.zero)
+            if (nowUsingGamepad.startButton.wasPressedThisFrame)
             {
-                if (TryMoveCursor(inputDirection)) isGamepadInputAccessible = false;
+                _player.playerCanvas.Button_Pause();
+                continue;
+            }
+            else if(IsLeftStickInputed(nowUsingGamepad.leftStick.ReadValue(),out Vector2Int dir))
+            {
+                ReturnToBoardPosition(dir);
+            }
+            else if (nowUsingGamepad.buttonSouth.wasPressedThisFrame)
+            {
+                Confirm();
+            }
+            else if (nowUsingGamepad.buttonEast.wasPressedThisFrame)
+            {
+                _player.playerCanvas.TurnCamera(CameraStage.Normal);
+                pickIngChess.ReturnPick();
+                pickIngChess = null;
+                inputStage = InputStage.Waiting;
             }
 
-            if(IsConformedKey()) Conform(nowPos);
-            else if (IsCancelKey())
-            {
-                if (inputStage == InputStage.Picking)
-                {
-                    pickIngChess.ReturnPick();
-                    pickIngChess = null;
-                    _chessBoard.ReSetActive();
-                    inputStage = InputStage.Waiting;
 
-                }
-            }
 
-            yield return null;
         }
+
+
 
     }
 
     private IEnumerator GamePad_OneMoreMove()
     {
-        bool isGamepadInputAccessible = true;
 
         while (true)
         {
-            if (!isGamepadInputAccessible)
-            {
-                yield return new WaitForSeconds(GamepadInputCd);
-                isGamepadInputAccessible = true;
-                continue;
-            }
             yield return null;
 
-            Vector2Int inputDirection = GamepadLeftStick();
-            if (inputDirection != Vector2Int.zero)
+            if (IsLeftStickInputed(nowUsingGamepad.leftStick.ReadValue(), out Vector2Int dir))
             {
-                if (TryMoveCursor(inputDirection)) isGamepadInputAccessible = false;
+                ReturnToBoardPosition(dir);
+                continue;
             }
-            if (!IsConformedKey()) continue;
-            bool canMove = pickIngChess.possibleMoveList.Contains(nowPos);
+            else if (nowUsingGamepad.buttonSouth.wasPressedThisFrame)
+            {
+                Confirm();
 
-            if (!canMove) continue;
-
-            ChessBasic moveChess = pickIngChess;
-            pickIngChess = null;
-            moveChess.Move(nowPos);
-            _chessBoard.ReSetActive();
-
-            yield break;
+            }
+        
 
         }
     }

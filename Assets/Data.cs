@@ -164,9 +164,12 @@ namespace Data
         public Sprite sp_WhiteColor;
         public Sprite sp_BlackColor;
         [Header("Button Sprite")]
+        public Sprite sp_Confirm;
         public Sprite sp_Return;
-
-
+        public Sprite sp_canDraw;
+        public Sprite sp_cantDraw;
+        public Sprite sp_Ready;
+        public Sprite sp_NonReady;
     }
 
 }

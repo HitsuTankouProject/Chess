@@ -1252,7 +1252,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &321072403
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2448,7 +2448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b47bac56c8486634d84f48a1edc22548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InPutManager
-  nowUsingGamePadIndex: 0
+  oldConnectingGamePad: 0
 --- !u!1 &500737666
 GameObject:
   m_ObjectHideFlags: 0
@@ -3157,7 +3157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInPut
   inputStage: 0
-  nowUsingDevice: 0
+  useGamepadType: 0
   pickIngChess: {fileID: 0}
 --- !u!4 &599565955 stripped
 Transform:
@@ -5749,7 +5749,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInPut
   inputStage: 0
-  nowUsingDevice: 0
+  useGamepadType: 0
   pickIngChess: {fileID: 0}
 --- !u!1001 &1065396198
 PrefabInstance:
@@ -7580,7 +7580,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1424132876
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8717,7 +8717,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1604063735
 RectTransform:
   m_ObjectHideFlags: 0

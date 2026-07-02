@@ -10,7 +10,7 @@ public class PlayerCanvas : MonoBehaviour
     private InGame _inGame =>InGame.Instance;
     public Camera playerCamera;
 
-    private bool isPause = false;
+    public bool isPause {  get; private set; }
 
     public void Init(Player player, List<AllBuffCard> choseBuffs)
     {
