@@ -7,7 +7,7 @@ public class Sorcerer : BuffBasic
 {
     public override ChessType buffChess => ChessType.Bishop;
     public override string buffName => "Sorcerer";
-    public override void Choose() => _player.bishopBuffType = Player.BishopBuff.Sorcerer;
+    public override void Choose() => _player.allTheBuff.bishopBuffType = BishopBuff.Sorcerer;
 
 
     public HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
@@ -37,9 +37,9 @@ public class Sorcerer : BuffBasic
     public override void ThirdLevel()
     {
         canCurseChess = true;
+        ChessColor othersChessColor = _player.usingChess == ChessColor.White ? ChessColor.Black : ChessColor.White;
 
-        _enemy = _player != InGame.Instance.whiteChessPlayer ? 
-            InGame.Instance.whiteChessPlayer : InGame.Instance.blackChessPlayer;
+        _enemy = GameManager.Instance.TargetPlayer(othersChessColor);
     }
 
     public void CurseChess()
@@ -68,7 +68,7 @@ public class Monk : BuffBasic
 {
     public override ChessType buffChess => ChessType.Bishop;
     public override string buffName => "Monk";
-    public override void Choose() => _player.bishopBuffType = Player.BishopBuff.Monk;
+    public override void Choose() => _player.allTheBuff.bishopBuffType = BishopBuff.Monk;
 
     public HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
     private readonly Vector2Int firstExtraDirections = Vector2Int.left;
@@ -122,11 +122,11 @@ public class Bishop : ChessBasic
 
     public override void ExtraFindPossibleMove(bool isThrougt)
     {
-        if (_player.bishopBuffType == Player.BishopBuff.None) return;
+        if (_player.bishopBuffType == BishopBuff.None) return;
         HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
         int extraCanGoRange;
 
-        if (_player.bishopBuffType == Player.BishopBuff.Sorcerer)
+        if (_player.bishopBuffType == BishopBuff.Sorcerer)
         {
             extraCanGoArea = _player.sorcerer.extraCanGoArea;
             extraCanGoRange = _player.sorcerer.extraCanGoRange;
@@ -187,9 +187,9 @@ public class Bishop : ChessBasic
         base.Move(moveTo);
         switch (_player.bishopBuffType)
         {
-            case Player.BishopBuff.None: return;
-            case Player.BishopBuff.Sorcerer:_player.sorcerer.CurseChess();return;
-            case Player.BishopBuff.Monk:PurificChess();return;
+            case BishopBuff.None: return;
+            case BishopBuff.Sorcerer:_player.sorcerer.CurseChess();return;
+            case BishopBuff.Monk:PurificChess();return;
         }
     }
 

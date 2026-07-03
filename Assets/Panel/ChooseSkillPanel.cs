@@ -40,7 +40,7 @@ public class ChooseSkillPanel : MonoBehaviour
     [Header("Picking Tag")]
     public Image playerTag;
     [SerializeField] private AllBuffCard picking;
-    private List<AllBuffCard> pickedCards;
+    private List<AllBuffCard> pickedCards = new();
 
     [Header("DrawAgain")]
     private bool canDrawAgain = true;
@@ -57,22 +57,22 @@ public class ChooseSkillPanel : MonoBehaviour
     {
         List<ChessType> playerCanPick = new();
 
-        if (chooseSkillPlayer.kingBuffType == Player.KingBuff.None)
+        if (chooseSkillPlayer.kingBuffType == KingBuff.None)
             playerCanPick.Add(ChessType.King);
 
-        if (chooseSkillPlayer.queenBuffType == Player.QueenBuff.None)
+        if (chooseSkillPlayer.queenBuffType == QueenBuff.None)
             playerCanPick.Add(ChessType.Queen);
 
-        if (chooseSkillPlayer.bishopBuffType == Player.BishopBuff.None)
+        if (chooseSkillPlayer.bishopBuffType == BishopBuff.None)
             playerCanPick.Add(ChessType.Bishop);
 
-        if (chooseSkillPlayer.knightBuffType == Player.KnightBuff.None)
+        if (chooseSkillPlayer.knightBuffType == KnightBuff.None)
             playerCanPick.Add(ChessType.Knight);
 
-        if (chooseSkillPlayer.rookBuffType == Player.RookBuff.None)
+        if (chooseSkillPlayer.rookBuffType == RookBuff.None)
             playerCanPick.Add(ChessType.Rook);
 
-        if (chooseSkillPlayer.pawnBuffType == Player.PawnBuff.None)
+        if (chooseSkillPlayer.pawnBuffType == PawnBuff.None)
             playerCanPick.Add(ChessType.Pawn);
 
         return playerCanPick;

@@ -8,7 +8,7 @@ public class Scout : BuffBasic
 {
     public override ChessType buffChess => ChessType.Pawn;
     public override string buffName => "Scout";
-    public override void Choose() => _player.pawnBuffType = Player.PawnBuff.Scout;
+    public override void Choose() => _player.allTheBuff.pawnBuffType = PawnBuff.Scout;
 
     public bool cantPromotion = false;
     public bool canReceiveMoveAreaFromYouAteChess = false;
@@ -53,7 +53,7 @@ public class Substitute : BuffBasic
 {
     public override ChessType buffChess => ChessType.Pawn;
     public override string buffName => "Substitute";
-    public override void Choose() => _player.pawnBuffType = Player.PawnBuff.Substitute;
+    public override void Choose() => _player.allTheBuff.pawnBuffType = PawnBuff.Substitute;
 
     public bool cantPromotion = false;
     public bool canOnlyKillKing = false;
@@ -101,7 +101,7 @@ public class Pawn : ChessBasic
 
     public override void ExtraFindPossibleMove(bool isThrough)
     {
-        if (_player.pawnBuffType != Player.PawnBuff.Scout
+        if (_player.pawnBuffType != PawnBuff.Scout
             || _player.scout.extraMoveArea.Count == 0) return;
 
         foreach (Vector2Int direction in _player.scout.extraMoveArea)
@@ -190,7 +190,7 @@ public class Pawn : ChessBasic
 
     private void ScoutSecondBuff(ChessBasic chess)
     {
-        if (_player.pawnBuffType != Player.PawnBuff.Scout || !_player.scout.canReceiveMoveAreaFromYouAteChess) return;
+        if (_player.pawnBuffType != PawnBuff.Scout || !_player.scout.canReceiveMoveAreaFromYouAteChess) return;
         _player.scout.AddExtraMoveArea(chess);
     }
 
@@ -202,7 +202,7 @@ public class Pawn : ChessBasic
             return false;
         }
 
-        bool canOnlyKillKing = _player.pawnBuffType == Player.PawnBuff.Substitute
+        bool canOnlyKillKing = _player.pawnBuffType == PawnBuff.Substitute
         && _player.substitute.canOnlyKillKing;
         bool isKing = chess.type == ChessType.King;
 
@@ -234,7 +234,7 @@ public class Pawn : ChessBasic
     };
     private void Promotion()
     {
-        if (_player.pawnBuffType != Player.PawnBuff.None) return;
+        if (_player.pawnBuffType != PawnBuff.None) return;
         int targetY = (color == ChessColor.White) ? 7 : 0;
         if (position.y != targetY) return;
         Pair<ChessColor, ChessType> promotionInfo = 

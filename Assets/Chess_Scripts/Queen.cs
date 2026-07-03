@@ -7,7 +7,7 @@ public class Witcher : BuffBasic
 {
     public override ChessType buffChess => ChessType.Queen;
     public override string buffName => "Witcher";
-    public override void Choose() => _player.queenBuffType = Player.QueenBuff.Witcher;
+    public override void Choose() => _player.allTheBuff.queenBuffType = QueenBuff.Witcher;
 
     public int canGoRange { get; private set; } = 2;
     public bool cantGotCurse { get; private set; } = false;
@@ -48,7 +48,7 @@ public class Beauty : BuffBasic
 {
     public override ChessType buffChess => ChessType.Queen;
     public override string buffName => "Beauty";
-    public override void Choose() => _player.queenBuffType = Player.QueenBuff.Beauty;
+    public override void Choose() => _player.allTheBuff.queenBuffType = QueenBuff.Beauty;
 
     public bool canProtectByKnight = false;
     public bool removeTheAreaLimit = false;
@@ -89,7 +89,7 @@ public class Queen : ChessBasic
     {
         get
         {
-            if(_player.queenBuffType == Player.QueenBuff.Witcher)
+            if(_player.queenBuffType == QueenBuff.Witcher)
                 return _player.witcher.canGoRange;
              else return 8;
         }
@@ -109,10 +109,10 @@ public class Queen : ChessBasic
 
         base.EatChess(chess);
 
-        if (_player.queenBuffType == Player.QueenBuff.Witcher) CurseBlock();
-        else if (_player.queenBuffType == Player.QueenBuff.Beauty) CharmChess(chessType, thisPos);
+        if (_player.queenBuffType == QueenBuff.Witcher) CurseBlock();
+        else if (_player.queenBuffType == QueenBuff.Beauty) CharmChess(chessType, thisPos);
 
-        Player.QueenBuff queenBuff = _player.queenBuffType;
+        QueenBuff queenBuff = _player.queenBuffType;
         
     }
 
@@ -145,7 +145,7 @@ public class Queen : ChessBasic
     private bool CanProtectByKnight(out ChessBasic knight)
     {
         knight = null;
-        if (_player.queenBuffType != Player.QueenBuff.Beauty) return false;
+        if (_player.queenBuffType != QueenBuff.Beauty) return false;
         List<ChessBasic> knightList = _player.ChessListByType(ChessType.Knight);
         if (knightList.Count == 0) return false;
 
@@ -177,7 +177,7 @@ public class Queen : ChessBasic
     }
     private void CharmChess(ChessType chessType, Vector2Int spawnKnightPos)
     {
-        if (_player.queenBuffType != Player.QueenBuff.Beauty ||
+        if (_player.queenBuffType != QueenBuff.Beauty ||
             !_player.beauty.canCharmChess
             || _chessBoard.IsKingChessSpawn(spawnKnightPos)) return;
 
@@ -199,7 +199,7 @@ public class Queen : ChessBasic
 
     private void CurseBlock()
     {
-        if (_player.queenBuffType != Player.QueenBuff.Witcher) return;
+        if (_player.queenBuffType != QueenBuff.Witcher) return;
         if (_player.witcher.nowBuffLevel == 2)
         {
             _chessBoard.CurseTheBlock(position,this);

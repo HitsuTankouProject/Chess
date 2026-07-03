@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
-using static Player;
 
 public class Rusher : BuffBasic
 {
     public override ChessType buffChess => ChessType.Rook;
     public override string buffName => "Rusher";
-    public override void Choose() => _player.rookBuffType = Player.RookBuff.Rusher;
+    public override void Choose() => _player.allTheBuff.rookBuffType = RookBuff.Rusher;
 
     public bool canThroughSameColor = false;
     public bool canThroughNonSameColor = false;
@@ -39,7 +38,7 @@ public class Guardian : BuffBasic
 {
     public override ChessType buffChess => ChessType.Rook;
     public override string buffName => "Guardian";
-    public override void Choose() => _player.rookBuffType = Player.RookBuff.Guardian;
+    public override void Choose() => _player.allTheBuff.rookBuffType = RookBuff.Guardian;
 
 
     public HashSet<Vector2Int> protectArea = new HashSet<Vector2Int>();

@@ -8,7 +8,7 @@ public class SageKing : BuffBasic
 {
     public override ChessType buffChess => ChessType.King;
     public override string buffName => "SageKing";
-    public override void Choose() => _player.kingBuffType = Player.KingBuff.SageKing;
+    public override void Choose() => _player.allTheBuff.kingBuffType = KingBuff.SageKing;
 
 
     public bool cantReSpawn = false;
@@ -32,9 +32,10 @@ public class SageKing : BuffBasic
     {
         canAddBarrierInPercent = true;
 
-        Player others = _player == InGame.Instance.whiteChessPlayer ? 
-            InGame.Instance.blackChessPlayer : InGame.Instance.whiteChessPlayer;
-        addBarrierPercent = others.kingBuffType == Player.KingBuff.MadKing ? 60.0f : 30.0f;
+        ChessColor othersChessColor = _player.usingChess == ChessColor.White ? ChessColor.Black : ChessColor.White;
+        addBarrierPercent = 
+            GameManager.Instance.TargetPlayer(othersChessColor).kingBuffType == KingBuff.MadKing 
+            ? 60.0f : 30.0f;
     }
 
     public bool TryAddBarrier()
@@ -55,7 +56,7 @@ public class MadKing : BuffBasic
 {
     public override ChessType buffChess => ChessType.King;
     public override string buffName => "MadKing";
-    public override void Choose() => _player.kingBuffType = Player.KingBuff.MadKing;
+    public override void Choose() => _player.allTheBuff.kingBuffType = KingBuff.MadKing;
 
     public int extraFindRange = 1;
     public bool cantReSpawn = false;
@@ -103,8 +104,8 @@ public class King : ChessBasic
     {
         base.ChessInit(player);
 
-        _enemy = player == InGame.Instance.whiteChessPlayer ? 
-            InGame.Instance.blackChessPlayer : InGame.Instance.whiteChessPlayer;
+        ChessColor othersChessColor = _player.usingChess == ChessColor.White ? ChessColor.Black : ChessColor.White;
+        _enemy = GameManager.Instance.TargetPlayer(othersChessColor);
     }
 
     public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>
@@ -254,7 +255,7 @@ public class King : ChessBasic
             return;
         }
 
-        InGame.Instance.GameSet();
+        GameManager.Instance.EndInGame();
 
     }
 

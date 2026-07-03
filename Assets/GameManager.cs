@@ -60,27 +60,6 @@ public struct Pair<F, S>
     }
 
 }
-
-[System.Serializable]
-public struct CameraView
-{
-    public Vector3 position { get; private set; }
-    public Vector3 angle { get; private set; }
-
-    //public float fieldOfView { get; private set; }
-
-
-    public CameraView(Vector3 targetPos, Vector3 targetAngle)
-    {
-        position = targetPos;
-        angle = targetAngle;
-    }
-
-
-
-
-}
-
 public struct MainCameraView
 {
     public Vector3 position { get; private set; }
@@ -94,6 +73,7 @@ public struct MainCameraView
     }
 
 }
+public enum PlayerCameraStage { Normal, Pick }
 public struct PlayerCameraView
 {
     public Vector3 position { get; private set; }
@@ -106,15 +86,12 @@ public struct PlayerCameraView
 
 }
 
-
-
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance {  get; private set; }
     public ResourcesData resourcesData;
     public InPutManager inPutManager;
     public ChessBoard chessBoard;
-
 
 
 
@@ -135,6 +112,13 @@ public class GameManager : MonoBehaviour
     [Header("Players")]
     public Player player01; 
     public Player player02;
+    public Player TargetPlayer(ChessColor chessColor)
+    {
+        if (chessColor == ChessColor.White) return player01;
+        else return player02;
+    }
+
+
     // ===== Player Camera Views =====
     private PlayerCameraView whiteView = new (new Vector3(0, 70, -44), new Vector3(55, 0, 0));
     private PlayerCameraView pickView_White = new (new Vector3(0, 90, 0), new Vector3(90, 0, 0));
@@ -176,7 +160,13 @@ public class GameManager : MonoBehaviour
                 StartCoroutine(SkillChoose());
                 break;
 
+            case GameStage.InGame:
+
+                StartCoroutine(InGame());
+                break;
+
             case GameStage.TurnEnd:
+                StartCoroutine(TurnEnd());
                 break;
 
             case GameStage.GameEnd:
@@ -263,8 +253,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region PlayerCameraView 
-
-    public enum PlayerCameraStage { Normal, Pick }
+    
     private const float playerCameraOpenTime = 0.5f;
 
     private const float openRectX = 0.5f;
@@ -317,46 +306,16 @@ public class GameManager : MonoBehaviour
         playerCamera.rect = target;
     }
 
-
-    //private IEnumerator TargetPlayerCameraOpen(Camera playerCamera , bool isOpen)
-    //{
-    //    if(playerCamera != player01Camera && playerCamera != player02Camera)
-    //    {
-    //        Debug.LogError("TargetPlayerCameraTurn: Invalid player camera.");
-    //        yield break;
-    //    }
-    //    if (Mathf.Abs(playerCamera.rect.x) == (isOpen ? openRectX : closeRectX)) yield break;
-
-    //    float timer = 0;
-    //    float offset = playerCamera == player01Camera ? -1 : 1;
-
-    //    while (timer < playerCameraOpenTime)
-    //    {
-    //        timer += Time.deltaTime;
-
-    //        float t = Mathf.Clamp01(timer / playerCameraOpenTime);
-    //        float newX = Mathf.Lerp(playerCamera.rect.x, isOpen ? openRectX * offset : closeRectX * offset, t);
-
-    //        playerCamera.rect = new Rect(newX, 0, 0.5f, 1);
-    //        yield return null;
-    //    }
-
-    //    playerCamera.rect = new Rect(openRectX * offset, 0, 0.5f, 1);
-    //}
     private IEnumerator PlayerCameraOpen(bool isOpen)
     {
-        //if(player01Camera.rect.x == (isOpen ? -openRectX : closeRectX)
-        // && player02Camera.rect.x == (isOpen ? openRectX : closeRectX))
-        //{
-        //    yield break;
-        //}
-
-
-
         yield return StartCoroutine(TargetPlayerCameraOpen(player01Camera, isOpen));
         yield return StartCoroutine(TargetPlayerCameraOpen(player02Camera, isOpen));
+    }
 
-
+    private Camera TargetCamera(ChessColor chessColor)
+    {
+        if(chessColor == ChessColor.White) return player01Camera;
+        else return player02Camera;
     }
 
     private PlayerCameraView TargetPlayerCameraView(ChessColor color, PlayerCameraStage cameraStage)
@@ -373,7 +332,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public IEnumerator PlayerCameraTurn(Camera playerCamera, Pair<ChessColor, PlayerCameraStage> playerCameraStagePair)
+    private IEnumerator PlayerCameraTurn(Camera playerCamera, Pair<ChessColor, PlayerCameraStage> playerCameraStagePair)
     {
         if (playerCamera != player01Camera && playerCamera != player02Camera)
         {
@@ -407,11 +366,19 @@ public class GameManager : MonoBehaviour
         playerCamera.transform.rotation = Quaternion.Euler(targetView.angle);
     }
 
+    public void PlayerCameraTurn(Pair<ChessColor, PlayerCameraStage> playerCameraStagePair)
+    {
+        Camera camera = TargetCamera(playerCameraStagePair.first);
+        StartCoroutine(PlayerCameraTurn(camera, playerCameraStagePair));
+    }
+
+
     #endregion
 
     #region Loading
     [Header("Loading")]
     public GameObject loading;
+
     private IEnumerator Loading()
     {
 
@@ -420,12 +387,9 @@ public class GameManager : MonoBehaviour
         inPutManager.Init();
 
         chessBoard.ChessBoard_Init();
-        player01.Player_Init(ChessColor.White);
-        player02.Player_Init(ChessColor.Black);
-        player01.playerInPut.StartInput();
-        player02.playerInPut.StartInput();
+        TargetPlayer(ChessColor.White).Player_Init(ChessColor.White);
+        TargetPlayer(ChessColor.Black).Player_Init(ChessColor.Black);
 
-        loading.SetActive(false);
 
         StartCoroutine(SwitchStage(GameStage.GameTitle));
     }
@@ -510,8 +474,8 @@ public class GameManager : MonoBehaviour
 
     public void EndControllerChoose(GamepadType player01pick, GamepadType player02pick)
     {
-        player01.playerInPut.SetUseGamepadType(player01pick);
-        player02.playerInPut.SetUseGamepadType(player01pick);
+        TargetPlayer(ChessColor.White).playerInPut.SetUseGamepadType(player01pick);
+        TargetPlayer(ChessColor.Black).playerInPut.SetUseGamepadType(player01pick);
         controllerChoosePanel.gameObject.SetActive(false);
         StartCoroutine(SwitchStage(GameStage.GameStart));
     }
@@ -531,19 +495,33 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    private const int maxTurnCount = 3;
-    private int nowTurnCount = 1;
-
     #region TurnStart
+    private void TurnInit()
+    {
+        chessBoard.ChessBoard_TurnInit();
+        Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
+        Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
 
+        foreach (Vector2Int chessPos in chessBoard.board.Keys)
+        {
+            if (chessBoard.board[chessPos].color == ChessColor.White)
+                whiteChess[chessPos] = chessBoard.board[chessPos];
+            else blackChess[chessPos] = chessBoard.board[chessPos];
+        }
+
+        player01.Player_ChessInit(whiteChess);
+        player02.Player_ChessInit(blackChess);
+    }
     private IEnumerator TurnStart()
     {
+
+        TurnInit();
+        yield return new WaitForSeconds(1.0f);
         yield return null;
-        //StartCoroutine(SwitchStage(GameStage.SkillChoose));
+        StartCoroutine(SwitchStage(GameStage.SkillChoose));
     }
 
     #endregion
-
 
     #region SkillChoose
     [Header("SkillChoose")]
@@ -558,24 +536,69 @@ public class GameManager : MonoBehaviour
         chooseSkillPanel.gameObject.SetActive(true);
         chooseSkillPanel.Init();
 
-        //StartCoroutine(SwitchStage(GameStage.TurnEnd));
     }
+
+    private IEnumerator ReadyForInGame()
+    {
+        yield return StartCoroutine(MainCameraTurn(GameStage.TurnStart));
+        yield return PlayerCameraOpen(true);
+
+        StartCoroutine(SwitchStage(GameStage.InGame));
+    }
+
+
 
     public void EndSkillChoose(AllBuffCard player01Pick, AllBuffCard player02Pick)
     {
         player01.ChooseBuff(player01Pick);
         player02.ChooseBuff(player02Pick);
 
-        StartCoroutine(SwitchStage(GameStage.InGame));
+        Debug.Log(player01Pick.ToString());
+        Debug.Log(player02Pick.ToString());
+
+        StartCoroutine(ReadyForInGame());
+
     }
 
     #endregion
 
+    public ChessColor nowTurn { get; private set; } = ChessColor.White;
+    private const int maxTurnCount = 3;
+    private int nowTurnCount = 1;
+
     #region InGame
+
+    private void TurnChange()
+    {
+        nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
+        TargetPlayer(nowTurn).Player_TurnStart();
+    }
+
+    private void StopPlayerTurn(ChessColor chessColor)
+    {
+        TargetPlayer(chessColor).nowPlayerStage = PlayerStage.NoMyTurn;
+        if (TargetPlayer(chessColor).turnStart != null)
+        {
+            StopCoroutine(TargetPlayer(chessColor).turnStart);
+            TargetPlayer(chessColor).turnStart = null;
+        }
+    }
+
+    public void EndTurn()
+    {
+        chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
+        StopPlayerTurn(ChessColor.White);
+        StopPlayerTurn(ChessColor.Black);
+        TurnChange();
+    }
+
+
+
     private IEnumerator InGame()
     {
         yield return null;
-        //StartCoroutine(SwitchStage(GameStage.TurnEnd));
+        nowTurn = ChessColor.White;
+        TargetPlayer(nowTurn).Player_TurnStart();
     }
 
     public void EndInGame()
@@ -590,20 +613,22 @@ public class GameManager : MonoBehaviour
     private IEnumerator TurnEnd()
     {
         yield return null;
-        if(nowTurnCount<maxTurnCount)
-                    {
-            nowTurnCount++;
-        }
-        else
+
+        if(nowTurnCount>=maxTurnCount)
         {
+            Debug.Log("Real GameSet");
             StartCoroutine(SwitchStage(GameStage.Release));
             yield break;
+
         }
 
-
-
+        Debug.Log("GameSet!!");
+        nowTurnCount++;
+        player01.AllBuffLevelUp();
+        player02.AllBuffLevelUp();
 
         StartCoroutine(SwitchStage(GameStage.TurnStart));
+
     }
 
     #endregion

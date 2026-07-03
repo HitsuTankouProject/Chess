@@ -8,7 +8,7 @@ public class Charger : BuffBasic
 {
     public override ChessType buffChess => ChessType.Knight;
     public override string buffName => "Charger";
-    public override void Choose() => _player.knightBuffType = Player.KnightBuff.Charger;
+    public override void Choose() => _player.allTheBuff.knightBuffType = KnightBuff.Charger;
 
 
     public HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
@@ -45,7 +45,7 @@ public class Skirmisher : BuffBasic
 {
     public override ChessType buffChess => ChessType.Knight;
     public override string buffName => "Skirmisher";
-    public override void Choose() => _player.knightBuffType = Player.KnightBuff.Skirmisher;
+    public override void Choose() => _player.allTheBuff.knightBuffType = KnightBuff.Skirmisher;
 
 
     public HashSet<Vector2Int> extraCanGoArea = new HashSet<Vector2Int>();
@@ -105,12 +105,12 @@ public class Knight : ChessBasic
     }
     public override void ExtraFindPossibleMove(bool isthrough)
     {
-        if (_player.knightBuffType == Player.KnightBuff.None) return;
+        if (_player.knightBuffType == KnightBuff.None) return;
 
-        HashSet<Vector2Int> extraCanGoArea = _player.knightBuffType == Player.KnightBuff.Charger ?
+        HashSet<Vector2Int> extraCanGoArea = _player.knightBuffType == KnightBuff.Charger ?
             _player.charger.extraCanGoArea : _player.skirmisher.extraCanGoArea;
 
-        int extraCanGoRange = _player.knightBuffType == Player.KnightBuff.Charger ?
+        int extraCanGoRange = _player.knightBuffType == KnightBuff.Charger ?
             _player.charger.extraCanGoRange : _player.skirmisher.extraCanGoRange;
 
         foreach (var dir in extraCanGoArea)
@@ -141,9 +141,9 @@ public class Knight : ChessBasic
 
     public override void Move(Vector2Int moveTo)
     {
-        Player.KnightBuff knightBuff = _player.knightBuffType;
+        KnightBuff knightBuff = _player.knightBuffType;
 
-        if (knightBuff == Player.KnightBuff.None)
+        if (knightBuff == KnightBuff.None)
         {
             base.Move(moveTo);
             return;
@@ -158,8 +158,8 @@ public class Knight : ChessBasic
         }
         MoveOnly(moveTo);
 
-        if (knightBuff == Player.KnightBuff.Skirmisher) SkirmisherFinalBuff();
-        else if (knightBuff == Player.KnightBuff.Charger) ChargerFinalBuff(isEatTheChess);
+        if (knightBuff == KnightBuff.Skirmisher) SkirmisherFinalBuff();
+        else if (knightBuff == KnightBuff.Charger) ChargerFinalBuff(isEatTheChess);
        
     }
 
@@ -167,7 +167,7 @@ public class Knight : ChessBasic
 
     private void ChargerFinalBuff(bool moveAgain)
     {
-        bool haveChargerFinalBuff = _player.knightBuffType == Player.KnightBuff.Charger && _player.charger.canMoveItAgain;
+        bool haveChargerFinalBuff = _player.knightBuffType == KnightBuff.Charger && _player.charger.canMoveItAgain;
 
         if (!haveChargerFinalBuff || !moveAgain)
         {
@@ -192,7 +192,7 @@ public class Knight : ChessBasic
     }
     private void SkirmisherFinalBuff()
     {
-        if (_player.knightBuffType != Player.KnightBuff.Skirmisher) return;
+        if (_player.knightBuffType != KnightBuff.Skirmisher) return;
         if (_player.skirmisher.nowBuffLevel != 3) return;
 
         Queue<ChessBasic> eatQueue = new Queue<ChessBasic>();

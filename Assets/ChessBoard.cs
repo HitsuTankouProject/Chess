@@ -15,8 +15,9 @@ public class Col
 public class ChessBoard : MonoBehaviour
 {
     public static ChessBoard Instance { get; private set; }
+    private GameManager _gameManager => GameManager.Instance;
+
     private PoolManager _poolManager => PoolManager.Instance;
-    private InGame _InGame => InGame.Instance;
     private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
     private void Awake()
     {

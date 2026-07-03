@@ -1,19 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
-
-using static Player;
-using NUnit.Framework;
 using Unity.VisualScripting;
-using static UnityEditor.Experimental.GraphView.GraphView;
+
 public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,ReadytoEnd,End }
-
-
 
 public class Player : MonoBehaviour
 {
-    private ChessBoard _chessBoard => ChessBoard.Instance;
-    private InPutManager _inPutManager => GameManager.Instance.inPutManager;
+    private GameManager _gameManager => GameManager.Instance;
+    private ChessBoard _chessBoard => _gameManager.chessBoard;
+    private InPutManager _inPutManager => _gameManager.inPutManager;
 
     public ChessColor usingChess;
 
@@ -46,113 +42,31 @@ public class Player : MonoBehaviour
         return chessList;
     }
 
-    #region Buff Chess
-
+    #region Chess Buff
+    public AllTheBuff allTheBuff = new();
     #region King
-    [Header("King Buff")]
-    public KingBuff kingBuffType;
-    public enum KingBuff { None, MadKing, SageKing }
-    public MadKing madKing = new MadKing();
-    public SageKing sageKing = new SageKing();
-
-    private BuffBasic TargetBuff_King(KingBuff buff)
-    {
-        return buff switch
-        {
-            KingBuff.MadKing => madKing,
-            KingBuff.SageKing => sageKing,
-            _ => null
-        };
-    }
-
+    public KingBuff kingBuffType => allTheBuff.kingBuffType;
+    public MadKing madKing => allTheBuff.madKing;
+    public SageKing sageKing => allTheBuff.sageKing;
     #endregion
-
     #region Queen
-    [Header("Queen Buff")]
-    public QueenBuff queenBuffType;
-    public enum QueenBuff { None, Witcher, Beauty }
-    public Witcher witcher = new Witcher();
-    public Beauty beauty = new Beauty();
-    private BuffBasic TargetBuff_Queen(QueenBuff buff)
-    {
-        return buff switch
-        {
-            QueenBuff.Witcher => witcher,
-            QueenBuff.Beauty => beauty,
-            _ => null
-        };
-    }
-    #endregion
-
-    #region Knight
-
-    [Header("Knight Buff")]
-    public KnightBuff knightBuffType;
-    public enum KnightBuff { None, Charger, Skirmisher }
-    public Charger charger = new Charger();
-    public Skirmisher skirmisher = new Skirmisher();
-    private BuffBasic TargetBuff_Knight(KnightBuff buff)
-    {
-        return buff switch
-        {
-            KnightBuff.Charger => charger,
-            KnightBuff.Skirmisher => skirmisher,
-            _ => null
-        };
-    }
-
-    #endregion
-
+    public QueenBuff queenBuffType => allTheBuff.queenBuffType;
+    public Witcher witcher => allTheBuff.witcher;
+    public Beauty beauty => allTheBuff.beauty;
+    #endregion   
     #region Bishop
-    [Header("Bishop Buff")]
-    public BishopBuff bishopBuffType;
-    public enum BishopBuff { None, Sorcerer, Monk };
-    public Sorcerer sorcerer = new Sorcerer();
-    public Monk monk = new Monk();
-    private BuffBasic TargetBuff_Bishop(BishopBuff buff)
-    {
-        return buff switch
-        {
-            BishopBuff.Sorcerer => sorcerer,
-            BishopBuff.Monk => monk,
-            _ => null
-        };
-    }
+    public BishopBuff bishopBuffType => allTheBuff.bishopBuffType;
+    public Sorcerer sorcerer => allTheBuff.sorcerer;
+    public Monk monk => allTheBuff.monk;
 
-    private void LevelUp_BisHopBuff()
-    {
-        if (bishopBuffType == BishopBuff.None) return;
 
-        bool success;
-        bool isSorcerer = bishopBuffType == BishopBuff.Sorcerer;
-
-        if (isSorcerer) sorcerer.LevelUp(out success);
-        else monk.LevelUp(out success);
-
-        if (!success)
-        {
-            Debug.LogError("BishopBuff LevelUp failed " + bishopBuffType.ToString());
-        }
-    }
     #endregion
-
     #region Rook
-    [Header("Rook Buff")]
-    public RookBuff rookBuffType;
-    public enum RookBuff { None, Rusher, Guardian };
-    public Rusher rusher = new Rusher();
-    public Guardian guardian = new Guardian();
-    private BuffBasic TargetBuff_Rook(RookBuff buff)
-    {
-        return buff switch
-        {
-            RookBuff.Rusher => rusher,
-            RookBuff.Guardian => guardian,
-            _ => null
-        };
-    }
+    public RookBuff rookBuffType => allTheBuff.rookBuffType;
+    public Rusher rusher => allTheBuff.rusher;
+    public Guardian guardian => allTheBuff.guardian;
 
-    private HashSet<Vector2Int> guardianProtectArea = new HashSet<Vector2Int>();
+    public HashSet<Vector2Int> guardianProtectArea { get; private set; } = new();
     public void AddToProtectArea(HashSet<Vector2Int> addToProtectArea) => guardianProtectArea.AddRange(addToProtectArea);
     public void UpdateGuardianProtectArea()
     {
@@ -180,122 +94,35 @@ public class Player : MonoBehaviour
         }
     }
     public bool IsProTectedByRook_Guardian(Vector2Int targetChessPos) => guardianProtectArea.Contains(targetChessPos);
-    #endregion
 
+    #endregion
+    #region Knight
+    public KnightBuff knightBuffType => allTheBuff.knightBuffType;
+    public Charger charger => allTheBuff.charger;
+    public Skirmisher skirmisher => allTheBuff.skirmisher;
+    #endregion
     #region Pawn
-    [Header("Pawn Buff")]
-    public PawnBuff pawnBuffType;
-    public enum PawnBuff { None, Scout, Substitute }
-    public Scout scout = new Scout();
-    public Substitute substitute = new Substitute();
-    private BuffBasic TargetBuff_Pawn(PawnBuff buff)
-    {
-        return buff switch
-        {
-            PawnBuff.Scout => scout,
-            PawnBuff.Substitute => substitute,
-            _ => null
-        };
-    }
+    public PawnBuff pawnBuffType => allTheBuff.pawnBuffType;
+    public Scout scout => allTheBuff.scout;
+    public Substitute substitute => allTheBuff.substitute;
+    #endregion
+    public Dictionary<AllBuffCard, BuffBasic> cardBuffMap => allTheBuff.cardBuffMap;
+
+    public List<AllBuffCard> choseBuffs => allTheBuff.choseBuffs;
+    public void AllBuffLevelUp() => allTheBuff.AllBuffLevelUp();
+    public void ChooseBuff(AllBuffCard choseBuff)=> allTheBuff.ChooseBuff(choseBuff);
+
     #endregion
 
-    public Dictionary<AllBuffCard, BuffBasic> cardBuffMap {  get; private set; } = new();
-    public List<AllBuffCard> choseBuffs { get; private set; } = new();
-    private void BuffInit(ChessType chessType, BuffBasic buffBasic1, BuffBasic buffBasic2)
-    {
-        if(buffBasic1.buffChess!= chessType|| buffBasic2.buffChess != chessType)
-        {
-            Debug.LogError($"{chessType.ToString()} : {buffBasic1.buffName} , {buffBasic2.buffName}");
-            return;
-        }
-        switch (chessType)
-        {
-            case ChessType.King:kingBuffType = KingBuff.None;break;
-            case ChessType.Queen:queenBuffType = QueenBuff.None;break;
-            case ChessType.Knight:knightBuffType = KnightBuff.None;break;
-            case ChessType.Bishop:bishopBuffType = BishopBuff.None;break;
-            case ChessType.Rook:rookBuffType = RookBuff.None;break;
-            case ChessType.Pawn:pawnBuffType = PawnBuff.None;break;
-        }
-        buffBasic1.BuffInit(this);
-        buffBasic2.BuffInit(this);
-    }
-    private void AllTheBuffInit()
-    {
-        BuffInit(ChessType.King, madKing, sageKing);
-        BuffInit(ChessType.Queen, witcher, beauty);
-        BuffInit(ChessType.Knight, charger, skirmisher);
-        BuffInit(ChessType.Bishop, sorcerer, monk);
-        BuffInit(ChessType.Rook, rusher, guardian);
-        BuffInit(ChessType.Pawn, scout, substitute);
+    public void TurnCamera(PlayerCameraStage playerCameraStage)=>
+        _gameManager.PlayerCameraTurn(new Pair<ChessColor, PlayerCameraStage>(usingChess, playerCameraStage));
 
-        cardBuffMap = new Dictionary<AllBuffCard, BuffBasic>
-        {
-            { AllBuffCard.SageKing, sageKing },
-            { AllBuffCard.MadKing, madKing },
-        
-            { AllBuffCard.Witcher, witcher },
-            { AllBuffCard.Beauty, beauty },
-        
-            { AllBuffCard.Charger, charger },
-            { AllBuffCard.Skirmisher, skirmisher },
-        
-            { AllBuffCard.Sorcerer, sorcerer },
-            { AllBuffCard.Monk, monk },
-        
-            { AllBuffCard.Rusher, rusher },
-            { AllBuffCard.Guardian, guardian },
-        
-            { AllBuffCard.Scout, scout },
-            { AllBuffCard.Substitute, substitute },
-        };
-    }
-
-    public void AllBuffLevelUp()
-    {
-        BuffBasic[] buffs =
-        {
-            TargetBuff_King(kingBuffType),
-            TargetBuff_Queen(queenBuffType),
-            TargetBuff_Bishop(bishopBuffType),
-            TargetBuff_Rook(rookBuffType),
-            TargetBuff_Knight(knightBuffType),
-            TargetBuff_Pawn(pawnBuffType),
-        };
-
-        foreach (BuffBasic buff in buffs)
-        {
-            if (buff == null) continue;
-            buff.LevelUp(out bool success);
-            Debug.Log(buff.buffName + "'s Level :" + buff.nowBuffLevel);
-            if (!success)
-            {
-                Debug.LogWarning($"{buff.buffName} already at max level.");
-                continue;
-            }
-        }
-
-    }
-
-    public void ChooseBuff(AllBuffCard choseBuff)
-    {
-        cardBuffMap[choseBuff].Choose();
-        cardBuffMap[choseBuff].LevelUpToTargetLevel(1, out bool success);
-        choseBuffs.Add(choseBuff);
-        if (!success)
-        {
-            Debug.LogError(cardBuffMap[choseBuff].buffName+" LevelUp No success");
-            return;
-        }
-    }
-
-
-    #endregion
     public void Player_Init(ChessColor targetChess)
     {
         usingChess = targetChess;
-        AllTheBuffInit();
+        allTheBuff.AllTheBuffInit(this);
         playerInPut.Init(this);
+        playerInPut.StartInput();
     }
 
     public void Player_ChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
@@ -332,7 +159,10 @@ public class Player : MonoBehaviour
         {
             switch (nowPlayerStage)
             {
-                case PlayerStage.ReadytoEnd:turnCanEnd = true; break;
+                case PlayerStage.ReadytoEnd:
+                    Debug.Log("ReadytoEnd");
+                    turnCanEnd = true; 
+                    break;
                 default:break;
             }
 
@@ -343,7 +173,7 @@ public class Player : MonoBehaviour
         Player_ChessDictUpdate();
         nowPlayerStage = PlayerStage.End;
 
-        InGame.Instance.EndTurn();
+        _gameManager.EndTurn();
     }
 
     public void Player_TurnStart()

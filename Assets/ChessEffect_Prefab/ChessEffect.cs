@@ -44,7 +44,7 @@ public class ChessEffect : MonoBehaviour
         for (int i = 0; i < transform.childCount; i++)
         {
             Vector3 dir = Random.onUnitSphere;
-            allPieces[i].Init(dir * speed, rotateSpeed, material);
+            allPieces[i].Init(lifeTime,dir * speed, rotateSpeed, material);
         }
         StartCoroutine(TurnOffEffect());
     }

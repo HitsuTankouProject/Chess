@@ -11,12 +11,15 @@ public enum InputStage { None, ChooseSkill,Waiting, Picking, OneMoreMove }
 
 public class PlayerInPut : MonoBehaviour
 {
-    private ChessBoard _chessBoard => ChessBoard.Instance;
 
-    private InPutManager _inPutManager => GameManager.Instance.inPutManager;
+    private GameManager _gameManager => GameManager.Instance;
+
+    private ChessBoard _chessBoard => _gameManager.chessBoard;
+
+    private InPutManager _inPutManager => _gameManager.inPutManager;
 
     private int gameBoardLayerMask;
-    private InGame _inGame => InGame.Instance;
+
     private Camera _camera;
 
     private Player _player;
@@ -73,7 +76,7 @@ public class PlayerInPut : MonoBehaviour
 
     private void ChangeInput(CanUseDevice usingDevice)
     {
-        if (_inGame.nowTurn != _player.usingChess || _inGame.inGameStage != InGameStage.TurnStart) return;
+        if (_gameManager.nowTurn != _player.usingChess) return;
 
         switch (usingDevice)
         {
@@ -94,8 +97,8 @@ public class PlayerInPut : MonoBehaviour
     {
         bool haveChess = _chessBoard.board.TryGetValue(boardPos, out ChessBasic chess);
         if (!haveChess) return;
-        if (chess.color != _inGame.nowTurn) return;
-        _player.playerCanvas.TurnCamera(CameraStage.Pick);
+        if (chess.color != _gameManager.nowTurn) return;
+        _player.TurnCamera(PlayerCameraStage.Pick);
 
         pickIngChess = chess;
         pickIngChess.FindPossibleMove();
@@ -107,18 +110,22 @@ public class PlayerInPut : MonoBehaviour
         if (pickIngChess == null) return false;
         bool canMove = pickIngChess.possibleMoveList.Contains(boardPos);
         _chessBoard.ReSetActive();
+        _player.TurnCamera(PlayerCameraStage.Normal);
 
         if (!canMove)
         {
-            return false;
+            pickIngChess = null;
+            inputStage = InputStage.Waiting;
         }
-        ChessBasic moveChess = pickIngChess;
+        else
+        {
+            ChessBasic moveChess = pickIngChess;
+            pickIngChess = null;
+            moveChess.Move(boardPos);
+        }
 
-        pickIngChess = null;
 
-        moveChess.Move(boardPos);
-
-        return true;
+        return canMove;
     }
 
     public IEnumerator OneMoreMove(ChessBasic oneMoreMoveChess)
@@ -143,6 +150,14 @@ public class PlayerInPut : MonoBehaviour
     }
 
     #region Mouse
+
+    private int CanHitLayerMask()
+    {
+        if (inputStage == InputStage.Waiting) return _inPutManager.chessLayerMask;
+        else if (inputStage == InputStage.Picking) return _inPutManager.gameBoardLayerMask;
+        else return -1;
+    }
+
     private bool IsPressed(out GameObject hitObject)
     {
         if (!nowUsingMouse.leftButton.wasPressedThisFrame)
@@ -152,7 +167,7 @@ public class PlayerInPut : MonoBehaviour
         }
         Vector2 mousePos = nowUsingMouse.position.ReadValue();
         Ray rayResult = _camera.ScreenPointToRay(mousePos);
-        bool isHit = Physics.Raycast(rayResult, out RaycastHit hit, 100f, _inPutManager.CanHitLayerMask(), QueryTriggerInteraction.Collide);
+        bool isHit = Physics.Raycast(rayResult, out RaycastHit hit, 100f, CanHitLayerMask(), QueryTriggerInteraction.Collide);
         if (!isHit)
         {
             hitObject = null;
@@ -198,7 +213,7 @@ public class PlayerInPut : MonoBehaviour
     {
         if (!PutChess(boardPos)) return;
 
-        _player.playerCanvas.TurnCamera(CameraStage.Normal);
+        _player.TurnCamera(PlayerCameraStage.Normal);
         inputStage = InputStage.None;
 
     }
@@ -208,7 +223,7 @@ public class PlayerInPut : MonoBehaviour
         while (true)
         {
             yield return null;
-            if (inputStage! == InputStage.None) continue;
+            if (inputStage! == InputStage.None || _gameManager.nowGameStage != GameStage.InGame) continue;
             PressAction();
         }
 
@@ -355,7 +370,7 @@ public class PlayerInPut : MonoBehaviour
             }
             else if (nowUsingGamepad.buttonEast.wasPressedThisFrame)
             {
-                _player.playerCanvas.TurnCamera(CameraStage.Normal);
+                _player.TurnCamera(PlayerCameraStage.Normal);
                 pickIngChess.ReturnPick();
                 pickIngChess = null;
                 inputStage = InputStage.Waiting;

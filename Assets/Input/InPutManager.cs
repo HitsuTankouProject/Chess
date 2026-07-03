@@ -12,14 +12,13 @@ public class InPutManager : MonoBehaviour
 
     private bool IsPlayerReady() => _player01Input != null && _player02Input != null;
 
-
     /*NEW ONE*/
     private GameManager _gameManager => GameManager.Instance;
     private PlayerInPut _player01Input => _gameManager.player01.playerInPut;
     private PlayerInPut _player02Input => _gameManager.player02.playerInPut;
 
-    private int gameBoardAndChessLayerMask = -1;
-    public int CanHitLayerMask() => gameBoardAndChessLayerMask;
+    public int chessLayerMask { get; private set; } = -1;
+    public int gameBoardLayerMask { get; private set; } = -1;
 
     public Dictionary<GamepadType, Gamepad> recodingGamePads { get; private set; } = new();
     public Gamepad GetGamepad(GamepadType gamepadType)
@@ -86,7 +85,6 @@ public class InPutManager : MonoBehaviour
         if (player == ChessColor.White)
         {
             _player01Input.inputStage = stage;
-
             _player02Input.inputStage = InputStage.None;
         }
         else if (player == ChessColor.Black)
@@ -99,7 +97,10 @@ public class InPutManager : MonoBehaviour
 
     public void Init()
     {
-        gameBoardAndChessLayerMask = LayerMask.GetMask("GameBoard") | LayerMask.GetMask("Chess");
+        gameBoardLayerMask = LayerMask.GetMask("GameBoard");
+        chessLayerMask = LayerMask.GetMask("Chess");
+
+
         oldConnectingGamePad = Gamepad.all.Count;
         RecodeGamePad();
 

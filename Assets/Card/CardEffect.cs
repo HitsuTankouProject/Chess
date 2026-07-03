@@ -4,7 +4,6 @@ using System.Collections;
 
 public class CardEffect : MonoBehaviour
 {
-    private InGame _inGame => InGame.Instance;
     private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
 
     //private bool isEffectActive =>
