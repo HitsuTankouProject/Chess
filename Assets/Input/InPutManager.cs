@@ -1,17 +1,13 @@
-using NUnit.Framework;
-using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 
 public enum GamepadType { None = 0, PlayStation, Xbox, Switch, }
 
 public class InPutManager : MonoBehaviour
 {
-
-    private bool IsPlayerReady() => _player01Input != null && _player02Input != null;
-
     /*NEW ONE*/
     private GameManager _gameManager => GameManager.Instance;
     private PlayerInPut _player01Input => _gameManager.player01.playerInPut;
@@ -20,12 +16,7 @@ public class InPutManager : MonoBehaviour
     public int chessLayerMask { get; private set; } = -1;
     public int gameBoardLayerMask { get; private set; } = -1;
 
-    public Dictionary<GamepadType, Gamepad> recodingGamePads { get; private set; } = new();
-    public Gamepad GetGamepad(GamepadType gamepadType)
-    {
-        if(!recodingGamePads.TryGetValue(gamepadType,out Gamepad gamepad)) return null;
-        else return gamepad;
-    }
+    public Dictionary<Gamepad, GamepadType> recodingGamePads { get; private set; } = new();
 
     private HashSet<GamepadType> removedGamepad = new();
     public int oldConnectingGamePad = 0;
@@ -57,29 +48,12 @@ public class InPutManager : MonoBehaviour
         foreach (Gamepad gamepad in Gamepad.all)
         {
             GamepadType controllerType = GetControllerType(gamepad);
-            if (controllerType == GamepadType.None|| recodingGamePads.ContainsKey(controllerType)) continue;
-            recodingGamePads[controllerType] = gamepad;
+            recodingGamePads[gamepad] = controllerType;
         }
     }
 
-    private void CurrentGamepadWatcher()
-    {
-        if (oldConnectingGamePad == Gamepad.all.Count) return;
-        Debug.Log(Gamepad.all.Count);
-        oldConnectingGamePad = Gamepad.all.Count;
-        RecodeGamePad();
-    }
-
-    #region Choose InPut
-
-    public void ChooseInput(PlayerInPut playerInput, GamepadType choseInput)
-    {
-        playerInput.SetUseGamepadType(choseInput);
-        playerInput.StartInput();
-    }
 
 
-    #endregion
     public void PlayerInputStage(ChessColor player, InputStage stage)
     {
         if (player == ChessColor.White)
@@ -94,6 +68,73 @@ public class InPutManager : MonoBehaviour
         }
 
     }
+    private void GamepadDistribute()
+    {
+        List<Gamepad> gamepads = Gamepad.all.ToList();
+
+        if (_player01Input.nowUsingGamepad != null &&
+            !gamepads.Contains(_player01Input.nowUsingGamepad))
+        {
+            _player01Input.ChangeToMouse();
+        }
+
+        if (_player02Input.nowUsingGamepad != null &&
+            !gamepads.Contains(_player02Input.nowUsingGamepad))
+        {
+            _player02Input.ChangeToMouse();
+        }
+
+        if (gamepads.Count == 0)
+        {
+            _player01Input.ChangeToMouse();
+            _player02Input.ChangeToMouse();
+            return;
+        }
+
+        HashSet<Gamepad> usingGamepads = new();
+
+        if (_player01Input.nowUsingGamepad != null)
+            usingGamepads.Add(_player01Input.nowUsingGamepad);
+
+        if (_player02Input.nowUsingGamepad != null)
+            usingGamepads.Add(_player02Input.nowUsingGamepad);
+
+        foreach (Gamepad gamepad in gamepads)
+        {
+            if (usingGamepads.Contains(gamepad))
+                continue;
+
+            if (_player01Input.nowUsingGamepad == null)
+            {
+                _player01Input.SetUseGamepadType(gamepad);
+                usingGamepads.Add(gamepad);
+                continue;
+            }
+
+            if (_player02Input.nowUsingGamepad == null)
+            {
+                _player02Input.SetUseGamepadType(gamepad);
+                usingGamepads.Add(gamepad);
+            }
+        }
+
+        if (_player01Input.nowUsingGamepad == null)
+            _player01Input.ChangeToMouse();
+
+        if (_player02Input.nowUsingGamepad == null)
+            _player02Input.ChangeToMouse();
+    }
+
+    private void CurrentGamepadWatcher()
+    {
+        if (oldConnectingGamePad == Gamepad.all.Count) return;
+
+        Debug.Log(Gamepad.all.Count);
+        oldConnectingGamePad = Gamepad.all.Count;
+        RecodeGamePad();
+        GamepadDistribute();
+
+    }
 
     public void Init()
     {
@@ -104,6 +145,16 @@ public class InPutManager : MonoBehaviour
         oldConnectingGamePad = Gamepad.all.Count;
         RecodeGamePad();
 
+        int gamepadCount = Gamepad.all.Count;
+        if (gamepadCount == 1)
+        {
+            _player01Input.SetUseGamepadType(Gamepad.all[0]);
+        }
+        else if (gamepadCount >= 2)
+        {
+            _player01Input.SetUseGamepadType(Gamepad.all[0]);
+            _player02Input.SetUseGamepadType(Gamepad.all[1]);
+        }
     }
 
     private void Update()

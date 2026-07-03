@@ -101,11 +101,11 @@ public class GameManager : MonoBehaviour
     public Camera player02Camera;
     // ===== Camera Views =====
     private MainCameraView gameTitleCameraView = new(new Vector3(-65, 89.1f, -57), new Vector3(55, 0, 0), 32.0f);
-    private MainCameraView gameDescriptionCameraView = new(new Vector3(-242, 70, 80), new Vector3(90, -90, 0), 32.0f);
-    private MainCameraView controllerChooseCameraView = new(new Vector3(-242, 70, -80), new Vector3(90, -90, 0), 32.0f);
+    private MainCameraView gameDescriptionCameraView = new(new Vector3(-242, 70, 80), new Vector3(90, -90, 0),50f);
+    private MainCameraView controllerChooseCameraView = new(new Vector3(-242, 70, -80), new Vector3(90, -90, 0), 50f);
     private MainCameraView turnStartCameraView = new(new Vector3(0, 75, 0), new Vector3(90, 0, 0), 80f);
-    private MainCameraView skillChooseCameraView = new(new Vector3(-242, 70, 80), new Vector3(90, -90, 0), 32.0f);
-    private MainCameraView releaseCameraView;
+    private MainCameraView skillChooseCameraView = new(new Vector3(-242, 70, 80), new Vector3(90, -90, 0), 50f);
+    private MainCameraView releaseCameraView = new(new Vector3(242, 70, 80), new Vector3(90, 90, 0), 50f);
     private const float cameraTurnTime = 0.75f;
 
     // ===== Player =====
@@ -438,7 +438,7 @@ public class GameManager : MonoBehaviour
     private void EndGameDescription()
     {
         gameDescriptionPanel.gameObject.SetActive(false);
-        StartCoroutine(SwitchStage(GameStage.ControllerChoose));
+        StartCoroutine(SwitchStage(GameStage.GameStart));
     }
 
     public void Button_EndGameDescription()
@@ -474,10 +474,10 @@ public class GameManager : MonoBehaviour
 
     public void EndControllerChoose(GamepadType player01pick, GamepadType player02pick)
     {
-        TargetPlayer(ChessColor.White).playerInPut.SetUseGamepadType(player01pick);
-        TargetPlayer(ChessColor.Black).playerInPut.SetUseGamepadType(player01pick);
-        controllerChoosePanel.gameObject.SetActive(false);
-        StartCoroutine(SwitchStage(GameStage.GameStart));
+        //TargetPlayer(ChessColor.White).playerInPut.SetUseGamepadType(player01pick);
+        //TargetPlayer(ChessColor.Black).playerInPut.SetUseGamepadType(player01pick);
+        //controllerChoosePanel.gameObject.SetActive(false);
+        //StartCoroutine(SwitchStage(GameStage.GameStart));
     }
 
 
@@ -526,7 +526,7 @@ public class GameManager : MonoBehaviour
     #region SkillChoose
     [Header("SkillChoose")]
     public ChooseSkillPanel chooseSkillPanel;
-
+    public bool isPicking => chooseSkillPanel.isPicking;
     private IEnumerator SkillChoose()
     {
         yield return PlayerCameraOpen(false);

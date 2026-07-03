@@ -22,6 +22,7 @@ public class ChooseSkillPanel : MonoBehaviour
     [Header("Pick Cards")]
     public Card[] canPickCard;
     public Button[] pickCardButton;
+    public List<AllBuffCard> pickedThreeCard { get; private set; } = new();
     private readonly Dictionary<ChessType, AllBuffCard[]> buffChessDict = new()
     {
         [ChessType.King] = new[] { AllBuffCard.MadKing, AllBuffCard.SageKing },
@@ -39,7 +40,8 @@ public class ChooseSkillPanel : MonoBehaviour
 
     [Header("Picking Tag")]
     public Image playerTag;
-    [SerializeField] private AllBuffCard picking;
+    private AllBuffCard picking;
+    public bool isPicking => picking != AllBuffCard.None;
     private List<AllBuffCard> pickedCards = new();
 
     [Header("DrawAgain")]
@@ -81,7 +83,7 @@ public class ChooseSkillPanel : MonoBehaviour
     private void PickThreeCard()
     {
         List<ChessType> playerCanPick = PlayerCanPick();
-
+        pickedThreeCard.Clear();
         int count = Mathf.Min(3, playerCanPick.Count);
 
         for (int i = 0; i < count; i++)
@@ -98,6 +100,7 @@ public class ChooseSkillPanel : MonoBehaviour
             playerCanPick.RemoveAt(randomTypeIndex);
             pickCardButton[i].onClick.AddListener(() => Button_OpenSkillDescriptionPanel(buffs[buffIndex]));
 
+            pickedThreeCard.Add(buffs[buffIndex]);
         }
     }
 
@@ -123,7 +126,7 @@ public class ChooseSkillPanel : MonoBehaviour
 
     }
 
-    private void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
+    public void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
     {
         picking = targetBuff;
         showCanPickPanel.gameObject.SetActive(false);
@@ -192,9 +195,6 @@ public class ChooseSkillPanel : MonoBehaviour
 
         _gameManager.EndSkillChoose(pickedCards[0], pickedCards[1]);
     }
-
-
-
 
     public void Init()
     {

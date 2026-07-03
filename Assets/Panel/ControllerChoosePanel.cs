@@ -27,34 +27,34 @@ public class ControllerChoosePanel : MonoBehaviour
 
     private void UpdateCanUseControllers()
     {
-        canUseGameTypeList.Clear();
+        //canUseGameTypeList.Clear();
 
-        for (int i = 0; i < canUseControllers.Length; i++)
-        {
-            int enumValue = i + 1;
+        //for (int i = 0; i < canUseControllers.Length; i++)
+        //{
+        //    int enumValue = i + 1;
 
-            if (!Enum.IsDefined(typeof(GamepadType), enumValue))
-            {
-                Debug.LogError($"Invalid GamepadType value: {enumValue}");
-                continue;
-            }
+        //    if (!Enum.IsDefined(typeof(GamepadType), enumValue))
+        //    {
+        //        Debug.LogError($"Invalid GamepadType value: {enumValue}");
+        //        continue;
+        //    }
 
-            GamepadType gamepadType = (GamepadType)enumValue;
+        //    GamepadType gamepadType = (GamepadType)enumValue;
 
-            bool haveGamePad =
-                _inPutManager.recodingGamePads.ContainsKey(gamepadType);
+        //    bool haveGamePad =
+        //        _inPutManager.recodingGamePads.ContainsKey(gamepadType);
 
-            canUseControllers[i].color =
-                haveGamePad ? c_pick : c_nonActive;
+        //    canUseControllers[i].color =
+        //        haveGamePad ? c_pick : c_nonActive;
 
-            if (haveGamePad)
-            {
-                canUseGameTypeList.Add(gamepadType);
-            }
-        }
+        //    if (haveGamePad)
+        //    {
+        //        canUseGameTypeList.Add(gamepadType);
+        //    }
+        //}
 
-        player01Choose.UpdateCanUseControllers(canUseGameTypeList);
-        player02Choose.UpdateCanUseControllers(canUseGameTypeList);
+        //player01Choose.UpdateCanUseControllers(canUseGameTypeList);
+        //player02Choose.UpdateCanUseControllers(canUseGameTypeList);
     }
 
     public void Init()
