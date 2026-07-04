@@ -188,12 +188,8 @@ public class Queen : ChessBasic
         }
 
         Pair<ChessColor, ChessType> promotionInfo = new Pair<ChessColor, ChessType>(color, ChessType.Knight);
-        _chessBoard.GenChess(spawnKnightPos, promotionInfo, out ChessBasic genChess);
+        _chessBoard.StartGenChessProcess(spawnKnightPos, promotionInfo, _player);
 
-        Debug.Log(genChess.name + " : " + spawnKnightPos);
-        Debug.Log(_chessBoard.board[spawnKnightPos].gameObject.name);
-
-        if (genChess != null) genChess.ChessInit(_player);
 
     }
 

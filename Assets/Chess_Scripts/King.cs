@@ -238,7 +238,7 @@ public class King : ChessBasic
 
         if (!_chessBoard.board.TryGetValue(targetSpawn, out ChessBasic chess))
         {
-            _chessBoard.GenChess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King));
+            _chessBoard.StartGenChessProcess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King));
             return;
         }
         ChessType killerType = CanKillKingType();
@@ -247,15 +247,12 @@ public class King : ChessBasic
         {
             chess.GotEaten();
 
-            _chessBoard.GenChess(
-                targetSpawn,
-                new Pair<ChessColor, ChessType>(color, ChessType.King),out ChessBasic king);
+            _chessBoard.StartGenChessProcess(targetSpawn,new Pair<ChessColor, ChessType>(color, ChessType.King), _player);
 
-            king.ChessInit(_player);
             return;
         }
 
-        GameManager.Instance.EndInGame();
+        GameManager.Instance.EndInGame(color);
 
     }
 

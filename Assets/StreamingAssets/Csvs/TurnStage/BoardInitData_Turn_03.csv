@@ -1,0 +1,8 @@
+﻿White:Rook,White:Bishop,White:Knight,White:King,White:Queen,White:Knight,White:Bishop,White:Rook,,,,
+White:Pawn,White:Pawn,White:Pawn,White:Pawn,White:Pawn,White:Pawn,White:Pawn,White:Pawn,,,White,King
+,,,,,,,,,,Black,Queen
+,,,,,,,,,,,Bishop
+,,,,,,,,,,,Rook
+,,,,,,,,,,,Knight
+Black:Pawn,Black:Pawn,Black:Pawn,Black:Pawn,Black:Pawn,Black:Pawn,Black:Pawn,Black:Pawn,,,,Pawn
+Black:Rook,Black:Bishop,Black:Knight,Black:Queen,Black:King,Black:Knight,Black:Bishop,Black:Rook,,,,

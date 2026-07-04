@@ -105,6 +105,7 @@ public class PlayerInPut : MonoBehaviour
         bool canMove = pickIngChess.possibleMoveList.Contains(boardPos);
         _chessBoard.ReSetActive();
         _player.TurnCamera(PlayerCameraStage.Normal);
+        pickIngChess.ReturnPick();
 
         if (!canMove)
         {
@@ -154,14 +155,16 @@ public class PlayerInPut : MonoBehaviour
 
     private bool IsPressed(out GameObject hitObject)
     {
-        if (!nowUsingMouse.leftButton.wasPressedThisFrame)
+        if (!nowUsingMouse.leftButton.wasPressedThisFrame || _player.isPause)
         {
             hitObject = null;
             return false;
         }
         Vector2 mousePos = nowUsingMouse.position.ReadValue();
         Ray rayResult = _camera.ScreenPointToRay(mousePos);
-        bool isHit = Physics.Raycast(rayResult, out RaycastHit hit, 100f, CanHitLayerMask(), QueryTriggerInteraction.Collide);
+
+
+        bool isHit = Physics.Raycast(rayResult, out RaycastHit hit, 1000f, CanHitLayerMask(), QueryTriggerInteraction.Collide);
         if (!isHit)
         {
             hitObject = null;

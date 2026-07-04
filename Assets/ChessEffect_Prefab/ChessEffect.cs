@@ -1,52 +1,70 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
+using static UnityEngine.Audio.ProcessorInstance;
+
+
+public enum EffectType { Swapn, Dead }
 
 public class ChessEffect : MonoBehaviour
 {
     private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
     public PoolManager _poolManager => PoolManager.Instance;
-    
     public PoolObject poolObject => this.gameObject.GetComponent<PoolObject>();
+    private List<MeshRenderer> allPieces = new();
+
 
     [Header("Effect Basic")]
-    public float speed = 5f;
-    public float rotateSpeed = 360f;
-    public float lifeTime = 0.8f;
+    //public Material m_material;
+    public Animator animator;
+    public bool isEffectFinish { get; private set; } = false;
 
-    private List<Vector3> allPiecesLocalPosition = new();
-    private List<FlyingPiece> allPieces = new();
+    private void TrigegerOn(EffectType effectType)
+        => animator.SetTrigger(effectType.ToString());
+
+
     private void Awake()
     {
-        foreach (Transform piece in transform)
-        {
-            allPiecesLocalPosition.Add(piece.localPosition);
-            allPieces.Add(piece.gameObject.AddComponent<FlyingPiece>());
-        }
-        gameObject.SetActive(false);
-
-    }
-
-    private IEnumerator TurnOffEffect()
-    {
-        yield return new WaitForSeconds(lifeTime * 1.1f);
         for (int i = 0; i < transform.childCount; i++)
         {
-            transform.GetChild(i).localPosition = allPiecesLocalPosition[i];
-        }
+            if (!transform.GetChild(i).TryGetComponent<MeshRenderer>(out MeshRenderer childMeshRenderer))
+            {
+                Debug.LogError(gameObject.name + $"Child : {i} no have MeshRenderer");
+                continue;
+            }
 
-        if (poolObject != null && _poolManager != null) poolObject.pool.Return(this.gameObject);
-        else gameObject.SetActive(false);
-    }
-    public void PlayEffect(ChessColor color)
-    {
-        Material material = _resourcesData.TargetColor(color);
-        for (int i = 0; i < transform.childCount; i++)
-        {
-            Vector3 dir = Random.onUnitSphere;
-            allPieces[i].Init(lifeTime,dir * speed, rotateSpeed, material);
+            allPieces.Add(childMeshRenderer);
         }
-        StartCoroutine(TurnOffEffect());
+        animator.speed = 2.0f;
+    }
+
+    public void EffectFinish()
+    {
+        isEffectFinish = true;
+        Debug.Log("EffectFinish");
+
+        poolObject.pool.Return(this.gameObject);
+    }
+
+    public void PlayEffect(EffectType effectType, ChessColor color)
+    {
+        isEffectFinish = false;
+        Material targetMaterial = _resourcesData.TargetColor(color);
+        for (int i = 0; i < transform.childCount; i++)
+            allPieces[i].material = targetMaterial;
+
+        TrigegerOn(effectType);
+    }
+
+    public void PlayEffect(EffectType effectType, Material addMaterial)
+    {
+        isEffectFinish = false;
+
+        for (int i = 0; i < transform.childCount; i++)
+            allPieces[i].material = addMaterial;
+
+        TrigegerOn(effectType);
     }
 
 }

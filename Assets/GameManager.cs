@@ -132,48 +132,17 @@ public class GameManager : MonoBehaviour
         loading.SetActive(true);
         switch (nowGameStage)
         {
-            case GameStage.Loading:
-                StartCoroutine(Loading());
-
-                break;
-            case GameStage.GameTitle:
-                StartCoroutine(GameTitle());
-                break;
-
-            case GameStage.GameDescription:
-                StartCoroutine(GameDescription());
-                break;
-
-            case GameStage.ControllerChoose:
-                StartCoroutine(ControllerChoose());
-                break;
-
-            case GameStage.GameStart:
-                StartCoroutine(GameStart());
-                break;
-
-            case GameStage.TurnStart:
-                StartCoroutine(TurnStart());
-                break;
-
-            case GameStage.SkillChoose:
-                StartCoroutine(SkillChoose());
-                break;
-
-            case GameStage.InGame:
-
-                StartCoroutine(InGame());
-                break;
-
-            case GameStage.TurnEnd:
-                StartCoroutine(TurnEnd());
-                break;
-
-            case GameStage.GameEnd:
-                break;
-
-            case GameStage.Release:
-                break;
+            case GameStage.Loading:             StartCoroutine(Loading());              break;
+            case GameStage.GameTitle:           StartCoroutine(GameTitle());            break;
+            case GameStage.GameDescription:     StartCoroutine(GameDescription());      break;
+            case GameStage.ControllerChoose:    StartCoroutine(ControllerChoose());     break;
+            case GameStage.GameStart:           StartCoroutine(GameStart());            break;
+            case GameStage.TurnStart:           StartCoroutine(TurnStart());            break;
+            case GameStage.SkillChoose:         StartCoroutine(SkillChoose());          break;
+            case GameStage.InGame:              StartCoroutine(InGame());               break;
+            case GameStage.TurnEnd:             StartCoroutine(TurnEnd());              break;
+            case GameStage.GameEnd:             StartCoroutine(GameEnd());              break;
+            case GameStage.Release:             StartCoroutine(Release());              break;
 
             default:
                 Debug.LogError("GameManager.SwitchStage: Invalid game stage.");
@@ -375,6 +344,42 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    #region Button
+
+
+    private void AllPanelClose()
+    {
+        gameTitlePanel.SetActive(false);
+        gameDescriptionPanel.SetActive(false);
+        gameReleasePanel.SetActive(false);
+    }
+    public void Button_BackToGameTitle()
+    {
+        AllPanelClose();
+        StartCoroutine(SwitchStage(GameStage.GameTitle));
+    }
+    public void Button_BackToGameDescription()
+    {
+        AllPanelClose();
+        StartCoroutine(SwitchStage(GameStage.GameDescription));
+    }
+    public void Button_BackToGameStart()
+    {
+        AllPanelClose();
+        StartCoroutine(SwitchStage(GameStage.GameStart));
+    }
+    public void Button_BackToRelease()
+    {
+        AllPanelClose();
+        StartCoroutine(SwitchStage(GameStage.Release));
+    }
+
+    public void Button_Exit() => Application.Quit();
+
+    #endregion
+
+
+
     #region Loading
     [Header("Loading")]
     public GameObject loading;
@@ -397,63 +402,37 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region GameTitle
-
     [Header("GameTitle")]
     public GameObject gameTitlePanel;
+
     private IEnumerator GameTitle()
     {
         yield return null;
-        SetMainCameraView(TargetMainCameraView(GameStage.GameTitle));
+        yield return StartCoroutine(MainCameraTurn(GameStage.GameTitle));
         gameTitlePanel.SetActive(true);
     }
-
-    private void EndGameTitle()
-    {
-        gameTitlePanel.SetActive(false);
-        StartCoroutine(SwitchStage(GameStage.GameDescription));
-    }
-
-    public void Button_GameStart()
-    {
-        EndGameTitle();
-    }
-
 
     #endregion
 
     #region GameDescription
-
     [Header("GameDescription")]
     public GameObject gameDescriptionPanel;
-    public bool gameDescription_Ready = false;
 
     private IEnumerator GameDescription()
     {
         yield return StartCoroutine(MainCameraTurn(GameStage.GameDescription));
 
         gameDescriptionPanel.SetActive(true);
-        gameDescription_Ready = true;
     }
 
-    private void EndGameDescription()
-    {
-        gameDescriptionPanel.gameObject.SetActive(false);
-        StartCoroutine(SwitchStage(GameStage.GameStart));
-    }
-
-    public void Button_EndGameDescription()
-    {
-        if (!gameDescription_Ready) return;
-        EndGameDescription();
-    }
     public void Button_GameDescription_NextPage()
     {
-        if (!gameDescription_Ready) return;
+
     }
 
     public void Button_GameDescription_ReturnPage()
     {
-        if (!gameDescription_Ready) return;
+
     }
 
 
@@ -490,15 +469,17 @@ public class GameManager : MonoBehaviour
         yield return StartCoroutine(MainCameraTurn(GameStage.TurnStart));
 
         yield return PlayerCameraOpen(true);
+        nowTurnCount = 1;
+        turnResult.Clear();
         StartCoroutine(SwitchStage(GameStage.TurnStart));
     }
 
     #endregion
 
     #region TurnStart
-    private void TurnInit()
+    private IEnumerator TurnInit()
     {
-        chessBoard.ChessBoard_TurnInit();
+        yield return chessBoard.ChessBoard_TurnInit();
         Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
         Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
 
@@ -515,9 +496,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator TurnStart()
     {
 
-        TurnInit();
-        yield return new WaitForSeconds(1.0f);
-        yield return null;
+        yield return TurnInit();
         StartCoroutine(SwitchStage(GameStage.SkillChoose));
     }
 
@@ -601,8 +580,10 @@ public class GameManager : MonoBehaviour
         TargetPlayer(nowTurn).Player_TurnStart();
     }
 
-    public void EndInGame()
+    public void EndInGame(ChessColor chessColor)
     {
+        turnResult[nowTurnCount] = chessColor;
+
         StartCoroutine(SwitchStage(GameStage.TurnEnd));
     }
 
@@ -614,10 +595,10 @@ public class GameManager : MonoBehaviour
     {
         yield return null;
 
-        if(nowTurnCount>=maxTurnCount)
+        if (nowTurnCount >= maxTurnCount) 
         {
             Debug.Log("Real GameSet");
-            StartCoroutine(SwitchStage(GameStage.Release));
+            StartCoroutine(SwitchStage(GameStage.GameEnd));
             yield break;
 
         }
@@ -633,27 +614,39 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    #region GameEnd
+    private IEnumerator GameEnd()
+    {
+        yield return null;
+        yield return PlayerCameraOpen(false);
+        yield return StartCoroutine(MainCameraTurn(GameStage.Release));
+        chessBoard.CleanTheBoard();
+        StartCoroutine(SwitchStage(GameStage.Release));
+    }
+
+
+
+
+    #endregion
+
     #region Release
+
+    public GameObject gameReleasePanel;
+    private Dictionary<int, ChessColor> turnResult = new();
+
 
     private IEnumerator Release()
     {
         yield return null;
+        gameReleasePanel.SetActive(true);
+
     }
 
-    public void Button_ReStartGame()
+    private void s()
     {
-        StartCoroutine(SwitchStage(GameStage.GameStart));
+
     }
 
-    public void Button_Exit()
-    {
-        
-    }
-
-    public void Button_ReTurnGameTitle()
-    {
-        StartCoroutine(SwitchStage(GameStage.GameTitle));
-    }
 
 
     #endregion

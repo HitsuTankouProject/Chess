@@ -37,6 +37,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _AlphaTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _BaseMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -100,6 +104,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _AddPrecomputedVelocity: 0
+    - _Alpha: 0.25
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
@@ -113,15 +118,18 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
+    - _EmissionStrength: 3
+    - _EnableExternalAlpha: 0
     - _EnvironmentReflections: 1
-    - _FlowSpeed: 0.04
+    - _FlowSpeed: 0.26
+    - _FresnelPower: 4
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _NoiseStrength: -2.33
+    - _NoiseStrength: -2.62
     - _OcclusionStrength: 1
-    - _Opacity: 4.57
+    - _Opacity: 3.18
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0
@@ -135,11 +143,15 @@ Material:
     - _WorkflowMode: 1
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
+    - _materialWidth: 0.05
     m_Colors:
-    - _AuraColor: {r: 0.5589375, g: 0, b: 1, a: 1}
+    - _AuraColor: {r: 0.56078434, g: 0, b: 1, a: 1}
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Flip: {r: 1, g: 1, b: 1, a: 1}
+    - _RendererColor: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
+    - _choseColor: {r: 0.012677431, g: 1, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

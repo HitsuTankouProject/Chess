@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 
     public PlayerInPut playerInPut;
     public PlayerCanvas playerCanvas;
-
+    public bool isPause=> playerCanvas.isPause;
 
     public Dictionary<Vector2Int, ChessBasic> allTheChess { get; private set; } = new();
 

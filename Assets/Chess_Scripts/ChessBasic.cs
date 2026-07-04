@@ -196,7 +196,7 @@ public abstract class ChessBasic : MonoBehaviour
     {
         if (chess == null) return;
         _player.nowPlayerStage = PlayerStage.EatingChess;
-        _chessBoard.PlayEffect(chess);
+        _chessBoard.DeadEffect(chess);
         _chessBoard.Swap(this, chess);
         chess.GotEaten();
     }

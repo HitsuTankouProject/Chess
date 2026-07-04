@@ -239,8 +239,7 @@ public class Pawn : ChessBasic
         if (position.y != targetY) return;
         Pair<ChessColor, ChessType> promotionInfo = 
             new Pair<ChessColor, ChessType>(color, canPromotionChessTypes[Random.Range(0, canPromotionChessTypes.Count)]);
-        _chessBoard.GenChess(position, promotionInfo,out ChessBasic genChess);
-        if(genChess!=null) genChess.ChessInit(_player);
+        _chessBoard.StartGenChessProcess(position, promotionInfo,_player);
         if (poolObject != null) poolObject.pool.Return(this.gameObject);
         else Debug.LogError("Not In Pool");
     }
