@@ -242,11 +242,11 @@ public class King : ChessBasic
             return;
         }
         ChessType killerType = CanKillKingType();
+        bool isKillerType = chess.type != killerType || chess.type == ChessType.King;
 
-        if (chess.type != killerType)
+        if (isKillerType)
         {
             chess.GotEaten();
-
             _chessBoard.StartGenChessProcess(targetSpawn,new Pair<ChessColor, ChessType>(color, ChessType.King), _player);
 
             return;

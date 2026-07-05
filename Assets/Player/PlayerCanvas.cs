@@ -18,19 +18,14 @@ public class PlayerCanvas : MonoBehaviour
         _player = player;
         PauseInit(choseBuffs);
     }
+
+    #region Button
     public void Button_Pause()
     {
         isPause = !isPause;
-        pausePanel.SetActive(isPause); 
+        pausePanel.SetActive(isPause);
     }
 
-
-
-    #region SkillDescriptionPanel
-    public SkillDescriptionPanel skillDescriptionPanel;
-    #endregion
-
-    #region Button
     private void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
     {
         uint nowLevel = _player.cardBuffMap[targetBuff].nowBuffLevel;
@@ -40,6 +35,16 @@ public class PlayerCanvas : MonoBehaviour
 
     public void Button_CloseSkillDescriptionPanel()
         => skillDescriptionPanel.gameObject.SetActive(false);
+    public void Button_Surrender()
+    {
+        GameManager.Instance.Surrender(_player.usingChess);
+    }
+    public void Button_BackToGameTitle()
+    {
+        GameManager.Instance.Button_BackToGameTitle();
+    }
+
+
     #endregion
 
     #region Pause
@@ -66,5 +71,10 @@ public class PlayerCanvas : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    #endregion
+
+    #region SkillDescriptionPanel
+    [Header("Skill Description Panel ")]
+    public SkillDescriptionPanel skillDescriptionPanel;
     #endregion
 }

@@ -11,7 +11,9 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 public enum ChessColor
 {
     White,
-    Black
+    Black,
+
+
 }
 
 /// <summary>　チェス駒の種類定義　</summary>

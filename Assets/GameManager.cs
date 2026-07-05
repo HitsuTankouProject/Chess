@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VectorGraphics;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
 
 public enum GameStage
 { 
@@ -378,8 +377,6 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-
-
     #region Loading
     [Header("Loading")]
     public GameObject loading;
@@ -493,11 +490,17 @@ public class GameManager : MonoBehaviour
         player01.Player_ChessInit(whiteChess);
         player02.Player_ChessInit(blackChess);
     }
+
+    private const int maxBuffCount = 3;
+    private bool IsMaxBuffCount()
+        => player01.cardBuffMap.Count >= maxBuffCount && player02.cardBuffMap.Count >= maxBuffCount;
     private IEnumerator TurnStart()
     {
 
         yield return TurnInit();
-        StartCoroutine(SwitchStage(GameStage.SkillChoose));
+
+        if(!IsMaxBuffCount()) StartCoroutine(SwitchStage(GameStage.SkillChoose));
+        else StartCoroutine(SwitchStage(GameStage.InGame));
     }
 
     #endregion
@@ -590,14 +593,43 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region TurnEnd 
+    private ChessColor winner;
+
+    private bool IsGameEnd()
+    {
+        if (nowTurnCount < maxTurnCount) return false;
+        int whiteWinCount = 0;
+        int blackWinCount = 0;
+        foreach (var result in turnResult.Values)
+        {
+            if (result == ChessColor.White) whiteWinCount++;
+            else if (result == ChessColor.Black) blackWinCount++;
+        }
+
+        return whiteWinCount != blackWinCount;
+
+    }
+
+    private void DetermineWinner()
+    {
+        int whiteWinCount = 0;
+        int blackWinCount = 0;
+        foreach (var result in turnResult.Values)
+        {
+            if (result == ChessColor.White) whiteWinCount++;
+            else if (result == ChessColor.Black) blackWinCount++;
+        }
+        winner = whiteWinCount > blackWinCount ? ChessColor.White : ChessColor.Black;
+    }
 
     private IEnumerator TurnEnd()
     {
         yield return null;
 
-        if (nowTurnCount >= maxTurnCount) 
+        if (IsGameEnd()) 
         {
             Debug.Log("Real GameSet");
+            DetermineWinner();
             StartCoroutine(SwitchStage(GameStage.GameEnd));
             yield break;
 
@@ -611,10 +643,18 @@ public class GameManager : MonoBehaviour
         StartCoroutine(SwitchStage(GameStage.TurnStart));
 
     }
+    public void Surrender(ChessColor surrender)
+    {
+        Debug.Log("Real GameSet");
+        winner = surrender == ChessColor.White ? ChessColor.Black : ChessColor.White;
+        StartCoroutine(SwitchStage(GameStage.GameEnd));
+    }
+
 
     #endregion
 
     #region GameEnd
+
     private IEnumerator GameEnd()
     {
         yield return null;
@@ -624,28 +664,45 @@ public class GameManager : MonoBehaviour
         StartCoroutine(SwitchStage(GameStage.Release));
     }
 
-
-
-
     #endregion
 
     #region Release
-
+    [Header("Release")]
     public GameObject gameReleasePanel;
+
+    public Image winnerTag;
+    public Image whiteChessResult;
+    public Image blackChessResult;
+
+
     private Dictionary<int, ChessColor> turnResult = new();
+    private void ShowGameResult()
+    {
+        int whiteWinCount = 0;
+        int blackWinCount = 0;
+        foreach (var result in turnResult.Values)
+        {
+            if (result == ChessColor.White) whiteWinCount++;
+            else if (result == ChessColor.Black) blackWinCount++;
+        }
+ 
+        whiteChessResult.sprite = resourcesData.allSprite.sp_NumberSprites[whiteWinCount];
+        blackChessResult.sprite = resourcesData.allSprite.sp_NumberSprites[blackWinCount];
+
+        winnerTag.sprite = resourcesData.PlayerSprite(winner);
+
+    }
 
 
     private IEnumerator Release()
     {
         yield return null;
+        ShowGameResult();
         gameReleasePanel.SetActive(true);
 
     }
 
-    private void s()
-    {
 
-    }
 
 
 
