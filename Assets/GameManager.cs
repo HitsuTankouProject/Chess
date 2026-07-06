@@ -493,7 +493,7 @@ public class GameManager : MonoBehaviour
 
     private const int maxBuffCount = 3;
     private bool IsMaxBuffCount()
-        => player01.cardBuffMap.Count >= maxBuffCount && player02.cardBuffMap.Count >= maxBuffCount;
+        => player01.choseBuffs.Count >= maxBuffCount && player02.choseBuffs.Count >= maxBuffCount;
     private IEnumerator TurnStart()
     {
 
@@ -545,6 +545,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
     public ChessColor nowTurn { get; private set; } = ChessColor.White;
+    public Image nowTurnTag;
     private const int maxTurnCount = 3;
     private int nowTurnCount = 1;
 
@@ -553,6 +554,7 @@ public class GameManager : MonoBehaviour
     private void TurnChange()
     {
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
+        nowTurnTag.sprite = resourcesData.PlayerSprite(nowTurn);
         TargetPlayer(nowTurn).Player_TurnStart();
     }
 
@@ -707,11 +709,6 @@ public class GameManager : MonoBehaviour
 
 
     #endregion
-
-
-
-
-
 
     private void Awake()
     {
