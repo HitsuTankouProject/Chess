@@ -542,6 +542,7 @@ public class GameManager : MonoBehaviour
     public IngamePanel inGamePanel;
 
     public ChessColor nowTurn { get; private set; } = ChessColor.White;
+    public Image nowTurnTag;
     private const int maxTurnCount = 3;
     private int nowTurnCount = 1;
 
@@ -550,6 +551,7 @@ public class GameManager : MonoBehaviour
         nowGameStage = GameStage.TurnChange;
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
         yield return StartCoroutine(inGamePanel.TurnChange(nowTurn));
+        nowTurnTag.sprite = resourcesData.PlayerSprite(nowTurn);
         TargetPlayer(nowTurn).Player_TurnStart();
         nowGameStage = GameStage.InGame;
     }

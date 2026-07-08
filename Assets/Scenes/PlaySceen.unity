@@ -4486,6 +4486,7 @@ MonoBehaviour:
   controllerChoosePanel: {fileID: 1383852892}
   chooseSkillPanel: {fileID: 1193127108}
   inGamePanel: {fileID: 759881839}
+  nowTurnTag: {fileID: 0}
   gameReleasePanel: {fileID: 1016197110}
   winnerTag: {fileID: 569327697}
   whiteChessResult: {fileID: 1939571205}
