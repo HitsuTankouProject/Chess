@@ -106,6 +106,7 @@ public class King : ChessBasic
 
         ChessColor othersChessColor = _player.usingChess == ChessColor.White ? ChessColor.Black : ChessColor.White;
         _enemy = GameManager.Instance.TargetPlayer(othersChessColor);
+        canReSpawn = player.kingBuffType == KingBuff.None;
     }
 
     public override HashSet<Vector2Int> directions => new HashSet<Vector2Int>
@@ -116,6 +117,12 @@ public class King : ChessBasic
     {
         if (!_player.sageKing.TryAddBarrier()) return;
         else GotExtraLife(true);
+    }
+    private bool SageKing_Level3_WonByGoToEnemyKingStart(Vector2Int moveTo)
+    {
+        if (_player.sageKing.nowBuffLevel != 3) return false;
+
+        return _chessBoard.GetKingStartPoint(_enemy.usingChess) != moveTo;
     }
 
     private bool MadKing_Level2_ThroughAndEatAllChess(Vector2Int nowPosition, Vector2Int moveTo, out Queue<ChessBasic> eatqueue)
@@ -144,7 +151,7 @@ public class King : ChessBasic
         if (!isMoveAgain)
         {
             isMoveAgain = true;
-            StartCoroutine(_player.playerInPut.OneMoreMove(this));
+            _player.playerInPut.StartOneMoreMove(this);
         }
         else
         {
@@ -209,24 +216,13 @@ public class King : ChessBasic
             }
         }
     }
-
-    private ChessType CanKillKingType()
-    {
-        int count = Enum.GetValues(typeof(ChessType)).Length;
-
-        for (int i = count - 1; i > 0; i--)
-        {
-            ChessType chessType = (ChessType)i;
-
-            if (_enemy.ChessListByType(chessType).Count > 0)
-                return chessType;
-        }
-
-        return ChessType.King;
-    }
-
     private void Respawn()
     {
+        if (!canReSpawn)
+        {
+            _player.haveKing = false;
+            return;
+        }
         Vector2Int targetSpawn = color == ChessColor.White ? 
             _chessBoard.white_KingChessSpawn : _chessBoard.black_KingChessSpawn;
 
@@ -241,35 +237,42 @@ public class King : ChessBasic
             _chessBoard.StartGenChessProcess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King));
             return;
         }
-        ChessType killerType = CanKillKingType();
-        bool isKillerType = chess.type != killerType || chess.type == ChessType.King;
 
-        if (isKillerType)
+        if (chess.color == color)
         {
             chess.GotEaten();
             _chessBoard.StartGenChessProcess(targetSpawn,new Pair<ChessColor, ChessType>(color, ChessType.King), _player);
-
             return;
         }
 
-        GameManager.Instance.EndInGame(color);
-
+        _player.haveKing = false;
     }
 
     public override void GotEaten()
     {
-        base.GotEaten();
+        if (_player.IsProtectbySubstitute(out ChessBasic pawn)) 
+        {
+            SwapPosition(pawn);
+            pawn.GotEaten();
+            return;
+        }
         Respawn();
+        base.GotEaten();
     }
 
 
     public override void Move(Vector2Int moveTo)
     {
-        SageKing_Level2_AddBarrier();
-        if (_player.madKing.nowBuffLevel <= 1)
-            base.Move(moveTo);
-        else MadKing_MoveTo(moveTo);
+        if (_player.madKing.nowBuffLevel > 1)
+        {
+            MadKing_MoveTo(moveTo);
+            return;
+        }
 
+        SageKing_Level2_AddBarrier();
+        base.Move(moveTo);
+        if (SageKing_Level3_WonByGoToEnemyKingStart(moveTo))
+            GameManager.Instance.EndInGame(_enemy.usingChess);
 
     }
 

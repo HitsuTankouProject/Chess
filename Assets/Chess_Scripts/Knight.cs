@@ -125,8 +125,10 @@ public class Knight : ChessBasic
                     if (chess.color != this.color)
                     {
                         possibleMoveList.Add(targetPos);
+                        possibleEatList.Add(targetPos);
+
                     }
-                    if(!isthrough) break;
+                    if (!isthrough) break;
                 }
                 else
                 {
@@ -153,33 +155,32 @@ public class Knight : ChessBasic
         bool isEatTheChess = posHaveChess != null;
         if (!canMove)
         {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            base.Move(moveTo);
             return;
         }
+
         MoveOnly(moveTo);
 
         if (knightBuff == KnightBuff.Skirmisher) SkirmisherFinalBuff();
         else if (knightBuff == KnightBuff.Charger) ChargerFinalBuff(isEatTheChess);
        
+
     }
 
 
 
     private void ChargerFinalBuff(bool moveAgain)
     {
-        bool haveChargerFinalBuff = _player.knightBuffType == KnightBuff.Charger && _player.charger.canMoveItAgain;
-
-        if (!haveChargerFinalBuff || !moveAgain)
+        if (!moveAgain || !_player.charger.canMoveItAgain)
         {
             _player.nowPlayerStage = PlayerStage.ReadytoEnd;
             return;
         }
 
-
         if (!isMoveAgain)
         {
             isMoveAgain = true;
-            StartCoroutine(_player.playerInPut.OneMoreMove(this));
+            _player.playerInPut.StartOneMoreMove(this);
         }
         else
         {
@@ -192,8 +193,11 @@ public class Knight : ChessBasic
     }
     private void SkirmisherFinalBuff()
     {
-        if (_player.knightBuffType != KnightBuff.Skirmisher) return;
-        if (_player.skirmisher.nowBuffLevel != 3) return;
+        if (_player.skirmisher.nowBuffLevel != 3)
+        {
+            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            return;
+        }
 
         Queue<ChessBasic> eatQueue = new Queue<ChessBasic>();
 
@@ -202,15 +206,17 @@ public class Knight : ChessBasic
             Vector2Int targetPos = position + dir;
             if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
             {
-                if (chess.color != this.color)
-                {
-                    eatQueue.Enqueue(chess);
-                }
+                if (chess.color != this.color) eatQueue.Enqueue(chess);
             }
 
         }
 
-        while (eatQueue.Count>0) eatQueue.Dequeue().GotEaten();
+        while (eatQueue.Count>0)
+        {
+            ChessBasic chess = eatQueue.Dequeue();
+            _chessBoard.DeadEffect(chess);
+            chess.GotEaten();
+        }
 
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
     }

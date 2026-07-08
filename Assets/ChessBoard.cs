@@ -5,6 +5,7 @@ using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEditor.PlayerSettings;
 
 [Serializable]
 public class Col
@@ -33,8 +34,23 @@ public class ChessBoard : MonoBehaviour
 
     [Header("Players")]
 
+    private readonly Vector2Int falseVaule = new Vector2Int(-1, -1);
     public Vector2Int black_KingChessSpawn { get; private set; } = new Vector2Int(-1, -1);
     public Vector2Int white_KingChessSpawn { get; private set; } = new Vector2Int(-1, -1);
+
+    private Vector2Int black_KingStart = new Vector2Int(-1, -1);
+    private Vector2Int white_KingStart = new Vector2Int(-1, -1);
+    private void SetKingStartPoint(ChessColor color, Vector2Int pos)
+    {
+        if (color == ChessColor.White) white_KingStart = pos;
+        else black_KingStart = pos;
+    }
+    public Vector2Int GetKingStartPoint(ChessColor color)
+    {
+        if (color == ChessColor.White) return white_KingStart;
+        else return black_KingStart;
+    }
+
     public bool IsKingChessSpawn(Vector2Int pos) => pos == black_KingChessSpawn || pos == white_KingChessSpawn;
 
 
@@ -115,12 +131,16 @@ public class ChessBoard : MonoBehaviour
         board.Clear();
     }
 
-    private IEnumerator GenChessAtStart()
+    private IEnumerator GenChessAtStart(int turn)
     {
         CleanTheBoard();
-        Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap("BoardInitData_Test");
+        Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap($"BoardInitData_Turn_0{turn}");
         foreach (var entry in chessStartMap)
         {
+            if (entry.Value.second == ChessType.King)
+            {
+                SetKingStartPoint(entry.Value.first, entry.Key);
+            }
             yield return GenChessProcess(entry.Key, entry.Value);
         }
 
@@ -133,7 +153,6 @@ public class ChessBoard : MonoBehaviour
             }
         }
     }
-
     private void FindRandomKingChessSpawn()
     {
         List<ChessBlock> blackChessBlocks = new List<ChessBlock>();
@@ -149,6 +168,11 @@ public class ChessBoard : MonoBehaviour
                 else whiteChessBlocks.Add(block);
             }
         }
+
+        if(black_KingChessSpawn != falseVaule) 
+            ChessBlock(black_KingChessSpawn).ChangeBlockStage(BlockStage.None);
+        if (white_KingChessSpawn != falseVaule)
+            ChessBlock(white_KingChessSpawn).ChangeBlockStage(BlockStage.None);
 
         black_KingChessSpawn = blackChessBlocks[UnityEngine.Random.Range(0, blackChessBlocks.Count)].position;
         ChessBlock(black_KingChessSpawn).ChangeBlockStage(BlockStage.KingSpawn);
@@ -228,33 +252,6 @@ public class ChessBoard : MonoBehaviour
 
     }
 
-
-    //public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair)
-    //{
-    //    Vector3 chessGenPos = ReturnChessBlockPosition(position);
-    //    Quaternion chessRotation = ChessRotation(pair.first);
-    //    GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].prefab, chessGenPos, chessRotation);
-    //    ChessBasic target = chess.GetComponent<ChessBasic>();
-    //    target.ChangeChessColor(pair.first);
-    //    MoveTo(target, position);
-
-    //}
-    //public void GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair, out ChessBasic genChess)
-    //{
-    //    genChess = null;
-    //    Vector3 chessGenPos = ReturnChessBlockPosition(position);
-    //    Quaternion chessRotation = ChessRotation(pair.first);
-    //    GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].prefab, chessGenPos, chessRotation);
-
-    //    ChessBasic target = chess.GetComponent<ChessBasic>();
-    //    target.ChangeChessColor(pair.first);
-    //    MoveTo(target, position);
-
-    //    genChess = target;
-    //}
-
-
-
     public void DeadEffect(ChessBasic targetChess)
     {
         Vector3 boardPosition = ReturnChessBlockPosition(targetChess.position);
@@ -262,6 +259,24 @@ public class ChessBoard : MonoBehaviour
         ChessEffect chessEffect = chess.gameObject.GetComponent<ChessEffect>();
         chessEffect.PlayEffect(EffectType.Dead, targetChess.color);
     }
+
+    public void PurificEffect(ChessBasic targetChess)
+    {
+        Vector3 boardPosition = ReturnChessBlockPosition(targetChess.position);
+        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[targetChess.type].chessEffect, boardPosition);
+        ChessEffect chessEffect = chess.gameObject.GetComponent<ChessEffect>();
+        chessEffect.PlayEffect(EffectType.Dead, _resourcesData.allMaterial.m_GotCurse);
+    }
+
+    public void IsGotExtraLife(ChessBasic targetChess, bool isGot)
+    {
+        Vector3 boardPosition = ReturnChessBlockPosition(targetChess.position);
+        GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[targetChess.type].chessEffect, boardPosition);
+        ChessEffect chessEffect = chess.gameObject.GetComponent<ChessEffect>();
+        EffectType effectType = isGot ? EffectType.Swapn : EffectType.Dead;
+        chessEffect.PlayEffect(effectType, _resourcesData.allMaterial.m_ChessHaveExtraLife);
+    }
+
 
 
     public Vector3 ReturnChessBlockPosition(Vector2Int position)
@@ -363,11 +378,9 @@ public class ChessBoard : MonoBehaviour
         ChessBlockInit();
     }
 
-    public IEnumerator ChessBoard_TurnInit()
+    public IEnumerator ChessBoard_TurnInit(int turn)
     {
-        yield return GenChessAtStart();
-
-
+        yield return GenChessAtStart(turn);
         FindRandomKingChessSpawn();
     }
 

@@ -121,15 +121,15 @@ Material:
     - _EmissionStrength: 3
     - _EnableExternalAlpha: 0
     - _EnvironmentReflections: 1
-    - _FlowSpeed: 0.26
+    - _FlowSpeed: 0.33
     - _FresnelPower: 4
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
-    - _NoiseStrength: -2.62
+    - _NoiseStrength: 0.15
     - _OcclusionStrength: 1
-    - _Opacity: 3.18
+    - _Opacity: 1.71
     - _Parallax: 0.005
     - _QueueControl: 0
     - _QueueOffset: 0

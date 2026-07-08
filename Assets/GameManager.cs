@@ -15,6 +15,7 @@ public enum GameStage
     TurnStart,
     SkillChoose,
     InGame,
+    TurnChange,
     TurnEnd,
     GameEnd, 
     Release,
@@ -225,8 +226,7 @@ public class GameManager : MonoBehaviour
     private const float playerCameraOpenTime = 0.5f;
 
     private const float openRectX = 0.5f;
-    private const float closeRectX = 0f;
-
+    private const float closeRectX = 0.001f;
     private IEnumerator TargetPlayerCameraOpen(Camera playerCamera, bool isOpen)
     {
         //playerCamera.gameObject.SetActive(false);
@@ -351,6 +351,7 @@ public class GameManager : MonoBehaviour
         gameTitlePanel.SetActive(false);
         gameDescriptionPanel.SetActive(false);
         gameReleasePanel.SetActive(false);
+        inGamePanel.gameObject.SetActive(false);
     }
     public void Button_BackToGameTitle()
     {
@@ -476,24 +477,15 @@ public class GameManager : MonoBehaviour
     #region TurnStart
     private IEnumerator TurnInit()
     {
-        yield return chessBoard.ChessBoard_TurnInit();
-        Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
-        Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
+        player01.haveKing = true;
+        player02.haveKing = true;
 
-        foreach (Vector2Int chessPos in chessBoard.board.Keys)
-        {
-            if (chessBoard.board[chessPos].color == ChessColor.White)
-                whiteChess[chessPos] = chessBoard.board[chessPos];
-            else blackChess[chessPos] = chessBoard.board[chessPos];
-        }
-
-        player01.Player_ChessInit(whiteChess);
-        player02.Player_ChessInit(blackChess);
+        yield return chessBoard.ChessBoard_TurnInit(nowTurnCount);
     }
 
     private const int maxBuffCount = 3;
     private bool IsMaxBuffCount()
-        => player01.cardBuffMap.Count >= maxBuffCount && player02.cardBuffMap.Count >= maxBuffCount;
+        => player01.choseBuffs.Count >= maxBuffCount && player02.choseBuffs.Count >= maxBuffCount;
     private IEnumerator TurnStart()
     {
 
@@ -544,16 +536,22 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+
+    #region InGame
+    [Header("InGame")]
+    public IngamePanel inGamePanel;
+
     public ChessColor nowTurn { get; private set; } = ChessColor.White;
     private const int maxTurnCount = 3;
     private int nowTurnCount = 1;
 
-    #region InGame
-
-    private void TurnChange()
+    private IEnumerator TurnChange()
     {
+        nowGameStage = GameStage.TurnChange;
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
+        yield return StartCoroutine(inGamePanel.TurnChange(nowTurn));
         TargetPlayer(nowTurn).Player_TurnStart();
+        nowGameStage = GameStage.InGame;
     }
 
     private void StopPlayerTurn(ChessColor chessColor)
@@ -565,13 +563,27 @@ public class GameManager : MonoBehaviour
             TargetPlayer(chessColor).turnStart = null;
         }
     }
-
     public void EndTurn()
     {
+        StartCoroutine(EndTurnProcess());
+    }
+
+    private IEnumerator EndTurnProcess()
+    {
+        yield return null;
+
         chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
+
         StopPlayerTurn(ChessColor.White);
         StopPlayerTurn(ChessColor.Black);
-        TurnChange();
+
+        if (!player01.haveKing || !player02.haveKing)
+        {
+            EndInGame(nowTurn);
+        }
+        else StartCoroutine(TurnChange());
+
+
     }
 
 
@@ -579,14 +591,27 @@ public class GameManager : MonoBehaviour
     private IEnumerator InGame()
     {
         yield return null;
+
+        Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
+        Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
+
+        foreach (Vector2Int chessPos in chessBoard.board.Keys)
+        {
+            if (chessBoard.board[chessPos].color == ChessColor.White)
+                whiteChess[chessPos] = chessBoard.board[chessPos];
+            else blackChess[chessPos] = chessBoard.board[chessPos];
+        }
+        player01.Player_ChessInit(whiteChess);
+        player02.Player_ChessInit(blackChess);
+
         nowTurn = ChessColor.White;
         TargetPlayer(nowTurn).Player_TurnStart();
+        inGamePanel.gameObject.SetActive(true);
     }
 
     public void EndInGame(ChessColor chessColor)
     {
         turnResult[nowTurnCount] = chessColor;
-
         StartCoroutine(SwitchStage(GameStage.TurnEnd));
     }
 
@@ -625,7 +650,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator TurnEnd()
     {
         yield return null;
-
+        AllPanelClose();
         if (IsGameEnd()) 
         {
             Debug.Log("Real GameSet");
@@ -707,11 +732,6 @@ public class GameManager : MonoBehaviour
 
 
     #endregion
-
-
-
-
-
 
     private void Awake()
     {

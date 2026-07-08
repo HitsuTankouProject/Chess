@@ -77,7 +77,7 @@ public class Monk : BuffBasic
     public bool canPurificChess { get; private set; } = false;
 
 
-public override void ResetBuff()
+    public override void ResetBuff()
     {
         extraCanGoArea.Clear();
     }
@@ -99,7 +99,7 @@ public override void ResetBuff()
 
     public void PurificChess(HashSet<ChessBasic> purificChesses)
     {
-        if (!canPurificChess || purificChesses.Count == 0) ;
+        if (!canPurificChess || purificChesses.Count == 0) return;
         foreach(ChessBasic chess in purificChesses)
         {
             if (chess.gotCurse) chess.PurifyThisChess();
@@ -143,7 +143,7 @@ public class Bishop : ChessBasic
             {
                 Vector2Int targetPos = position + dir * i;
 
-                if (!_chessBoard.IsOutOfBoard(targetPos)) break;
+                if (_chessBoard.IsOutOfBoard(targetPos)) break;
 
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
@@ -162,20 +162,31 @@ public class Bishop : ChessBasic
         }
     }
 
+    public override void CurseThisChess()
+    {
+        if (_player.bishopBuffType == BishopBuff.Sorcerer) PurifyThisChess();
+        else base.CurseThisChess();
+    }
+
 
     public void PurificChess()
     {
-        possibleMoveList.Clear();
         HashSet<ChessBasic> purificChesses = new HashSet<ChessBasic>();
-        FindCanMove(true);
-        ExtraFindPossibleMove(true);
-        purificChesses.Add(this);
+        HashSet<Vector2Int> findPurific = PossibleMove(true);
+        Debug.Log(findPurific.Count);
 
-        foreach (Vector2Int targetPos in possibleMoveList)
+        foreach (Vector2Int targetPos in findPurific)
         {
             if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
             {
-                if (chess.color == color && chess.gotCurse) purificChesses.Add(chess);
+                Debug.Log(chess.chessInfo.first.ToString());
+                Debug.Log(chess.chessInfo.second.ToString());
+
+                if (chess.color == color && chess.gotCurse)
+                {
+                    Debug.Log(targetPos);
+                    purificChesses.Add(chess);
+                }
             }
         }
 

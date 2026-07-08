@@ -48,21 +48,25 @@ public class Scout : BuffBasic
     }
 
 }
-
 public class Substitute : BuffBasic
 {
     public override ChessType buffChess => ChessType.Pawn;
     public override string buffName => "Substitute";
     public override void Choose() => _player.allTheBuff.pawnBuffType = PawnBuff.Substitute;
+    public HashSet<Vector2Int> extraMoveArea => new()
+    {
+        Vector2Int.up,Vector2Int.down,Vector2Int.left,Vector2Int.right,
+        new Vector2Int(1, 1),new Vector2Int(1, -1),new Vector2Int(-1, 1),new Vector2Int(-1, -1)
+    };
 
     public bool cantPromotion = false;
-    public bool canOnlyKillKing = false;
+    public bool cantKill = false;
     public bool cantKillKingWhenPawnExist = false;
 
     public override void ResetBuff()
     {
         cantPromotion = false;
-        canOnlyKillKing = false;
+        cantKill = false;
         cantKillKingWhenPawnExist = false;
     }
 
@@ -72,14 +76,14 @@ public class Substitute : BuffBasic
     }
     public override void SecondLevel()
     {
-        canOnlyKillKing = true;
+        cantKill = true;
+
     }
     public override void ThirdLevel()
     {
         cantKillKingWhenPawnExist = true;
     }
 }
-
 public class Pawn : ChessBasic
 {
     public override ChessType type => ChessType.Pawn;
@@ -99,11 +103,8 @@ public class Pawn : ChessBasic
         isFirstMove = true;
     }
 
-    public override void ExtraFindPossibleMove(bool isThrough)
+    private void Scout_ExtraFindPossibleMove()
     {
-        if (_player.pawnBuffType != PawnBuff.Scout
-            || _player.scout.extraMoveArea.Count == 0) return;
-
         foreach (Vector2Int direction in _player.scout.extraMoveArea)
         {
             for (int i = 1; i <= _player.scout.extraMoveRange; i++)
@@ -128,30 +129,35 @@ public class Pawn : ChessBasic
                 break;
             }
         }
-
-
     }
-
-    public override void FindCanMove(bool isThrough)
+    private void Substitute_ExtraFindPossibleMove()
     {
-        int moveDirectionValue = (color == ChessColor.White) ? 1 : -1;
-
-        foreach (Vector2Int moveDirection in directions)
+        foreach (Vector2Int direction in _player.substitute.extraMoveArea)
         {
-            Vector2Int moveOffset = moveDirection * moveDirectionValue;
-
-            for (int distance = 1; distance <= findRange; distance++)
+            for (int i = 1; i <= _player.scout.extraMoveRange; i++)
             {
-                Vector2Int targetPosition = position + moveOffset * distance;
+                Vector2Int targetPosition = position + direction * i;
 
                 if (IsOutOfBoard(targetPosition)) break;
 
-                bool haveChess = _chessBoard.board.ContainsKey(targetPosition);
-
-                if (!haveChess) possibleMoveList.Add(targetPosition);
-                if (!isThrough && haveChess) break;
+                bool haveChess = _chessBoard.board.TryGetValue(targetPosition, out ChessBasic chess);
+                if (!haveChess)
+                {
+                    possibleMoveList.Add(targetPosition);
+                    continue;
+                }
+                break;
             }
         }
+    }
+    public override void ExtraFindPossibleMove(bool isThrough)
+    {
+        if (_player.scout.extraMoveArea.Count != 0)
+        {
+            Scout_ExtraFindPossibleMove();
+            return;
+        }
+        else if (_player.substitute.cantKill) Substitute_ExtraFindPossibleMove();
 
     }
 
@@ -174,18 +180,29 @@ public class Pawn : ChessBasic
             }
         }
     }
-
-    public override void FindPossibleMove()
+    public override void FindCanMove(bool isThrough)
     {
-        possibleMoveList.Clear();
-        possibleEatList.Clear();
+        if (_player.substitute.cantKill) return;
 
-        FindCanMove(false);
+        int moveDirectionValue = (color == ChessColor.White) ? 1 : -1;
+        foreach (Vector2Int moveDirection in directions)
+        {
+            Vector2Int moveOffset = moveDirection * moveDirectionValue;
+
+            for (int distance = 1; distance <= findRange; distance++)
+            {
+                Vector2Int targetPosition = position + moveOffset * distance;
+
+                if (IsOutOfBoard(targetPosition)) break;
+
+                bool haveChess = _chessBoard.board.ContainsKey(targetPosition);
+
+                if (!haveChess) possibleMoveList.Add(targetPosition);
+                if (!isThrough && haveChess) break;
+            }
+        }
         FindCanEat();
-        ExtraFindPossibleMove(false);
 
-        _chessBoard.ShowActive(ChessBlockStage.CanGo, type, possibleMoveList);
-        _chessBoard.ShowActive(ChessBlockStage.CanEat, type, possibleEatList);
     }
 
     private void ScoutSecondBuff(ChessBasic chess)
@@ -194,28 +211,12 @@ public class Pawn : ChessBasic
         _player.scout.AddExtraMoveArea(chess);
     }
 
-    public override bool CanEatChess(ChessBasic chess)
+    public override void EatChess(ChessBasic chess)
     {
-        if (chess.haveExtraLife)
-        {
-            chess.GotExtraLife(false);
-            return false;
-        }
-
-        bool canOnlyKillKing = _player.pawnBuffType == PawnBuff.Substitute
-        && _player.substitute.canOnlyKillKing;
-        bool isKing = chess.type == ChessType.King;
-
-        if (canOnlyKillKing && !isKing) return false;
-        if (!isKing) return true;
-
-        if (chess.haveExtraLife)
-        {
-            chess.GotExtraLife(false);
-            return false;
-        }
-        return true;
+        ScoutSecondBuff(chess);
+        base.EatChess (chess);
     }
+
 
 
     public override void Move(Vector2Int moveTo)

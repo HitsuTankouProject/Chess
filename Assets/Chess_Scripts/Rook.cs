@@ -9,9 +9,10 @@ public class Rusher : BuffBasic
     public override ChessType buffChess => ChessType.Rook;
     public override string buffName => "Rusher";
     public override void Choose() => _player.allTheBuff.rookBuffType = RookBuff.Rusher;
-
+    
     public bool canThroughSameColor = false;
     public bool canThroughNonSameColor = false;
+    public int findRange = 8;
     public bool canEatThroughNonSameColorChess = false;
 
     public override void ResetBuff()
@@ -30,6 +31,7 @@ public class Rusher : BuffBasic
     }
     public override void ThirdLevel()
     {
+        findRange = 4;
         canEatThroughNonSameColorChess = true;
     }
 }
@@ -108,7 +110,7 @@ public class Rook : ChessBasic
     {
         foreach (var dir in directions)
         {
-            for (int i = 1; i < findRange; i++)
+            for (int i = 1; i <=_player.rusher.findRange; i++)
             {
                 Vector2Int targetPos = position + dir * i;
 
@@ -133,21 +135,15 @@ public class Rook : ChessBasic
     }
     public void GuardianBuff()
     {
-
         if (_player.rookBuffType != RookBuff.Guardian || _player.guardian.protectArea.Count == 0) return;
-        Debug.Log("sss00");
-        HashSet<Vector2Int> addToProtectArea = new HashSet<Vector2Int>();
         foreach (Vector2Int protectedDir in _player.guardian.protectArea)
         {
             Vector2Int spot = position + protectedDir;
             if (_chessBoard.IsOutOfBoard(spot)) continue;
             if (!_chessBoard.board.TryGetValue(spot, out ChessBasic chess)
                 || chess.color != this.color) continue;
-            chess.GotExtraLife(true);
-            addToProtectArea.Add(spot);
+            _player.AddGuardianProtectedChess(chess);
         }
-        Debug.Log(addToProtectArea.Count);
-        _player.AddToProtectArea(addToProtectArea);
     }
 
     public override void FindCanMove(bool isThrough)
@@ -184,8 +180,12 @@ public class Rook : ChessBasic
         }
         MoveOnly(moveTo);
 
-        while (eatqueue.Count > 0) eatqueue.Dequeue().GotEaten();
-
+        while (eatqueue.Count > 0)
+        {
+            ChessBasic chess = eatqueue.Dequeue();
+            _chessBoard.DeadEffect(chess);
+            chess.GotEaten();
+        }
 
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
     }

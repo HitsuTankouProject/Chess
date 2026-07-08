@@ -4,5 +4,5 @@
 ,,,White:Bishop,,,,,,,,Bishop
 ,,,,,Black:Pawn,,,,,,Rook
 ,,,,,,,,,,,Knight
-,,,,,,,,,,,Pawn
-Black:Rook,Black:Bishop,Black:Knight,Black:Queen,Black:King,Black:Knight,Black:Bishop,Black:Rook,,,,
+,,,,,,White:Pawn,,,,,Pawn
+Black:Rook,Black:Bishop,Black:Knight,Black:Queen,Black:King,Black:Knight,,Black:Rook,,,,

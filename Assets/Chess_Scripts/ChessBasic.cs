@@ -1,11 +1,8 @@
-using System;
+
 using System.Collections.Generic;
-using System.Drawing;
-using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using static UnityEditor.Experimental.GraphView.GraphView;
+
 
 /// <summary>　駒の色定義　</summary>
 public enum ChessColor
@@ -42,28 +39,30 @@ public abstract class ChessBasic : MonoBehaviour
     /// <summary>　駒の色 </summary>
     public ChessColor color;
     public MeshRenderer _meshRenderer;
+    public MeshRenderer effect;
+
     public void ChangeChessColor(ChessColor chessColor)
     {
         color = chessColor;
-        _meshRenderer.material= _resourcesData.TargetColor(color);
+        _meshRenderer.material = _resourcesData.TargetColor(color);
 
     }
 
 
     /// <summary>　駒タイプ　派生クラス側で定義　</summary>
-    public abstract ChessType type { get;}
+    public abstract ChessType type { get; }
     /// <summary>　駒の色と種類情報　</summary>
     public Pair<ChessColor, ChessType> chessInfo => new Pair<ChessColor, ChessType>(color, type);
     /// <summary>　現在の盤面座標　</summary>
-    public Vector2Int position { get; private set; } = new Vector2Int(-1,-1);
-    public bool IsOutOfBoard(Vector2Int position) =>_chessBoard.IsOutOfBoard(position);
+    public Vector2Int position { get; private set; } = new Vector2Int(-1, -1);
+    public bool IsOutOfBoard(Vector2Int position) => _chessBoard.IsOutOfBoard(position);
 
     /// <summary>　駒座標更新　</summary>
     public void SetPosition(Vector2Int pos) => position = pos;
     /// <summary>　 駒名取得　</summary>
     public virtual string ChessName() { return "ChessBasic"; }
 
-    public abstract HashSet<Vector2Int> directions { get;}
+    public abstract HashSet<Vector2Int> directions { get; }
 
 
     public Player _player;
@@ -73,25 +72,39 @@ public abstract class ChessBasic : MonoBehaviour
         ChangeChessColor(_player.usingChess);
     }
 
-    public bool haveBuffed = false;
+    //public bool haveBuffed = false;
 
 
 
-    public bool haveExtraLife {  get; private set; } = false;
+    public bool haveExtraLife { get; private set; } = false;
     public void GotExtraLife(bool isHaveExtraLife)
     {
-        if(type == ChessType.Rook)
+        if (type == ChessType.Rook)
         {
             haveExtraLife = false;
             return;
         }
         haveExtraLife = isHaveExtraLife;
-
+        _chessBoard.IsGotExtraLife(this, isHaveExtraLife);
+        effect.material = _resourcesData.allMaterial.m_ChessHaveExtraLife;
+        effect.enabled = haveExtraLife;
     }
 
     public bool gotCurse { get; private set; } = false;
-    public void CurseThisChess() =>gotCurse = true;
-    public void PurifyThisChess()=> gotCurse = false;
+    public virtual void CurseThisChess()
+    {
+        gotCurse = true;
+        effect.material = _resourcesData.allMaterial.m_GotCurse;
+        effect.enabled = true;
+
+    }
+    public void PurifyThisChess()
+    {
+        if (!gotCurse) return;
+        gotCurse = false;
+        effect.enabled = false;
+        _chessBoard.PurificEffect(this);
+    }
 
 
     /// <summary>　 移動可能マス一覧　</summary>
@@ -113,12 +126,20 @@ public abstract class ChessBasic : MonoBehaviour
 
                 if (_chessBoard.board.TryGetValue(targetPos, out ChessBasic chess))
                 {
+                    if (isThrougt)
+                    {
+                        possibleMoveList.Add(targetPos);
+                        if (chess.color != this.color)
+                            possibleEatList.Add(targetPos);
+                        continue;
+                    }
+
                     if (chess.color != this.color)
                     {
                         possibleMoveList.Add(targetPos);
                         possibleEatList.Add(targetPos);
                     }
-                    if (!isThrougt) break;
+                    break;
                 }
                 else
                 {
@@ -177,16 +198,19 @@ public abstract class ChessBasic : MonoBehaviour
         transform.position = _chessBoard.ReturnChessBlockPosition(position);
         transform.rotation = Quaternion.Euler(Vector3.zero);
     }
-
-    public virtual bool CanEatChess(ChessBasic chess)
+    
+    public virtual bool CanBeEat()
     {
-        if (chess.haveExtraLife)
+        if (haveExtraLife)
         {
-            chess.GotExtraLife(false);
+            GotExtraLife(false);
             return false;
         }
-       
         return true;
+    }
+    public virtual bool CanEatChess(ChessBasic chess)
+    {
+        return chess.CanBeEat();
     }
     public bool CanMoveTo(Vector2Int moveTo, out ChessBasic chess)
     {
@@ -212,14 +236,14 @@ public abstract class ChessBasic : MonoBehaviour
             _player.nowPlayerStage = PlayerStage.ReadytoEnd;
             return;
         }
+
         if (chess == null) _chessBoard.MoveTo(this, moveTo);
         else EatChess(chess);
 
-        if (_player.IsProTectedByRook_Guardian(position))
-        {
-            haveExtraLife = true;
-        }
-        else haveExtraLife = false;
+        if (gotCurse) PurifyThisChess();
+        if (_chessBoard.ChessBlock(moveTo).blockStage == BlockStage.GotCurse)
+            CurseThisChess();
+
     }
 
     /// <summary>

@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 
     public PlayerInPut playerInPut;
     public PlayerCanvas playerCanvas;
-    public bool isPause=> playerCanvas.isPause;
+    public bool isPause => playerCanvas.isPause;
 
     public Dictionary<Vector2Int, ChessBasic> allTheChess { get; private set; } = new();
 
@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
         return chessList;
     }
 
+    public bool haveKing = true;
     #region Chess Buff
     public AllTheBuff allTheBuff = new();
     #region King
@@ -53,6 +54,9 @@ public class Player : MonoBehaviour
     public QueenBuff queenBuffType => allTheBuff.queenBuffType;
     public Witcher witcher => allTheBuff.witcher;
     public Beauty beauty => allTheBuff.beauty;
+
+
+
     #endregion   
     #region Bishop
     public BishopBuff bishopBuffType => allTheBuff.bishopBuffType;
@@ -66,45 +70,28 @@ public class Player : MonoBehaviour
     public Rusher rusher => allTheBuff.rusher;
     public Guardian guardian => allTheBuff.guardian;
 
-    public HashSet<Vector2Int> guardianProtectArea { get; private set; } = new();
-    public void AddToProtectArea(HashSet<Vector2Int> addToProtectArea) => guardianProtectArea.AddRange(addToProtectArea);
-    public void UpdateGuardianProtectArea()
-    {
-        if (rookBuffType != RookBuff.Guardian) return;
-        foreach (Vector2Int area in guardianProtectArea)
-        {
-            if (!_chessBoard.board.TryGetValue(area, out ChessBasic chess) || chess.color != usingChess) continue;
-            chess.GotExtraLife(false);
-        }
-        guardianProtectArea.Clear();
-
-        List<ChessBasic> rookList = ChessListByType(ChessType.Rook);
-
-        if (rookList.Count == 0) return;
-        foreach (ChessBasic chess in rookList)
-        {
-            Debug.Log("4");
-            if (!chess.TryGetComponent<Rook>(out Rook rook))
-            {
-                Debug.LogError(" NonRook store in the Rook List");
-                return;
-            }
-            rook.GuardianBuff();
-
-        }
-    }
-    public bool IsProTectedByRook_Guardian(Vector2Int targetChessPos) => guardianProtectArea.Contains(targetChessPos);
+    public void AddGuardianProtectedChess(ChessBasic chess) =>
+        allTheBuff.AddGuardianProtectedChess(chess);
+    public void UpdateGuardianProtectArea() =>
+        allTheBuff.UpdateGuardianProtectArea(ChessListByType(ChessType.Rook));
 
     #endregion
     #region Knight
     public KnightBuff knightBuffType => allTheBuff.knightBuffType;
     public Charger charger => allTheBuff.charger;
     public Skirmisher skirmisher => allTheBuff.skirmisher;
+
+
+
     #endregion
     #region Pawn
     public PawnBuff pawnBuffType => allTheBuff.pawnBuffType;
     public Scout scout => allTheBuff.scout;
     public Substitute substitute => allTheBuff.substitute;
+
+    public bool IsProtectbySubstitute(out ChessBasic chess) =>
+        allTheBuff.IsProtectbySubstitute(ChessListByType(ChessType.Pawn), out chess);
+
     #endregion
     public Dictionary<AllBuffCard, BuffBasic> cardBuffMap => allTheBuff.cardBuffMap;
 
@@ -128,21 +115,30 @@ public class Player : MonoBehaviour
     public void Player_ChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
         AllChessInit(targetDict);
+
         Player_ChessDictUpdate();
         playerCanvas.Init(this, choseBuffs);
+    }
 
-        //queenBuffType = QueenBuff.Witcher;
-        //witcher.LevelUpToTargetLevel(3, out bool a);
+    private void EatAllTheCurseChess()
+    {
+        List<ChessBasic> allTheCurseChess = new();
+        foreach(ChessBasic chess in allTheChess.Values)
+            if (chess.gotCurse) 
+                allTheCurseChess.Add(chess);
+        foreach (ChessBasic chess in allTheCurseChess)
+        {
+            _chessBoard.DeadEffect(chess);
+            chess.GotEaten();
 
-        //kingBuffType = KingBuff.MadKing;
-        //madKing.LevelUpToTargetLevel(3, out bool a);
-
+        }
     }
 
     private void Player_ChessDictUpdate()
     {
         allTheChess = _chessBoard.ColorChessDict(usingChess);
         UpdateGuardianProtectArea();
+        EatAllTheCurseChess();
     }
 
     public Coroutine turnStart;
@@ -155,6 +151,8 @@ public class Player : MonoBehaviour
         nowPlayerStage = PlayerStage.Ready;
         turnCanEnd = false;
         playerInPut.StartGame();
+        UpdateGuardianProtectArea();
+
         while (!turnCanEnd)
         {
             switch (nowPlayerStage)
@@ -178,7 +176,6 @@ public class Player : MonoBehaviour
 
     public void Player_TurnStart()
     {
-        
         nowPlayerStage = PlayerStage.TurnInit;
         _inPutManager.PlayerInputStage(usingChess, InputStage.Waiting);
         turnStart = StartCoroutine(TurnStart());

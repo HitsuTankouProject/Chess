@@ -42,8 +42,6 @@ public class ChessEffect : MonoBehaviour
     public void EffectFinish()
     {
         isEffectFinish = true;
-        Debug.Log("EffectFinish");
-
         poolObject.pool.Return(this.gameObject);
     }
 

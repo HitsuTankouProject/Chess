@@ -105,16 +105,16 @@ public class ChessBlock : MonoBehaviour
         curseChess = null;
 
         ChangeBlockStage(BlockStage.None);
-
+        if(GameManager.Instance.chessBoard.board.TryGetValue(position,out ChessBasic chess))
+            chess.PurifyThisChess();
     }
 
     public void ChangeBlockStage(BlockStage stage, ChessBasic chess = default)
     {
-        if (blockStage == BlockStage.KingSpawn) return;
         blockStage = stage;
         ChangeBlockEffect(stage);
 
-        if (stage == BlockStage.GotCurse)
+        if (blockStage != BlockStage.KingSpawn && stage == BlockStage.GotCurse)
         {
             if (chess == default)
             {

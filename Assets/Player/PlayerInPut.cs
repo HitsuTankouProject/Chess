@@ -123,18 +123,25 @@ public class PlayerInPut : MonoBehaviour
         return canMove;
     }
 
-    public IEnumerator OneMoreMove(ChessBasic oneMoreMoveChess)
+    public void StartOneMoreMove(ChessBasic oneMoreMoveChess)
     {
+        inputStage = InputStage.OneMoreMove;
         _player.nowPlayerStage = PlayerStage.MovingChess;
 
-        inputStage = InputStage.OneMoreMove;
+        StartCoroutine(OneMoreMove(oneMoreMoveChess));
+    }
+
+    private IEnumerator OneMoreMove(ChessBasic oneMoreMoveChess)
+    {
+        _player.TurnCamera(PlayerCameraStage.Pick);
 
         pickIngChess = oneMoreMoveChess;
-
         pickIngChess.FindPossibleMove();
         pickIngChess.GotPick();
+
         nowPos = pickIngChess.position;
         _chessBoard.UpdatePlayerChose(nowPos);
+
 
         Debug.Log(pickIngChess.name);
 
@@ -172,7 +179,6 @@ public class PlayerInPut : MonoBehaviour
         }
 
         hitObject = hit.collider.gameObject;
-        Debug.Log(hitObject.name);
         return true;
     }
 
@@ -189,6 +195,7 @@ public class PlayerInPut : MonoBehaviour
 
     private void PressAction()
     {
+        if (inputStage == InputStage.OneMoreMove) return;
         bool isPressed = IsPressed(out GameObject hitObject);
         if (!isPressed) return;
         int hitLayer = hitObject.layer;
@@ -210,8 +217,12 @@ public class PlayerInPut : MonoBehaviour
     {
         if (!PutChess(boardPos)) return;
 
-        _player.TurnCamera(PlayerCameraStage.Normal);
-        inputStage = InputStage.None;
+        if(inputStage!= InputStage.OneMoreMove)
+        {
+            _player.TurnCamera(PlayerCameraStage.Normal);
+            inputStage = InputStage.None;
+        }
+
 
     }
 
@@ -233,8 +244,19 @@ public class PlayerInPut : MonoBehaviour
             yield return null;
             bool isPressed = IsPressed(out GameObject hitObject);
             if (!isPressed) continue;
+            Vector2Int moveTo = ChessBoardPosition(hitObject);
+            bool canMove = pickIngChess.possibleMoveList.Contains(moveTo);
+            if(!canMove) continue;
+            _chessBoard.ReSetActive();
+            _player.TurnCamera(PlayerCameraStage.Normal);
+            pickIngChess.ReturnPick();
 
-            if (!PutChess(ChessBoardPosition(hitObject))) continue;
+            ChessBasic moveChess = pickIngChess;
+            pickIngChess = null;
+            moveChess.Move(moveTo);
+
+            //if (!PutChess(ChessBoardPosition(hitObject))) continue;
+
             inputStage = InputStage.None;
         }
     }

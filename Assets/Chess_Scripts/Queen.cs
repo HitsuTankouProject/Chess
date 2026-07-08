@@ -60,12 +60,9 @@ public class Beauty : BuffBasic
         removeTheAreaLimit = false;
         canCharmChess = false;
     }
-
-
     public override void FirstLevel()
     {
         canProtectByKnight = true;
-
     }
     public override void SecondLevel()
     {
@@ -99,7 +96,11 @@ public class Queen : ChessBasic
     { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
         new Vector2Int(1, 1), new Vector2Int(1, -1), new Vector2Int(-1, 1), new Vector2Int(-1, -1) };
 
-    
+    public override void CurseThisChess()
+    {
+        if (_player.queenBuffType == QueenBuff.Witcher) PurifyThisChess();
+        else base.CurseThisChess();
+    }
     public override void EatChess(ChessBasic chess)
     {
         if (chess == null) return;
@@ -116,35 +117,11 @@ public class Queen : ChessBasic
         
     }
 
-    public override void Move(Vector2Int moveTo)
-    {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
-        ReturnPick();
-        if (!CanMoveTo(moveTo, out ChessBasic chess))
-        {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-            return;
-        }
-        if (chess == null) _chessBoard.MoveTo(this, moveTo);
-        else
-        {
-            EatChess(chess);
-
-        }
-
-        if (_player.IsProTectedByRook_Guardian(position))
-            GotExtraLife(true);
-        else GotExtraLife(false);
-        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-    }
-
-
-
-
     private const float canCharmPercent = 50.0f;
     private bool CanProtectByKnight(out ChessBasic knight)
     {
         knight = null;
+
         if (_player.queenBuffType != QueenBuff.Beauty) return false;
         List<ChessBasic> knightList = _player.ChessListByType(ChessType.Knight);
         if (knightList.Count == 0) return false;

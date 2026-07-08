@@ -1,5 +1,7 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UIElements;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public enum KingBuff { None, MadKing, SageKing }
 public enum QueenBuff { None, Witcher, Beauty }
@@ -43,6 +45,7 @@ public class AllTheBuff
             _ => null
         };
     }
+
     #endregion
 
     #region Bishop
@@ -92,8 +95,42 @@ public class AllTheBuff
         };
     }
 
+    public HashSet<ChessBasic> protectedByGuardianChesses { get; private set; } = new();
+
+    public void AddGuardianProtectedChess(ChessBasic chess)
+    {
+        if (chess == null) return;
+        if (protectedByGuardianChesses.Add(chess)) chess.GotExtraLife(true);
+    }
+    public void UpdateGuardianProtectArea(List<ChessBasic> rookList)
+    {
+        if (rookBuffType != RookBuff.Guardian)
+            return;
+
+        foreach (ChessBasic chess in protectedByGuardianChesses)
+        {
+            if (chess != null)
+            {
+                chess.GotExtraLife(false);
+            }
+        }
+
+        protectedByGuardianChesses.Clear();
+        foreach (ChessBasic chess in rookList)
+        {
+            if (!chess.TryGetComponent(out Rook rook))
+            {
+                Debug.LogError("NonRook stored in the Rook List");
+                continue;
+            }
+            rook.GuardianBuff();
+        }
+    }
+
+
+
     #endregion
-    
+
     #region Knight
 
     [Header("Knight Buff")]
@@ -126,6 +163,18 @@ public class AllTheBuff
             _ => null
         };
     }
+
+    public bool IsProtectbySubstitute(List<ChessBasic> pawnList, out ChessBasic chess)
+    {
+        chess = null;
+        if (!substitute.cantKillKingWhenPawnExist || pawnList.Count == 0) return false;
+
+        chess = pawnList[Random.Range(0, pawnList.Count)];
+        return true;
+    }
+
+
+
     #endregion
 
     public Dictionary<AllBuffCard, BuffBasic> cardBuffMap { get; private set; } = new();

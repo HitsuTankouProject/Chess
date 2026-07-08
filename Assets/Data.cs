@@ -150,10 +150,10 @@ namespace Data
         public Material m_BoardBlockKingSpawn;
         [Header("Chess Material")]
         public Material m_ChessHaveExtraLife;
-
-        [Header("Public Material")]
         public Material m_White;
         public Material m_Black;
+
+        [Header("Public Material")]
         public Material m_GotCurse;
 
     }

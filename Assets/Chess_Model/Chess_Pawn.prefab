@@ -70,6 +70,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Pawn
   color: 0
   _meshRenderer: {fileID: 1785591401092794117}
+  effect: {fileID: 4236574631730026368}
   _player: {fileID: 0}
   haveBuffed: 0
 --- !u!1 &927533149698408864
@@ -120,7 +121,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 927533149698408864}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -177,7 +178,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3875344186219451913
 Transform:
   m_ObjectHideFlags: 0

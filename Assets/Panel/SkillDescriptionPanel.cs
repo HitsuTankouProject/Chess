@@ -21,9 +21,10 @@ public class SkillDescriptionPanel : MonoBehaviour
         cardBuffLevelDescriptions[1].text = cardData.buffLevel02Description;
         cardBuffLevelDescriptions[2].text = cardData.buffLevel03Description;
 
-
         for (int i = 0; i < nowBuffMark.Length; i++)
-            nowBuffMark[i].enabled = nowLevel >= i;
+        {
+            nowBuffMark[i].enabled = nowLevel >= i + 1;
+        }
 
     }
 

@@ -22,13 +22,15 @@ public class PlayerCanvas : MonoBehaviour
     #region Button
     public void Button_Pause()
     {
+        if (GameManager.Instance.nowGameStage != GameStage.InGame) return;
         isPause = !isPause;
         pausePanel.SetActive(isPause);
     }
 
-    private void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
+    public void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
     {
         uint nowLevel = _player.cardBuffMap[targetBuff].nowBuffLevel;
+        Debug.Log(nowLevel);
         skillDescriptionPanel.ChangeDescription(targetBuff, nowLevel);
         skillDescriptionPanel.gameObject.SetActive(true);
     }
@@ -61,14 +63,18 @@ public class PlayerCanvas : MonoBehaviour
         for (int i = 0; i < cards.Length; i++)
         {
             cards[i].onClick.RemoveAllListeners();
-            cards[i].gameObject.SetActive(false);
+
             if (i < choseBuffs.Count)
             {
-                cards[i].gameObject.SetActive(true);
-                cards[i].onClick.AddListener(() => Button_OpenSkillDescriptionPanel(choseBuffs[i]));
+                AllBuffCard targetBuff = choseBuffs[i];
+
+
+                cards[i].image.sprite = GameManager.Instance.resourcesData.cardDataDict[targetBuff].sp_CardCover;
+                cards[i].onClick.AddListener(() => Button_OpenSkillDescriptionPanel(targetBuff));
             }
+            else
+                cards[i].image.sprite = GameManager.Instance.resourcesData.cradDataList.sp_CardBack;
         }
-        gameObject.SetActive(false);
     }
 
     #endregion
