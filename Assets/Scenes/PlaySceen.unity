@@ -2220,7 +2220,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.46174863, y: -0, z: -0, w: 0.8870109}
+  m_LocalRotation: {x: 0.46174863, y: 0, z: 0, w: 0.8870109}
   m_LocalPosition: {x: 0, y: 70, z: -44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4483,10 +4483,8 @@ MonoBehaviour:
   loading: {fileID: 1258815547}
   gameTitlePanel: {fileID: 1184193341}
   gameDescriptionPanel: {fileID: 653280638}
-  controllerChoosePanel: {fileID: 1383852892}
   chooseSkillPanel: {fileID: 1193127108}
   inGamePanel: {fileID: 759881839}
-  nowTurnTag: {fileID: 0}
   gameReleasePanel: {fileID: 1016197110}
   winnerTag: {fileID: 569327697}
   whiteChessResult: {fileID: 1939571205}
@@ -5754,7 +5752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &759881835
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7062,7 +7060,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: -1080}
+  m_SizeDelta: {x: 0, y: -2160}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &887645716
 MonoBehaviour:
@@ -8486,7 +8484,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.84002686, y: 0}
+  m_AnchoredPosition: {x: 0.8400879, y: 0}
   m_SizeDelta: {x: 16.33, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1016197112
@@ -11478,7 +11476,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -946.94, y: 138.41998}
+  m_AnchoredPosition: {x: -946.94006, y: 138.41998}
   m_SizeDelta: {x: 405.51, y: 178.42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1374944226

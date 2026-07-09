@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.PlayerSettings;
+using Cysharp.Threading.Tasks;
+using System.Threading;
+
 
 [Serializable]
 public class Col
@@ -131,7 +131,30 @@ public class ChessBoard : MonoBehaviour
         board.Clear();
     }
 
-    private IEnumerator GenChessAtStart(int turn)
+    //private IEnumerator GenChessAtStart(int turn)
+    //{
+    //    CleanTheBoard();
+    //    Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap($"BoardInitData_Turn_0{turn}");
+    //    foreach (var entry in chessStartMap)
+    //    {
+    //        if (entry.Value.second == ChessType.King)
+    //        {
+    //            SetKingStartPoint(entry.Value.first, entry.Key);
+    //        }
+    //        yield return GenChessProcess(entry.Key, entry.Value);
+    //    }
+
+    //    foreach(Vector2Int pos in board.Keys)
+    //    {
+    //        if (board[pos].chessInfo != chessStartMap[pos])
+    //        {
+    //            Debug.LogError($"GenChessAtStart Failed ");
+    //            yield break;
+    //        }
+    //    }
+    //}
+
+    private async UniTask GenChessAtStart(int turn)
     {
         CleanTheBoard();
         Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap($"BoardInitData_Turn_0{turn}");
@@ -141,18 +164,20 @@ public class ChessBoard : MonoBehaviour
             {
                 SetKingStartPoint(entry.Value.first, entry.Key);
             }
-            yield return GenChessProcess(entry.Key, entry.Value);
+            await GenChessProcess(entry.Key, entry.Value);
         }
 
-        foreach(Vector2Int pos in board.Keys)
+        foreach (Vector2Int pos in board.Keys)
         {
             if (board[pos].chessInfo != chessStartMap[pos])
             {
                 Debug.LogError($"GenChessAtStart Failed ");
-                yield break;
+                return;
             }
         }
     }
+
+
     private void FindRandomKingChessSpawn()
     {
         List<ChessBlock> blackChessBlocks = new List<ChessBlock>();
@@ -233,13 +258,14 @@ public class ChessBoard : MonoBehaviour
 
         return target;
     }
-    private IEnumerator GenChessProcess(Vector2Int position, Pair<ChessColor, ChessType> pair, Player player = null)
+
+    private async UniTask GenChessProcess(Vector2Int position, Pair<ChessColor, ChessType> pair, Player player = null)
     {
         Vector3 boardPosition = ReturnChessBlockPosition(position);
         GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].chessEffect, boardPosition);
         ChessEffect chessEffect = chess.gameObject.GetComponent<ChessEffect>();
         chessEffect.PlayEffect(EffectType.Swapn, _resourcesData.allMaterial.m_ChessHaveExtraLife);
-        while (!chessEffect.isEffectFinish) yield return null;
+        while (!chessEffect.isEffectFinish) await UniTask.Yield();
 
         ChessBasic chessBasic = GenChess(position, pair);
 
@@ -248,8 +274,7 @@ public class ChessBoard : MonoBehaviour
 
     public void StartGenChessProcess(Vector2Int position, Pair<ChessColor, ChessType> pair, Player player = null)
     {
-        StartCoroutine(GenChessProcess(position, pair, player));
-
+        GenChessProcess(position, pair, player).Forget();
     }
 
     public void DeadEffect(ChessBasic targetChess)
@@ -378,13 +403,11 @@ public class ChessBoard : MonoBehaviour
         ChessBlockInit();
     }
 
-    public IEnumerator ChessBoard_TurnInit(int turn)
+    public async UniTask ChessBoard_TurnInit(int turn)
     {
-        yield return GenChessAtStart(turn);
+        await GenChessAtStart(turn);
         FindRandomKingChessSpawn();
     }
-
-
 
 
 }

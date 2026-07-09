@@ -1,7 +1,9 @@
-using UnityEngine;
-using System.Collections.Generic;
 using System.Collections;
-using Unity.VisualScripting;
+using System.Collections.Generic;
+using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Threading;
+
 
 public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,ReadytoEnd,End }
 
@@ -141,13 +143,15 @@ public class Player : MonoBehaviour
         EatAllTheCurseChess();
     }
 
-    public Coroutine turnStart;
-    
+    //public Coroutine turnStart;
+    public CancellationTokenSource turnStart;
+
+
     private bool turnCanEnd = false;
-    private IEnumerator TurnStart()
+
+    private async UniTask TurnStart(CancellationToken token)
     {
-        
-        yield return null;
+        await UniTask.Yield();
         nowPlayerStage = PlayerStage.Ready;
         turnCanEnd = false;
         playerInPut.StartGame();
@@ -159,26 +163,38 @@ public class Player : MonoBehaviour
             {
                 case PlayerStage.ReadytoEnd:
                     Debug.Log("ReadytoEnd");
-                    turnCanEnd = true; 
+                    turnCanEnd = true;
                     break;
-                default:break;
+                default: break;
             }
 
-            yield return null;
+            await UniTask.Yield();
 
         }
 
         Player_ChessDictUpdate();
         nowPlayerStage = PlayerStage.End;
-
         _gameManager.EndTurn();
+
+    }
+
+    public void Player_TurnStop()
+    {
+        turnStart?.Cancel();
+        turnStart?.Dispose();
+        turnStart = null;
     }
 
     public void Player_TurnStart()
     {
         nowPlayerStage = PlayerStage.TurnInit;
         _inPutManager.PlayerInputStage(usingChess, InputStage.Waiting);
-        turnStart = StartCoroutine(TurnStart());
+
+        turnStart = new CancellationTokenSource();
+        TurnStart(turnStart.Token).Forget();
+
+
+        //turnStart = StartCoroutine(TurnStart());
         playerInPut.StartInput();
     }
 

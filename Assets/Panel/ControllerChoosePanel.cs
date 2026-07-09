@@ -64,13 +64,11 @@ public class ControllerChoosePanel : MonoBehaviour
 
     public void AllReady()
     {
-        if (player01Choose.isReady && player02Choose.isReady)
-        {
-            _gameManager.EndControllerChoose(player01Choose.choseGamepad, player02Choose.choseGamepad);
-        }
+        //if (player01Choose.isReady && player02Choose.isReady)
+        //{
+        //    _gameManager.EndControllerChoose(player01Choose.choseGamepad, player02Choose.choseGamepad);
+        //}
             
-
-
     }
 
     public bool CanChose(ControllerChoose self, GamepadType gamepadType)

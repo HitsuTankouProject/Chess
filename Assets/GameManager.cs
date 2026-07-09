@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
+using Cysharp.Threading.Tasks;
 
 public enum GameStage
 { 
@@ -126,31 +126,58 @@ public class GameManager : MonoBehaviour
     private PlayerCameraView pickView_Black = new (new Vector3(0, 90, 0), new Vector3(90, 180, 0));
 
     public GameStage nowGameStage;
-    private IEnumerator SwitchStage(GameStage targetStage)
+
+    //private IEnumerator SwitchStage(GameStage targetStage)
+    //{
+    //    nowGameStage = targetStage;
+    //    loading.SetActive(true);
+    //    switch (nowGameStage)
+    //    {
+    //        case GameStage.Loading:             StartCoroutine(Loading());              break;
+    //        case GameStage.GameTitle:           StartCoroutine(GameTitle());            break;
+    //        case GameStage.GameDescription:     StartCoroutine(GameDescription());      break;
+    //        case GameStage.ControllerChoose:    StartCoroutine(ControllerChoose());     break;
+    //        case GameStage.GameStart:           StartCoroutine(GameStart());            break;
+    //        case GameStage.TurnStart:           StartCoroutine(TurnStart());            break;
+    //        case GameStage.SkillChoose:         StartCoroutine(SkillChoose());          break;
+    //        case GameStage.InGame:              StartCoroutine(InGame());               break;
+    //        case GameStage.TurnEnd:             StartCoroutine(TurnEnd());              break;
+    //        case GameStage.GameEnd:             StartCoroutine(GameEnd());              break;
+    //        case GameStage.Release:             StartCoroutine(Release());              break;
+
+    //        default:
+    //            Debug.LogError("GameManager.SwitchStage: Invalid game stage.");
+    //            yield break;
+    //    }
+    //    loading.SetActive(false);
+
+    //}
+
+    private async UniTask SwitchStage(GameStage targetStage)
     {
         nowGameStage = targetStage;
         loading.SetActive(true);
         switch (nowGameStage)
         {
-            case GameStage.Loading:             StartCoroutine(Loading());              break;
-            case GameStage.GameTitle:           StartCoroutine(GameTitle());            break;
-            case GameStage.GameDescription:     StartCoroutine(GameDescription());      break;
-            case GameStage.ControllerChoose:    StartCoroutine(ControllerChoose());     break;
-            case GameStage.GameStart:           StartCoroutine(GameStart());            break;
-            case GameStage.TurnStart:           StartCoroutine(TurnStart());            break;
-            case GameStage.SkillChoose:         StartCoroutine(SkillChoose());          break;
-            case GameStage.InGame:              StartCoroutine(InGame());               break;
-            case GameStage.TurnEnd:             StartCoroutine(TurnEnd());              break;
-            case GameStage.GameEnd:             StartCoroutine(GameEnd());              break;
-            case GameStage.Release:             StartCoroutine(Release());              break;
+            case GameStage.Loading:             Loading().Forget();         break;
+            case GameStage.GameTitle:           GameTitle().Forget();       break;
+            case GameStage.GameDescription:     GameDescription().Forget(); break;
+            //case GameStage.ControllerChoose:        ; break;
+            case GameStage.GameStart:           GameStart().Forget();       break;
+            case GameStage.TurnStart:           TurnStart().Forget();       break;
+            case GameStage.SkillChoose:         SkillChoose().Forget();     break;
+            case GameStage.InGame:              InGame().Forget();          break;
+            case GameStage.TurnEnd:             TurnEnd().Forget();         break;
+            case GameStage.GameEnd:             GameEnd().Forget(); break;
+            case GameStage.Release:              break;
 
             default:
                 Debug.LogError("GameManager.SwitchStage: Invalid game stage.");
-                yield break;
+                return;
         }
         loading.SetActive(false);
-
     }
+
 
     #region MainCameraView
     private MainCameraView TargetMainCameraView(GameStage gameStage)
@@ -182,15 +209,14 @@ public class GameManager : MonoBehaviour
         mainCamera.transform.rotation = Quaternion.Euler(targetView.angle);
         mainCamera.fieldOfView = targetView.fieldOfView;
     }
-
-    private IEnumerator MainCameraTurn(GameStage gameStage)
+    private async UniTask MainCameraTurn(GameStage gameStage)
     {
         MainCameraView targetView = TargetMainCameraView(gameStage);
 
         if (Vector3.Distance(mainCamera.transform.position, targetView.position) < 0.01f)
         {
             SetMainCameraView(targetView);
-            yield break;
+            return;
         }
 
         MainCameraView nowView =
@@ -210,28 +236,26 @@ public class GameManager : MonoBehaviour
 
             mainCamera.transform.rotation =
                 Quaternion.Slerp(
-                    Quaternion.Euler(nowView.angle),Quaternion.Euler(targetView.angle),t);
+                    Quaternion.Euler(nowView.angle), Quaternion.Euler(targetView.angle), t);
 
             mainCamera.fieldOfView = Mathf.Lerp(nowView.fieldOfView, targetView.fieldOfView, t);
 
-            yield return null;
+            await UniTask.Yield();
         }
         SetMainCameraView(targetView);
     }
 
+
     #endregion
 
     #region PlayerCameraView 
-    
+
     private const float playerCameraOpenTime = 0.5f;
 
     private const float openRectX = 0.5f;
     private const float closeRectX = 0.001f;
-    private IEnumerator TargetPlayerCameraOpen(Camera playerCamera, bool isOpen)
+    private async UniTask TargetPlayerCameraOpen(Camera playerCamera, bool isOpen)
     {
-        //playerCamera.gameObject.SetActive(false);
-        //playerCamera.gameObject.SetActive(true);
-
         bool isWhite = playerCamera == player01Camera;
 
         Rect start = playerCamera.rect;
@@ -239,12 +263,10 @@ public class GameManager : MonoBehaviour
 
         if (isWhite)
         {
-            // WhiteF‘ü‰ü Width
             target.width = isOpen ? openRectX : closeRectX;
         }
         else
         {
-            // BlackF‘ü‰ü X
             target.x = isOpen ? openRectX : 1f;
         }
 
@@ -268,16 +290,15 @@ public class GameManager : MonoBehaviour
 
             playerCamera.rect = rect;
 
-            yield return null;
+            await UniTask.Yield();
         }
 
         playerCamera.rect = target;
     }
-
-    private IEnumerator PlayerCameraOpen(bool isOpen)
+    private async UniTask PlayerCameraOpen(bool isOpen)
     {
-        yield return StartCoroutine(TargetPlayerCameraOpen(player01Camera, isOpen));
-        yield return StartCoroutine(TargetPlayerCameraOpen(player02Camera, isOpen));
+        await TargetPlayerCameraOpen(player01Camera, isOpen);
+        await TargetPlayerCameraOpen(player02Camera, isOpen);
     }
 
     private Camera TargetCamera(ChessColor chessColor)
@@ -300,12 +321,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private IEnumerator PlayerCameraTurn(Camera playerCamera, Pair<ChessColor, PlayerCameraStage> playerCameraStagePair)
+    private async UniTask PlayerCameraTurn(Camera playerCamera, Pair<ChessColor, PlayerCameraStage> playerCameraStagePair)
     {
         if (playerCamera != player01Camera && playerCamera != player02Camera)
         {
             Debug.LogError("PlayerCameraTurn: Invalid player camera.");
-            yield break;
+            return;
         }
 
         PlayerCameraView targetView = TargetPlayerCameraView(playerCameraStagePair.first, playerCameraStagePair.second);
@@ -313,10 +334,10 @@ public class GameManager : MonoBehaviour
         {
             playerCamera.transform.position = targetView.position;
             playerCamera.transform.rotation = Quaternion.Euler(targetView.angle);
-            yield break;
+            return;
         }
         PlayerCameraView nowView =
-            new PlayerCameraView( playerCamera.transform.position, playerCamera.transform.rotation.eulerAngles);
+            new PlayerCameraView(playerCamera.transform.position, playerCamera.transform.rotation.eulerAngles);
 
         float timer = 0;
         while (timer < cameraTurnTime)
@@ -327,17 +348,19 @@ public class GameManager : MonoBehaviour
             playerCamera.transform.position =
                 Vector3.Lerp(nowView.position, targetView.position, t);
             playerCamera.transform.rotation =
-                Quaternion.Slerp( Quaternion.Euler(nowView.angle), Quaternion.Euler(targetView.angle), t);
-            yield return null;
+                Quaternion.Slerp(Quaternion.Euler(nowView.angle), Quaternion.Euler(targetView.angle), t);
+            await UniTask.Yield();
         }
         playerCamera.transform.position = targetView.position;
         playerCamera.transform.rotation = Quaternion.Euler(targetView.angle);
     }
 
+
     public void PlayerCameraTurn(Pair<ChessColor, PlayerCameraStage> playerCameraStagePair)
     {
         Camera camera = TargetCamera(playerCameraStagePair.first);
-        StartCoroutine(PlayerCameraTurn(camera, playerCameraStagePair));
+        PlayerCameraTurn(camera, playerCameraStagePair).Forget();
+        //StartCoroutine(PlayerCameraTurn(camera, playerCameraStagePair));
     }
 
 
@@ -356,22 +379,23 @@ public class GameManager : MonoBehaviour
     public void Button_BackToGameTitle()
     {
         AllPanelClose();
-        StartCoroutine(SwitchStage(GameStage.GameTitle));
+        SwitchStage(GameStage.GameTitle).Forget();
     }
     public void Button_BackToGameDescription()
     {
         AllPanelClose();
-        StartCoroutine(SwitchStage(GameStage.GameDescription));
+        SwitchStage(GameStage.GameDescription).Forget();
+
     }
     public void Button_BackToGameStart()
     {
         AllPanelClose();
-        StartCoroutine(SwitchStage(GameStage.GameStart));
+        SwitchStage(GameStage.GameStart).Forget();
     }
     public void Button_BackToRelease()
     {
         AllPanelClose();
-        StartCoroutine(SwitchStage(GameStage.Release));
+        SwitchStage(GameStage.Release).Forget();
     }
 
     public void Button_Exit() => Application.Quit();
@@ -382,10 +406,9 @@ public class GameManager : MonoBehaviour
     [Header("Loading")]
     public GameObject loading;
 
-    private IEnumerator Loading()
+    private async UniTask Loading()
     {
-
-        yield return null;
+        await UniTask.Yield();
         resourcesData.ResourcesInit();
         inPutManager.Init();
 
@@ -393,9 +416,9 @@ public class GameManager : MonoBehaviour
         TargetPlayer(ChessColor.White).Player_Init(ChessColor.White);
         TargetPlayer(ChessColor.Black).Player_Init(ChessColor.Black);
 
-
-        StartCoroutine(SwitchStage(GameStage.GameTitle));
+        SwitchStage(GameStage.GameTitle).Forget();
     }
+
 
     #endregion
 
@@ -403,10 +426,10 @@ public class GameManager : MonoBehaviour
     [Header("GameTitle")]
     public GameObject gameTitlePanel;
 
-    private IEnumerator GameTitle()
+    private async UniTask GameTitle()
     {
-        yield return null;
-        yield return StartCoroutine(MainCameraTurn(GameStage.GameTitle));
+        await UniTask.Yield();
+        await MainCameraTurn(GameStage.GameTitle);
         gameTitlePanel.SetActive(true);
     }
 
@@ -416,10 +439,11 @@ public class GameManager : MonoBehaviour
     [Header("GameDescription")]
     public GameObject gameDescriptionPanel;
 
-    private IEnumerator GameDescription()
-    {
-        yield return StartCoroutine(MainCameraTurn(GameStage.GameDescription));
 
+    private async UniTask GameDescription()
+    {
+        await UniTask.Yield();
+        await MainCameraTurn(GameStage.GameDescription);
         gameDescriptionPanel.SetActive(true);
     }
 
@@ -436,64 +460,68 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-    #region ControllerChoose
+    //#region ControllerChoose
 
-    [Header("ControllerChoose")]
-    public ControllerChoosePanel controllerChoosePanel;
+    //[Header("ControllerChoose")]
+    //public ControllerChoosePanel controllerChoosePanel;
 
-    private IEnumerator ControllerChoose()
-    {
-        yield return StartCoroutine(MainCameraTurn(GameStage.ControllerChoose));
+    //private IEnumerator ControllerChoose()
+    //{
+    //    yield return StartCoroutine(MainCameraTurn(GameStage.ControllerChoose));
 
-        controllerChoosePanel.gameObject.SetActive(true);
-        controllerChoosePanel.Init();
-    }
+    //    controllerChoosePanel.gameObject.SetActive(true);
+    //    controllerChoosePanel.Init();
+    //}
 
-    public void EndControllerChoose(GamepadType player01pick, GamepadType player02pick)
-    {
-        //TargetPlayer(ChessColor.White).playerInPut.SetUseGamepadType(player01pick);
-        //TargetPlayer(ChessColor.Black).playerInPut.SetUseGamepadType(player01pick);
-        //controllerChoosePanel.gameObject.SetActive(false);
-        //StartCoroutine(SwitchStage(GameStage.GameStart));
-    }
+    //public void EndControllerChoose(GamepadType player01pick, GamepadType player02pick)
+    //{
+    //    //TargetPlayer(ChessColor.White).playerInPut.SetUseGamepadType(player01pick);
+    //    //TargetPlayer(ChessColor.Black).playerInPut.SetUseGamepadType(player01pick);
+    //    //controllerChoosePanel.gameObject.SetActive(false);
+    //    //StartCoroutine(SwitchStage(GameStage.GameStart));
+    //}
 
 
-    #endregion
+    //#endregion
 
     #region GameStart
 
-    private IEnumerator GameStart()
+    private async UniTask GameStart()
     {
-        yield return StartCoroutine(MainCameraTurn(GameStage.TurnStart));
-
-        yield return PlayerCameraOpen(true);
+        await MainCameraTurn(GameStage.TurnStart);
+        await PlayerCameraOpen(true);
         nowTurnCount = 1;
         turnResult.Clear();
-        StartCoroutine(SwitchStage(GameStage.TurnStart));
+        await SwitchStage(GameStage.TurnStart);
     }
 
     #endregion
 
     #region TurnStart
-    private IEnumerator TurnInit()
+
+    private async UniTask TurnInit()
     {
         player01.haveKing = true;
         player02.haveKing = true;
 
-        yield return chessBoard.ChessBoard_TurnInit(nowTurnCount);
+        await chessBoard.ChessBoard_TurnInit(nowTurnCount);
     }
+
 
     private const int maxBuffCount = 3;
     private bool IsMaxBuffCount()
         => player01.choseBuffs.Count >= maxBuffCount && player02.choseBuffs.Count >= maxBuffCount;
-    private IEnumerator TurnStart()
+    private async UniTask TurnStart()
     {
+        await TurnInit();
 
-        yield return TurnInit();
+        if (!IsMaxBuffCount()) SwitchStage(GameStage.SkillChoose).Forget();
+        else SwitchStage(GameStage.InGame).Forget();
 
-        if(!IsMaxBuffCount()) StartCoroutine(SwitchStage(GameStage.SkillChoose));
-        else StartCoroutine(SwitchStage(GameStage.InGame));
     }
+
+
+
 
     #endregion
 
@@ -501,25 +529,23 @@ public class GameManager : MonoBehaviour
     [Header("SkillChoose")]
     public ChooseSkillPanel chooseSkillPanel;
     public bool isPicking => chooseSkillPanel.isPicking;
-    private IEnumerator SkillChoose()
+
+    private async UniTask SkillChoose()
     {
-        yield return PlayerCameraOpen(false);
-
-        yield return StartCoroutine(MainCameraTurn(GameStage.SkillChoose));
-
+        await PlayerCameraOpen(false);
+        await MainCameraTurn(GameStage.SkillChoose);
         chooseSkillPanel.gameObject.SetActive(true);
         chooseSkillPanel.Init();
-
     }
 
-    private IEnumerator ReadyForInGame()
+
+    private async UniTask ReadyForInGame()
     {
-        yield return StartCoroutine(MainCameraTurn(GameStage.TurnStart));
-        yield return PlayerCameraOpen(true);
+        await MainCameraTurn(GameStage.TurnStart);
+        await PlayerCameraOpen(true);
 
-        StartCoroutine(SwitchStage(GameStage.InGame));
+        await SwitchStage(GameStage.InGame);
     }
-
 
 
     public void EndSkillChoose(AllBuffCard player01Pick, AllBuffCard player02Pick)
@@ -530,7 +556,7 @@ public class GameManager : MonoBehaviour
         Debug.Log(player01Pick.ToString());
         Debug.Log(player02Pick.ToString());
 
-        StartCoroutine(ReadyForInGame());
+        ReadyForInGame().Forget();
 
     }
 
@@ -542,37 +568,41 @@ public class GameManager : MonoBehaviour
     public IngamePanel inGamePanel;
 
     public ChessColor nowTurn { get; private set; } = ChessColor.White;
-    public Image nowTurnTag;
     private const int maxTurnCount = 3;
     private int nowTurnCount = 1;
 
-    private IEnumerator TurnChange()
+    private async UniTask TurnChange()
     {
         nowGameStage = GameStage.TurnChange;
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
-        yield return StartCoroutine(inGamePanel.TurnChange(nowTurn));
-        nowTurnTag.sprite = resourcesData.PlayerSprite(nowTurn);
+
+        await inGamePanel.TurnChange(nowTurn);
         TargetPlayer(nowTurn).Player_TurnStart();
         nowGameStage = GameStage.InGame;
     }
+    //private IEnumerator TurnChange()
+    //{
+    //    nowGameStage = GameStage.TurnChange;
+    //    nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
+    //    yield return StartCoroutine(inGamePanel.TurnChange(nowTurn));
+    //    nowTurnTag.sprite = resourcesData.PlayerSprite(nowTurn);
+    //    TargetPlayer(nowTurn).Player_TurnStart();
+    //    nowGameStage = GameStage.InGame;
+    //}
 
     private void StopPlayerTurn(ChessColor chessColor)
     {
         TargetPlayer(chessColor).nowPlayerStage = PlayerStage.NoMyTurn;
-        if (TargetPlayer(chessColor).turnStart != null)
-        {
-            StopCoroutine(TargetPlayer(chessColor).turnStart);
-            TargetPlayer(chessColor).turnStart = null;
-        }
+        TargetPlayer(chessColor).Player_TurnStop();
     }
     public void EndTurn()
     {
-        StartCoroutine(EndTurnProcess());
+        EndTurnProcess().Forget();
     }
 
-    private IEnumerator EndTurnProcess()
+    private async UniTask EndTurnProcess()
     {
-        yield return null;
+        await UniTask.Yield();
 
         chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
 
@@ -580,19 +610,15 @@ public class GameManager : MonoBehaviour
         StopPlayerTurn(ChessColor.Black);
 
         if (!player01.haveKing || !player02.haveKing)
-        {
             EndInGame(nowTurn);
-        }
-        else StartCoroutine(TurnChange());
-
+        else 
+            TurnChange().Forget();
 
     }
 
-
-
-    private IEnumerator InGame()
+    private async UniTask InGame()
     {
-        yield return null;
+        await UniTask.Yield();
 
         Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
         Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
@@ -611,10 +637,12 @@ public class GameManager : MonoBehaviour
         inGamePanel.gameObject.SetActive(true);
     }
 
+
     public void EndInGame(ChessColor chessColor)
     {
         turnResult[nowTurnCount] = chessColor;
-        StartCoroutine(SwitchStage(GameStage.TurnEnd));
+        SwitchStage(GameStage.TurnEnd).Forget();
+        //StartCoroutine(SwitchStage(GameStage.TurnEnd));
     }
 
     #endregion
@@ -649,16 +677,16 @@ public class GameManager : MonoBehaviour
         winner = whiteWinCount > blackWinCount ? ChessColor.White : ChessColor.Black;
     }
 
-    private IEnumerator TurnEnd()
+    private async UniTask TurnEnd()
     {
-        yield return null;
+        await UniTask.Yield();
         AllPanelClose();
-        if (IsGameEnd()) 
+        if (IsGameEnd())
         {
             Debug.Log("Real GameSet");
             DetermineWinner();
-            StartCoroutine(SwitchStage(GameStage.GameEnd));
-            yield break;
+            SwitchStage(GameStage.GameEnd).Forget();
+            return;
 
         }
 
@@ -667,29 +695,31 @@ public class GameManager : MonoBehaviour
         player01.AllBuffLevelUp();
         player02.AllBuffLevelUp();
 
-        StartCoroutine(SwitchStage(GameStage.TurnStart));
+        SwitchStage(GameStage.TurnStart).Forget();
 
     }
+
+
     public void Surrender(ChessColor surrender)
     {
         Debug.Log("Real GameSet");
         winner = surrender == ChessColor.White ? ChessColor.Black : ChessColor.White;
-        StartCoroutine(SwitchStage(GameStage.GameEnd));
+        SwitchStage(GameStage.GameEnd).Forget();
     }
 
 
     #endregion
 
     #region GameEnd
-
-    private IEnumerator GameEnd()
+    private async UniTask GameEnd()
     {
-        yield return null;
-        yield return PlayerCameraOpen(false);
-        yield return StartCoroutine(MainCameraTurn(GameStage.Release));
+        await UniTask.Yield();
+        await PlayerCameraOpen(false);
+        await MainCameraTurn(GameStage.Release);
         chessBoard.CleanTheBoard();
-        StartCoroutine(SwitchStage(GameStage.Release));
+        SwitchStage(GameStage.Release).Forget();
     }
+
 
     #endregion
 
@@ -748,8 +778,8 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        StartCoroutine(SwitchStage(GameStage.Loading));
-
+        //StartCoroutine(SwitchStage(GameStage.Loading));
+        SwitchStage(GameStage.Loading).Forget();
 
     }
 
