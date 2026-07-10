@@ -250,14 +250,17 @@ public class King : ChessBasic
 
     public override void GotEaten()
     {
-        if (_player.IsProtectbySubstitute(out ChessBasic pawn)) 
+        if (_player.IsProtectbySubstitute(out ChessBasic pawn)&& pawn != null) 
         {
             SwapPosition(pawn);
             pawn.GotEaten();
-            return;
         }
-        Respawn();
-        base.GotEaten();
+        else
+        {
+            Respawn();
+            base.GotEaten();
+        }
+
     }
 
 

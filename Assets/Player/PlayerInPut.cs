@@ -46,7 +46,7 @@ public class PlayerInPut : MonoBehaviour
         else nowUsingDevice = CanUseDevice.Mouse;
     }
     public Gamepad nowUsingGamepad;
-    public Mouse nowUsingMouse => Mouse.current;  
+    public Mouse nowUsingMouse => Mouse.current;
 
     public void ChangeToGamepad()
     {
@@ -56,8 +56,8 @@ public class PlayerInPut : MonoBehaviour
             return;
         }
         nowUsingDevice = CanUseDevice.Gamepad;
-        if(inputStage == InputStage.OneMoreMove)StartCoroutine(OneMoreMove(pickIngChess));
-        else ChangeInput(CanUseDevice.Gamepad);
+        //if (inputStage == InputStage.OneMoreMove) StartCoroutine(OneMoreMove(pickIngChess));
+        //else ChangeInput(CanUseDevice.Gamepad);
 
     }
     public void ChangeToMouse()
@@ -65,7 +65,7 @@ public class PlayerInPut : MonoBehaviour
         nowUsingDevice = CanUseDevice.Mouse;
         nowUsingGamepad = null;
 
-        if (inputStage == InputStage.OneMoreMove) StartCoroutine(OneMoreMove(pickIngChess));
+        if (inputStage == InputStage.OneMoreMove) OneMoreMove(pickIngChess).Forget();
         else ChangeInput(CanUseDevice.Mouse);
     }
 
@@ -92,6 +92,7 @@ public class PlayerInPut : MonoBehaviour
         bool haveChess = _chessBoard.board.TryGetValue(boardPos, out ChessBasic chess);
         if (!haveChess) return;
         if (chess.color != _gameManager.nowTurn) return;
+        Debug.Log(chess.name);
         _player.TurnCamera(PlayerCameraStage.Pick);
 
         pickIngChess = chess;
@@ -128,10 +129,10 @@ public class PlayerInPut : MonoBehaviour
         inputStage = InputStage.OneMoreMove;
         _player.nowPlayerStage = PlayerStage.MovingChess;
 
-        StartCoroutine(OneMoreMove(oneMoreMoveChess));
+        OneMoreMove(oneMoreMoveChess).Forget();
     }
 
-    private IEnumerator OneMoreMove(ChessBasic oneMoreMoveChess)
+    private async UniTask OneMoreMove(ChessBasic oneMoreMoveChess)
     {
         _player.TurnCamera(PlayerCameraStage.Pick);
 
@@ -145,8 +146,8 @@ public class PlayerInPut : MonoBehaviour
 
         Debug.Log(pickIngChess.name);
 
-        if (nowUsingDevice == CanUseDevice.Mouse) yield return Mouse_OneMoreMove();
-        else if (nowUsingDevice == CanUseDevice.Gamepad) yield return GamePad_OneMoreMove();
+        if (nowUsingDevice == CanUseDevice.Mouse) await Mouse_OneMoreMove();
+        //else if (nowUsingDevice == CanUseDevice.Gamepad) yield return GamePad_OneMoreMove();
 
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
     }
@@ -201,9 +202,17 @@ public class PlayerInPut : MonoBehaviour
         int hitLayer = hitObject.layer;
         Debug.Log(hitObject.name);
 
-        if (inputStage == InputStage.Waiting) Press_Chess(ChessBoardPosition(hitObject));
-        else if (inputStage == InputStage.Picking) Press_ChessBoard(ChessBoardPosition(hitObject));
-
+  
+        if (inputStage == InputStage.Picking)
+        {
+            Press_ChessBoard(ChessBoardPosition(hitObject));
+            return;
+        }
+        else if (inputStage == InputStage.Waiting)
+        {
+            Press_Chess(ChessBoardPosition(hitObject));
+            return;
+        }
     }
 
     private void Press_Chess(Vector2Int boardPos)
@@ -226,33 +235,23 @@ public class PlayerInPut : MonoBehaviour
 
     }
 
-    private async UniTask test_MouseInPut(CancellationToken token)
+    private async UniTask MouseInPut(CancellationToken token)
     {
         while (true)
         {
             await UniTask.Yield();
-            if (inputStage == InputStage.None || _gameManager.nowGameStage != GameStage.InGame) continue;
+            if (inputStage == InputStage.None || _gameManager.nowGameStage != GameStage.InGame) return;
             PressAction();
         }
 
     }
 
-    private IEnumerator MouseInPut()
+
+    private async UniTask Mouse_OneMoreMove()
     {
         while (true)
         {
-            yield return null;
-            if (inputStage! == InputStage.None || _gameManager.nowGameStage != GameStage.InGame) continue;
-            PressAction();
-        }
-
-    }
-
-    private IEnumerator Mouse_OneMoreMove()
-    {
-        while (true)
-        {
-            yield return null;
+            await UniTask.Yield();
             bool isPressed = IsPressed(out GameObject hitObject);
             if (!isPressed) continue;
             Vector2Int moveTo = ChessBoardPosition(hitObject);
@@ -274,13 +273,10 @@ public class PlayerInPut : MonoBehaviour
 
     private void StartMouseInput()
     {
-        //if (test_inputUpdate != null) test_RejectInput();
-        //test_inputUpdate = new CancellationTokenSource();
-        //test_MouseInPut(test_inputUpdate.Token).Forget();
-
-
         if (inputUpdate != null) RejectInput();
-        inputUpdate = StartCoroutine(MouseInPut());
+        inputUpdate = new CancellationTokenSource();
+        MouseInPut(inputUpdate.Token).Forget();
+
     }
 
 
@@ -504,33 +500,19 @@ public class PlayerInPut : MonoBehaviour
 
     private void StartGamepadInput()
     {
-        if (inputUpdate != null) RejectInput();
-        inputUpdate = StartCoroutine(GamePadInPut());
+        //if (inputUpdate != null) RejectInput();
+        //inputUpdate = StartCoroutine(GamePadInPut());
     }
 
     #endregion
 
-    private CancellationTokenSource test_inputUpdate;
-    private Coroutine inputUpdate;
-    private void test_RejectInput()
-    {
-        test_inputUpdate.Cancel();
-        test_inputUpdate.Dispose();
-        test_inputUpdate = null;
-
-        if (pickIngChess != null)
-        {
-            pickIngChess.ReturnPick();
-            pickIngChess = null;
-        }
-        _chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
-        _chessBoard.ReSetActive();
-    }
-
+    private CancellationTokenSource inputUpdate;
     private void RejectInput()
     {
-        StopAllCoroutines();
+        inputUpdate.Cancel();
+        inputUpdate.Dispose();
         inputUpdate = null;
+
         if (pickIngChess != null)
         {
             pickIngChess.ReturnPick();
@@ -539,6 +521,7 @@ public class PlayerInPut : MonoBehaviour
         _chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
         _chessBoard.ReSetActive();
     }
+
 
     public void StartInput()
     {
@@ -549,20 +532,6 @@ public class PlayerInPut : MonoBehaviour
         }
     }
 
-    //public void InputWatcher()
-    //{
-    //    if (nowUsingGamepad == null) return;
 
-    //    if (nowUsingDevice == CanUseDevice.Mouse && nowUsingGamepad != null)
-    //        StartGamepadInput();
-    //    else if (nowUsingDevice == CanUseDevice.Gamepad && nowUsingGamepad == null)
-    //        StartMouseInput();
-
-    //}
-
-    //private void Update()
-    //{
-    //    InputWatcher();
-    //}
 
 }

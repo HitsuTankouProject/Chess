@@ -127,32 +127,6 @@ public class GameManager : MonoBehaviour
 
     public GameStage nowGameStage;
 
-    //private IEnumerator SwitchStage(GameStage targetStage)
-    //{
-    //    nowGameStage = targetStage;
-    //    loading.SetActive(true);
-    //    switch (nowGameStage)
-    //    {
-    //        case GameStage.Loading:             StartCoroutine(Loading());              break;
-    //        case GameStage.GameTitle:           StartCoroutine(GameTitle());            break;
-    //        case GameStage.GameDescription:     StartCoroutine(GameDescription());      break;
-    //        case GameStage.ControllerChoose:    StartCoroutine(ControllerChoose());     break;
-    //        case GameStage.GameStart:           StartCoroutine(GameStart());            break;
-    //        case GameStage.TurnStart:           StartCoroutine(TurnStart());            break;
-    //        case GameStage.SkillChoose:         StartCoroutine(SkillChoose());          break;
-    //        case GameStage.InGame:              StartCoroutine(InGame());               break;
-    //        case GameStage.TurnEnd:             StartCoroutine(TurnEnd());              break;
-    //        case GameStage.GameEnd:             StartCoroutine(GameEnd());              break;
-    //        case GameStage.Release:             StartCoroutine(Release());              break;
-
-    //        default:
-    //            Debug.LogError("GameManager.SwitchStage: Invalid game stage.");
-    //            yield break;
-    //    }
-    //    loading.SetActive(false);
-
-    //}
-
     private async UniTask SwitchStage(GameStage targetStage)
     {
         nowGameStage = targetStage;
@@ -168,8 +142,8 @@ public class GameManager : MonoBehaviour
             case GameStage.SkillChoose:         SkillChoose().Forget();     break;
             case GameStage.InGame:              InGame().Forget();          break;
             case GameStage.TurnEnd:             TurnEnd().Forget();         break;
-            case GameStage.GameEnd:             GameEnd().Forget(); break;
-            case GameStage.Release:              break;
+            case GameStage.GameEnd:             GameEnd().Forget();         break;
+            case GameStage.Release:             Release().Forget();         break;
 
             default:
                 Debug.LogError("GameManager.SwitchStage: Invalid game stage.");
@@ -372,7 +346,7 @@ public class GameManager : MonoBehaviour
     private void AllPanelClose()
     {
         gameTitlePanel.SetActive(false);
-        gameDescriptionPanel.SetActive(false);
+        gameDescriptionPanel.gameObject.SetActive(false);
         gameReleasePanel.SetActive(false);
         inGamePanel.gameObject.SetActive(false);
     }
@@ -437,23 +411,15 @@ public class GameManager : MonoBehaviour
 
     #region GameDescription
     [Header("GameDescription")]
-    public GameObject gameDescriptionPanel;
+    public DescriptionPanel gameDescriptionPanel;
 
 
     private async UniTask GameDescription()
     {
         await UniTask.Yield();
         await MainCameraTurn(GameStage.GameDescription);
-        gameDescriptionPanel.SetActive(true);
-    }
-
-    public void Button_GameDescription_NextPage()
-    {
-
-    }
-
-    public void Button_GameDescription_ReturnPage()
-    {
+        gameDescriptionPanel.gameObject.SetActive(true);
+        gameDescriptionPanel.Init();
 
     }
 
@@ -515,8 +481,10 @@ public class GameManager : MonoBehaviour
     {
         await TurnInit();
 
-        if (!IsMaxBuffCount()) SwitchStage(GameStage.SkillChoose).Forget();
-        else SwitchStage(GameStage.InGame).Forget();
+        if (!IsMaxBuffCount()) 
+            SwitchStage(GameStage.SkillChoose).Forget();
+        else 
+        SwitchStage(GameStage.InGame).Forget();
 
     }
 
@@ -580,15 +548,6 @@ public class GameManager : MonoBehaviour
         TargetPlayer(nowTurn).Player_TurnStart();
         nowGameStage = GameStage.InGame;
     }
-    //private IEnumerator TurnChange()
-    //{
-    //    nowGameStage = GameStage.TurnChange;
-    //    nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
-    //    yield return StartCoroutine(inGamePanel.TurnChange(nowTurn));
-    //    nowTurnTag.sprite = resourcesData.PlayerSprite(nowTurn);
-    //    TargetPlayer(nowTurn).Player_TurnStart();
-    //    nowGameStage = GameStage.InGame;
-    //}
 
     private void StopPlayerTurn(ChessColor chessColor)
     {
@@ -751,9 +710,9 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private IEnumerator Release()
+    private async UniTask Release()
     {
-        yield return null;
+        await UniTask.Yield();
         ShowGameResult();
         gameReleasePanel.SetActive(true);
 
@@ -778,9 +737,7 @@ public class GameManager : MonoBehaviour
     
     private void Start()
     {
-        //StartCoroutine(SwitchStage(GameStage.Loading));
         SwitchStage(GameStage.Loading).Forget();
-
     }
 
 

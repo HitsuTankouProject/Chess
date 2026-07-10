@@ -6,8 +6,8 @@ using UnityEngine.InputSystem.Utilities;
 
 [SelectionBase]
 /// <summary>
-/// InputSystem の入力デバイス管理クラス
-/// Mouse / Keyboard / Gamepad を取得・管理する
+/// InputSystem の入力デバイス管?ク?ス
+/// Mouse / Keyboard / Gamepad を取得・管?する
 /// </summary>
 class InPutDevice
 {
@@ -17,7 +17,7 @@ class InPutDevice
     /// <summary> 現在接続されている Keyboard </summary>
     public Keyboard keyboard => Keyboard.current;
 
-    /// <summary> 接続中の Gamepad一覧 </summary>
+    /// <summary> 接続?の Gamepad一? </summary>
     public ReadOnlyArray<Gamepad> connectingGamepad => Gamepad.all;
 
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.Experimental.GraphView.GraphView;
+using Cysharp.Threading.Tasks;
 
 public class ChooseSkillPanel : MonoBehaviour
 {
@@ -104,21 +104,21 @@ public class ChooseSkillPanel : MonoBehaviour
         }
     }
 
-    private IEnumerator CardReadyProcess()
+    private async UniTask CardReadyProcess()
     {
-        yield return null;
+        await UniTask.Yield();
         pickCardButton[0].enabled = false;
         pickCardButton[1].enabled = false;
         pickCardButton[2].enabled = false;
 
         for (int i = 0; i < canPickCard.Length; i++)
         {
-            yield return canPickCard[i].TurnTheCard(CardFace.Back);
+            await canPickCard[i].TurnTheCard(CardFace.Back);
         }
         PickThreeCard();
         for (int i = 0; i < canPickCard.Length; i++)
         {
-            yield return canPickCard[i].TurnTheCard(CardFace.Front);
+            await canPickCard[i].TurnTheCard(CardFace.Front);
         }
         pickCardButton[0].enabled = true;
         pickCardButton[1].enabled = true;
@@ -142,8 +142,7 @@ public class ChooseSkillPanel : MonoBehaviour
         canDrawAgain = true;
         image_drawAgain.sprite = sp_canDraw;
         image_drawAgain.color = c_Draw;
-        StartCoroutine(CardReadyProcess());
-
+        CardReadyProcess().Forget();
     }
 
     public void Button_Return()
@@ -167,7 +166,7 @@ public class ChooseSkillPanel : MonoBehaviour
         canDrawAgain = false;
         image_drawAgain.sprite = sp_cantDraw;
         image_drawAgain.color = c_Drawed;
-        StartCoroutine(CardReadyProcess());
+        CardReadyProcess().Forget();
     }
     private void TurnSwitch()
     {

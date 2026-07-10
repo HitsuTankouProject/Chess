@@ -5,9 +5,9 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public enum KingBuff { None, MadKing, SageKing }
 public enum QueenBuff { None, Witcher, Beauty }
-public enum KnightBuff { None, Charger, Skirmisher }
 public enum BishopBuff { None, Sorcerer, Monk };
 public enum RookBuff { None, Rusher, Guardian };
+public enum KnightBuff { None, Charger, Skirmisher }
 public enum PawnBuff { None, Scout, Substitute }
 
 [System.Serializable]
@@ -167,7 +167,10 @@ public class AllTheBuff
     public bool IsProtectbySubstitute(List<ChessBasic> pawnList, out ChessBasic chess)
     {
         chess = null;
-        if (!substitute.cantKillKingWhenPawnExist || pawnList.Count == 0) return false;
+
+        if (substitute == null|| !substitute.cantKillKingWhenPawnExist
+            || pawnList == null || pawnList.Count == 0)
+            return false;
 
         chess = pawnList[Random.Range(0, pawnList.Count)];
         return true;

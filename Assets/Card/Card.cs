@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
-
-
+using Cysharp.Threading.Tasks;
 
 
 public enum CardFace { Front, Back }
@@ -36,13 +35,13 @@ public class Card : MonoBehaviour
 
     private float FinalFaceTo(CardFace faceTo) => faceTo == CardFace.Front ? 0f : 180f;
 
-    public IEnumerator TurnTheCard(CardFace faceTo)
+    public async UniTask TurnTheCard(CardFace faceTo)
     {
         float targetY = FinalFaceTo(faceTo);
         float startY = transform.localEulerAngles.y;
 
         if (Mathf.Abs(Mathf.DeltaAngle(startY, targetY)) < 0.1f)
-            yield break;
+            await UniTask.Yield();
 
         float elapsedTime = 0f;
 
@@ -56,7 +55,7 @@ public class Card : MonoBehaviour
 
             transform.localEulerAngles = new Vector3(0, y, 0);
 
-            yield return null;
+            await UniTask.Yield();
         }
 
         transform.localEulerAngles = new Vector3(0, targetY, 0);

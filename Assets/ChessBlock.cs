@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -96,12 +97,13 @@ public class ChessBlock : MonoBehaviour
         }
     }
 
-    private IEnumerator GotCurse()
+    private async UniTask GotCurse()
     {
-        while (curseChess != null && curseChess.gameObject.activeSelf)
-        {
-            yield return null;
-        }
+        await UniTask.WaitWhile(() => curseChess != null && curseChess.gameObject.activeSelf);
+        //while (curseChess != null && curseChess.gameObject.activeSelf)
+        //{
+        //    yield return null;
+        //}
         curseChess = null;
 
         ChangeBlockStage(BlockStage.None);
@@ -122,7 +124,7 @@ public class ChessBlock : MonoBehaviour
                 return;
             }
             curseChess = chess;
-            StartCoroutine(GotCurse());
+            GotCurse().Forget();
         }
 
     }
@@ -144,48 +146,5 @@ public class ChessBlock : MonoBehaviour
         Init(Vector2Int.zero);
     }
 
-    public bool normal = false;
-    public bool gotCurse = false;
-    public bool kingChessSpawn = false;
-    public bool canGo = false;
-    public bool caneat = false;
-
-    private void Update()
-    {
-        if (normal)
-        {
-            normal = false;
-            ShowChoseEffect(false);
-            ChangeBlockStage(BlockStage.None);
-            ChangeChessBlockEffect(ChessBlockStage.Normal);
-        }
-        if (gotCurse)
-        {
-            gotCurse = false;
-            ChangeBlockStage(BlockStage.GotCurse);
-        }
-        if (kingChessSpawn)
-        {
-            kingChessSpawn = false;
-            ChangeBlockStage(BlockStage.KingSpawn);
-        }
-        if (canGo)
-        {
-            canGo = false;
-            ChangeChessBlockEffect(ChessBlockStage.CanGo, ChessType.Knight);
-            ShowChoseEffect(true);
-        }
-        if (caneat)
-        {
-            caneat = false;
-            ChangeChessBlockEffect(ChessBlockStage.CanEat, ChessType.Pawn);
-            ShowChoseEffect(true);
-
-        }
-
-
-
-
-    }
 
 }   

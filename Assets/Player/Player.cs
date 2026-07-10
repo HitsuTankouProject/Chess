@@ -116,6 +116,13 @@ public class Player : MonoBehaviour
 
     public void Player_ChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
+
+        //allTheBuff.kingBuffType = KingBuff.MadKing;
+        //madKing.LevelUpToTargetLevel(1, out bool a);
+
+        //allTheBuff.pawnBuffType = PawnBuff.Substitute;
+        //substitute.LevelUpToTargetLevel(3, out bool b);
+
         AllChessInit(targetDict);
 
         Player_ChessDictUpdate();
