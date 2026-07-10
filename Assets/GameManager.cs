@@ -530,7 +530,6 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
-
     #region InGame
     [Header("InGame")]
     public IngamePanel inGamePanel;
@@ -568,10 +567,10 @@ public class GameManager : MonoBehaviour
         StopPlayerTurn(ChessColor.White);
         StopPlayerTurn(ChessColor.Black);
 
-        if (!player01.haveKing || !player02.haveKing)
-            EndInGame(nowTurn);
-        else 
-            TurnChange().Forget();
+        if (!player01.haveKing || !player02.haveKing) EndInGame(nowTurn);
+        else if(chessBoard.board.Count<=2) EndInGame(ChessColor.None);
+        else TurnChange().Forget();
+
 
     }
 
@@ -619,8 +618,9 @@ public class GameManager : MonoBehaviour
             if (result == ChessColor.White) whiteWinCount++;
             else if (result == ChessColor.Black) blackWinCount++;
         }
+        bool bothLessThenTwo = whiteWinCount < 2 && blackWinCount < 2;
 
-        return whiteWinCount != blackWinCount;
+        return !bothLessThenTwo;
 
     }
 

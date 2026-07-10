@@ -10,7 +10,7 @@ public enum ChessColor
     White,
     Black,
 
-
+    None = -1
 }
 
 /// <summary>　チェス駒の種類定義　</summary>

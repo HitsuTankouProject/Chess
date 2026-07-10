@@ -2181,7 +2181,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83acdfbe6be145749847c592bb9c75ee, type: 2}
+  - {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4511,7 +4511,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83acdfbe6be145749847c592bb9c75ee, type: 2}
+  - {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -8089,7 +8089,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 83acdfbe6be145749847c592bb9c75ee, type: 2}
+  - {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -12393,7 +12393,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1112357233}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -12401,8 +12401,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 440, y: 448.94}
-  m_SizeDelta: {x: 1064.66, y: 186.76}
+  m_AnchoredPosition: {x: 60, y: 9}
+  m_SizeDelta: {x: 1694.2, y: 716.38}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1112357235
 MonoBehaviour:
@@ -12424,7 +12424,15 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5148\u306B2\u52DD\u3057\u305F\u65B9\u304C\u52DD\u3061"
+  m_text: "\u25A0 \u51683\u30E9\u30A6\u30F3\u30C9\u3067\u884C\u3044\u307E\u3059\u3002\r\n\u25A0
+    \u30E9\u30A6\u30F3\u30C9\u3054\u3068\u306B\u76E4\u9762\u304C\u5909\u308F\u308A\u307E\u3059\u3002\r\n\u25A0
+    2\u52DD\u5148\u53D6\u3067\u52DD\u5229\u3067\u3059\u3002\r\n\u25A0 \u30AD\u30F3\u30B0\u304C\u6355\u7372\u3055\u308C\u308B\u3068\u3001\u5FA9\u6D3B\u30DE\u30B9\u3067\u5FA9\u6D3B\u3057\u307E\u3059\u3002\r\n\u25A0
+    \u5FA9\u6D3B\u30DE\u30B9\u306B\u76F8\u624B\u306E\u99D2\u304C\u3042\u308B\u5834\u5408\u306F\u5FA9\u6D3B\u3067\u304D\u305A\u3001\u6557\u5317\u3068\u306A\u308A\u307E\u3059\u3002\r\n\u25A0
+    \u4E21\u30D7\u30EC\u30A4\u30E4\u30FC\u3068\u3082\u30AD\u30F3\u30B0\u3060\u3051\u304C\u6B8B\u3063\u305F\u5834\u5408\u306F\u5F15\u304D\u5206\u3051\u3068\u306A\u308A\u307E\u3059\u3002\r\n\u25A0
+    \u5404\u30E9\u30A6\u30F3\u30C9\u958B\u59CB\u6642\u306B\u30D0\u30D5\u30AB\u30FC\u30C9\u30921\u679A\u9078\u629E\u3057\u307E\u3059\u3002\r\n\u25A0
+    \u30D0\u30D5\u306B\u3088\u3063\u3066\u99D2\u306E\u80FD\u529B\u304C\u5909\u5316\u3057\u307E\u3059\u3002\r\n\u25A0
+    \u6B21\u306E\u30E9\u30A6\u30F3\u30C9\u3067\u306F\u3001\u524D\u306E\u30E9\u30A6\u30F3\u30C9\u3067\u9078\u629E\u3057\u305F\u30D0\u30D5\u304C\u30EC\u30D9\u30EB\u30A2\u30C3\u30D7\u3057\u307E\u3059\u3002\r\n\u25A0
+    \u9078\u629E\u3067\u304D\u308B\u30D0\u30D5\u306F\u6700\u59273\u3064\u3067\u3059\u3002\r\n"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4db8ecc6e55b1d446b81bf42b0262c4c, type: 2}
   m_sharedMaterial: {fileID: 8978990287035068275, guid: 4db8ecc6e55b1d446b81bf42b0262c4c, type: 2}
@@ -12451,15 +12459,15 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 97.5
+  m_fontSize: 49.45
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
   m_fontSizeMin: 18
   m_fontSizeMax: 97.5
   m_fontStyle: 0
-  m_HorizontalAlignment: 2
-  m_VerticalAlignment: 512
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -13014,7 +13022,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u546A\u308F\u308C\u305F\u30DE\u30B9\u306B\u6B62\u307E\u308B\u3068\u3001\u546A\u3044\u72B6\u614B\u306B\u306A\u308A\u307E\u3059\u3002\u546A\u3044\u306E\u5143\u3068\u306A\u308B\u99D2\u3092\u6355\u7372\u3059\u308B\u3068\u3001\u30DE\u30B9\u306E\u546A\u3044\u72B6\u614B\u306F\u89E3\u9664\u3055\u308C\u307E\u3059\u3002"
+  m_text: "\u546A\u308F\u308C\u305F\u30DE\u30B9\u306B\u6B62\u307E\u308B\u3068\u3001\u546A\u3044\u72B6\u614B\u306B\u306A\u308A\u307E\u3059\u3002\u546A\u3044\u306E\u5143\u3068\u306A\u308B\u99D2\u3092\u6355\u7372\u3059\u308B\u3068\u3001\n\u30DE\u30B9\u306E\u546A\u3044\u72B6\u614B\u306F\u89E3\u9664\u3055\u308C\u307E\u3059\u3002"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4db8ecc6e55b1d446b81bf42b0262c4c, type: 2}
   m_sharedMaterial: {fileID: 8978990287035068275, guid: 4db8ecc6e55b1d446b81bf42b0262c4c, type: 2}
@@ -14732,7 +14740,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1272477944
 RectTransform:
   m_ObjectHideFlags: 0
@@ -16746,7 +16754,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u546A\u308F\u308C\u305F\u99D2\u3067\u3059\u3002\u6B21\u306E\u81EA\u5206\u306E\u30BF\u30FC\u30F3\u307E\u3067\u306B\u79FB\u52D5\u3057\u306A\u3044\u3068\u3001\u5F37\u5236\u7684\u306B\u6355\u7372\u3055\u308C\u307E\u3059\u3002\u79FB\u52D5\u3059\u308B\u3068\u89E3\u9664\u3055\u308C\u307E\u3059\u3002"
+  m_text: "\u546A\u308F\u308C\u305F\u99D2\u3067\u3059\u3002\u6B21\u306E\u81EA\u5206\u306E\u30BF\u30FC\u30F3\u307E\u3067\u306B\u79FB\u52D5\u3057\u306A\u3044\u3068\u3001\u5F37\u5236\u7684\u306B\u6355\u7372\u3055\u308C\u307E\u3059\u3002\n\u79FB\u52D5\u3059\u308B\u3068\u89E3\u9664\u3055\u308C\u307E\u3059\u3002"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4db8ecc6e55b1d446b81bf42b0262c4c, type: 2}
   m_sharedMaterial: {fileID: 8978990287035068275, guid: 4db8ecc6e55b1d446b81bf42b0262c4c, type: 2}
@@ -20497,7 +20505,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1702730794
 RectTransform:
   m_ObjectHideFlags: 0
