@@ -1,7 +1,10 @@
+using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 
 public enum GamepadType { None = 0, PlayStation, Xbox, Switch, }
@@ -136,6 +139,36 @@ public class InPutManager : MonoBehaviour
 
     }
 
+    private bool HasAnyButtonPressed(Gamepad gamepad)
+    {
+
+        foreach (var control in gamepad.allControls)
+        {
+            if (control is ButtonControl button && button.isPressed)
+                return true;
+        }
+        return false;
+    }
+
+    public async UniTask<ButtonControl> WaitForGamePadButtonInput()
+    {
+        await UniTask.WaitUntil(() => !HasAnyButtonPressed(Gamepad.current));
+        if (Gamepad.current == null) return null;
+        var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
+        if (control is ButtonControl button && button.device is Gamepad)
+            return button;
+        else return null;
+
+    }
+
+
+
+
+
+
+
+
+
     public void Init()
     {
         gameBoardLayerMask = LayerMask.GetMask("GameBoard");
@@ -156,6 +189,7 @@ public class InPutManager : MonoBehaviour
             _player02Input.SetUseGamepadType(Gamepad.all[1]);
         }
     }
+
 
     private void Update()
     {

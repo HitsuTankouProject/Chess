@@ -1,9 +1,12 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
+using System.Linq;
+using UniRx;
 
 public enum GameStage
 { 
@@ -371,8 +374,9 @@ public class GameManager : MonoBehaviour
         AllPanelClose();
         SwitchStage(GameStage.Release).Forget();
     }
-
     public void Button_Exit() => Application.Quit();
+
+
 
     #endregion
 
@@ -405,7 +409,26 @@ public class GameManager : MonoBehaviour
         await UniTask.Yield();
         await MainCameraTurn(GameStage.GameTitle);
         gameTitlePanel.SetActive(true);
+        WaitGamePadInput_GameTitle().Forget();
+
     }
+
+    private async UniTask WaitGamePadInput_GameTitle()
+    {
+        while(nowGameStage == GameStage.GameTitle)
+        {
+            ButtonControl button =  await inPutManager.WaitForGamePadButtonInput();
+            if (button == null) return;
+            switch (button.name)
+            {
+                case "buttonWest": Button_BackToGameDescription(); return;
+                case "buttonSouth": Button_BackToGameStart(); return;
+                default: await UniTask.Yield(); continue;
+            }
+        }
+    }
+
+
 
     #endregion
 
@@ -422,7 +445,6 @@ public class GameManager : MonoBehaviour
         gameDescriptionPanel.Init();
 
     }
-
 
     #endregion
 
