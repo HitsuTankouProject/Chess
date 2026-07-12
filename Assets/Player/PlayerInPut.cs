@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using Cysharp.Threading.Tasks;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Cysharp.Threading.Tasks;
-using System.Threading;
+using UnityEngine.InputSystem.Controls;
 
 public enum CanUseDevice { Mouse,Gamepad };
 public enum InputStage { None, ChooseSkill,Waiting, Picking, OneMoreMove }
@@ -40,22 +41,22 @@ public class PlayerInPut : MonoBehaviour
 
     #region Using Device
     public CanUseDevice nowUsingDevice/* { get; private set; } */= CanUseDevice.Mouse;
-    public void SetUseGamepadType(Gamepad gamepad)
-    {
-        if (gamepad != null) nowUsingDevice = CanUseDevice.Gamepad;
-        else nowUsingDevice = CanUseDevice.Mouse;
-    }
+
     public Gamepad nowUsingGamepad;
     public Mouse nowUsingMouse => Mouse.current;
 
-    public void ChangeToGamepad()
+    public void ChangeToGamepad(Gamepad gamepad = null)
     {
-        if (nowUsingGamepad == null)
+        if (gamepad == null)
         {
             ChangeToMouse();
             return;
         }
+        nowUsingGamepad = gamepad;
         nowUsingDevice = CanUseDevice.Gamepad;
+
+
+
         //if (inputStage == InputStage.OneMoreMove) StartCoroutine(OneMoreMove(pickIngChess));
         //else ChangeInput(CanUseDevice.Gamepad);
 
@@ -63,7 +64,6 @@ public class PlayerInPut : MonoBehaviour
     public void ChangeToMouse()
     {
         nowUsingDevice = CanUseDevice.Mouse;
-        nowUsingGamepad = null;
 
         if (inputStage == InputStage.OneMoreMove) OneMoreMove(pickIngChess).Forget();
         else ChangeInput(CanUseDevice.Mouse);
@@ -71,7 +71,6 @@ public class PlayerInPut : MonoBehaviour
 
     private void ChangeInput(CanUseDevice usingDevice)
     {
-        if (_gameManager.nowGameStage != GameStage.InGame) return;
         switch (usingDevice)
         {
             case CanUseDevice.Mouse:StartMouseInput();break;
@@ -150,7 +149,11 @@ public class PlayerInPut : MonoBehaviour
         //else if (nowUsingDevice == CanUseDevice.Gamepad) yield return GamePad_OneMoreMove();
 
         _player.nowPlayerStage = PlayerStage.ReadytoEnd;
-    }
+    }       
+
+
+
+
 
     #region Mouse
 
@@ -182,8 +185,6 @@ public class PlayerInPut : MonoBehaviour
         hitObject = hit.collider.gameObject;
         return true;
     }
-
-    private bool IsSameLayer(int checkLayer, int sampleLayer) => (sampleLayer & (1 << checkLayer)) != 0;
 
     private Vector2Int ChessBoardPosition(GameObject hitObject) 
     {
@@ -245,8 +246,6 @@ public class PlayerInPut : MonoBehaviour
         }
 
     }
-
-
     private async UniTask Mouse_OneMoreMove()
     {
         while (true)
@@ -283,6 +282,196 @@ public class PlayerInPut : MonoBehaviour
     #endregion
 
     #region Gamepad
+    public void StartGamepadInput()
+    {
+        if (inputUpdate != null) RejectInput();
+        inputUpdate = new CancellationTokenSource();
+
+        switch (_gameManager.nowGameStage)
+        {
+            case GameStage.SkillChoose:     WaitGamePadInput_GameSkillChoose(inputUpdate.Token).Forget();     break;
+            case GameStage.InGame: break;
+        }
+
+    }
+
+    #region Choose Skill
+    private ChooseSkillPanel _chooseSkillPanel => _gameManager.chooseSkillPanel;
+    private bool IsNowPickTurn()
+    {
+        return inputStage == InputStage.ChooseSkill && _gameManager.chooseSkillPanel.chooseSkillPlayerColor == _player.usingChess;
+    }
+    private void PickNextCard() => _chooseSkillPanel.PickNextCard();
+    private void PickBackCard() => _chooseSkillPanel.PickBackCard();
+
+    private void Return()
+    {
+        if (_chooseSkillPanel.isPicking) _chooseSkillPanel.Button_Return(); 
+        else _chooseSkillPanel.Button_DrawAgain();
+    }
+    private void ConFirm()
+    {
+        if (_chooseSkillPanel.isPicking)
+        {
+            _chooseSkillPanel.Button_ConFirm();
+            RejectInput();
+
+        }
+        else _chooseSkillPanel.PickThatCard();
+    }
+
+    private async UniTask WaitGamePadInput_GameSkillChoose(CancellationToken token)
+    {
+        while (IsNowPickTurn())
+        {
+            ButtonControl button = await _inPutManager.WaitForGamePadButtonInput(nowUsingGamepad);
+            await UniTask.Yield();
+
+            if (button == null) continue;
+
+            switch (button.name)
+            {
+                case "rightShoulder":   PickNextCard();         break;
+                case "right":           PickNextCard();         break;
+
+                case "leftShoulder":    PickBackCard();         break;
+                case "left":            PickBackCard();         break;
+
+                case "buttonEast":      Return();               break;
+                case "buttonSouth":     ConFirm();              break;
+
+                default:                await UniTask.Yield();  break;
+            }
+        }
+    }
+
+    #endregion
+
+    #region InGame
+    private bool isPause => _player.isPause;
+    private Vector2Int nowPosPick = Vector2Int.zero;
+
+    private void Pause()
+    {
+        pickCardIndex = 0;
+        _player.playerCanvas.Button_Pause();
+    }
+
+
+    #region Non Player Turn
+    private SkillDescriptionPanel skillDescriptionPanel => _player.playerCanvas.skillDescriptionPanel;
+    private bool isCardDescriptionOpen => skillDescriptionPanel.gameObject.activeSelf;
+    private int maxCanPick => _player.choseBuffs.Count - 1;
+    private int pickCardIndex = 0;
+
+    private void Pause_NextCard()
+    {
+        if(!isPause) { return; }
+        pickCardIndex = Mathf.Min(pickCardIndex + 1, maxCanPick);
+    }
+    private void Pause_BackCard()
+    {
+        if (!isPause) { return; }
+        pickCardIndex = Mathf.Max(pickCardIndex - 1, 0);
+    }
+    private void Pause_Confirm()
+    {
+        if (!isPause || isCardDescriptionOpen) { return; }
+        _player.playerCanvas.cardActions[pickCardIndex]();
+
+    }
+    private void Pause_Return()
+    {
+        if (!isPause || !isCardDescriptionOpen) { return; }
+        skillDescriptionPanel.Button_Return();
+    }
+
+    private void Pause_Surrender() => _player.playerCanvas.Button_Surrender();
+    private void Pause_BackToGameTitle() => _player.playerCanvas.Button_BackToGameTitle();
+
+
+    private async UniTask NonPlayerTurn(CancellationToken token)
+    {
+        while(inputStage == InputStage.None)
+        {
+            await UniTask.Yield();
+            ButtonControl button = await _inPutManager.WaitForGamePadButtonInput(nowUsingGamepad);
+            if (button == null) continue;
+
+            switch (button.name)
+            {
+                case "startButton": Pause(); break;
+
+                case "right": Pause_NextCard(); break;
+                case "left": Pause_BackCard(); break;
+
+                case "buttonEast": Pause_Confirm(); break;
+                case "buttonSouth": Pause_Return(); break;
+
+                case "buttonWest": Pause_BackToGameTitle(); break;
+
+                case "buttonNorth": Pause_Surrender(); break;
+
+
+                default: await UniTask.Yield(); break;
+            }
+
+
+        }
+
+    }
+
+    #endregion
+
+    #region Player Turn
+    private void NowPosInit()
+    {
+        nowPosPick = _player.allTheChess.Keys.First();
+    }
+
+
+
+    #endregion
+
+
+
+    private async UniTask InGameProcess(CancellationToken token)
+    {
+        while (true)
+        {
+            if (_gameManager.nowGameStage != GameStage.InGame) return;
+            await UniTask.Yield();
+
+            if (inputStage == InputStage.None)
+            {
+
+            }
+            else if (inputStage == InputStage.Waiting || inputStage == InputStage.Picking)
+            {
+                NowPosInit();
+
+            }
+            else if (inputStage == InputStage.OneMoreMove)
+            {
+
+            }
+
+        }
+
+    }
+
+
+
+
+
+
+    #endregion
+
+
+
+
+
+
 
     private Vector2Int nowPos = Vector2Int.zero;
 
@@ -376,9 +565,6 @@ public class PlayerInPut : MonoBehaviour
     {
        switch (_gameManager.nowGameStage)
        {
-            case GameStage.ControllerChoose:
-                //_inPutManager.controllerChoosePanel.player01Choose.Button_ChoosePsController();
-                break;
             case GameStage.InGame:
                 if (inputStage == InputStage.None) return;
                 ReturnToBoardPosition(Vector2Int.left);
@@ -498,7 +684,7 @@ public class PlayerInPut : MonoBehaviour
     }
 
 
-    private void StartGamepadInput()
+    private void StartGaamepadInput()
     {
         //if (inputUpdate != null) RejectInput();
         //inputUpdate = StartCoroutine(GamePadInPut());

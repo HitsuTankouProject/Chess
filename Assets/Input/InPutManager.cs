@@ -24,6 +24,56 @@ public class InPutManager : MonoBehaviour
     private HashSet<GamepadType> removedGamepad = new();
     public int oldConnectingGamePad = 0;
 
+    public void PlayerInputStage(ChessColor player, InputStage stage)
+    {
+        if (player == ChessColor.White)
+        {
+            _player01Input.inputStage = stage;
+            _player02Input.inputStage = InputStage.None;
+        }
+        else if (player == ChessColor.Black)
+        {
+            _player01Input.inputStage = InputStage.None;
+            _player02Input.inputStage = stage;
+        }
+
+    }
+
+    #region GamePad Input
+    private bool HasAnyButtonPressed(Gamepad gamepad)
+    {
+        if (gamepad == null) return false;
+        foreach (var control in gamepad.allControls)
+        {
+            if (control is ButtonControl button && button.isPressed)
+                return true;
+        }
+        return false;
+    }
+    public async UniTask<ButtonControl> WaitForGamePadButtonInput()
+    {
+        await UniTask.WaitUntil(() => !HasAnyButtonPressed(Gamepad.current));
+        if (Gamepad.current == null) return null;
+        var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
+        if (control is ButtonControl button && button.device is Gamepad)
+            return button;
+        else return null;
+
+    }
+    public async UniTask<ButtonControl> WaitForGamePadButtonInput(Gamepad gamepad)
+    {
+        await UniTask.WaitUntil(() => !HasAnyButtonPressed(gamepad));
+        if (gamepad == null) return null;
+        var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
+        if (control is ButtonControl button && button.device is Gamepad)
+            return button;
+        else return null;
+
+    }
+
+    #endregion
+
+    #region Gamepad Connect Watcher
     private GamepadType GetControllerType(Gamepad gamepad)
     {
         if (gamepad == null) return GamepadType.None;
@@ -44,7 +94,12 @@ public class InPutManager : MonoBehaviour
 
         return GamepadType.None;
     }
-
+    private Gamepad FindUnusedGamePad(Gamepad usedGamePad)
+    {
+        foreach (Gamepad gamePad in Gamepad.all)
+            if (gamePad != usedGamePad) return gamePad;
+        return null;
+    }
     private void RecodeGamePad()
     {
         recodingGamePads.Clear();
@@ -54,151 +109,107 @@ public class InPutManager : MonoBehaviour
             recodingGamePads[gamepad] = controllerType;
         }
     }
-
-
-
-    public void PlayerInputStage(ChessColor player, InputStage stage)
+    private void GamePadPairProcess()
     {
-        if (player == ChessColor.White)
-        {
-            _player01Input.inputStage = stage;
-            _player02Input.inputStage = InputStage.None;
-        }
-        else if (player == ChessColor.Black)
-        {
-            _player01Input.inputStage = InputStage.None;
-            _player02Input.inputStage = stage;
-        }
+        oldConnectingGamePad = Gamepad.all.Count;
 
-    }
-    private void GamepadDistribute()
-    {
-        List<Gamepad> gamepads = Gamepad.all.ToList();
+        bool isPlayer01UsingGamePad = _player01Input.nowUsingDevice == CanUseDevice.Gamepad;
+        bool isPlayer01HaveGamePad = _player01Input.nowUsingGamepad != null 
+                                    &&Gamepad.all.Contains(_player01Input.nowUsingGamepad);
 
-        if (_player01Input.nowUsingGamepad != null &&
-            !gamepads.Contains(_player01Input.nowUsingGamepad))
+        bool isPlayer02UsingGamePad = _player02Input.nowUsingDevice == CanUseDevice.Gamepad;
+        bool isPlayer02HaveGamePad = _player02Input.nowUsingGamepad != null
+                                     && Gamepad.all.Contains(_player02Input.nowUsingGamepad);
+
+        if (oldConnectingGamePad == 0)
         {
+            if (!isPlayer01UsingGamePad && !isPlayer02UsingGamePad) return;
             _player01Input.ChangeToMouse();
-        }
-
-        if (_player02Input.nowUsingGamepad != null &&
-            !gamepads.Contains(_player02Input.nowUsingGamepad))
-        {
             _player02Input.ChangeToMouse();
         }
-
-        if (gamepads.Count == 0)
+        else if (oldConnectingGamePad == 1)
         {
-            _player01Input.ChangeToMouse();
+            Gamepad connectedGamePad = Gamepad.all[0];
+
+            // Player 1 õﬂ„Sê≥èÌégópîáå¬éËîcÅCïsé˘óvô|óù
+            if (isPlayer01UsingGamePad && isPlayer01HaveGamePad)
+            {
+                if (isPlayer02UsingGamePad) _player02Input.ChangeToMouse();
+                return;
+            }
+
+            // Player 2 õﬂ„Sê≥èÌégópîáå¬éËîcÅCïsé˘óvô|óù
+            else if (isPlayer02UsingGamePad && isPlayer02HaveGamePad)
+            {
+                if (isPlayer01UsingGamePad)
+                    _player01Input.ChangeToMouse();
+                return;
+            }
+
+            // óLêlê›íËà◊ GamepadÅCíAå¥ñ{ìIéËîcõﬂù–ê¸
+            if (isPlayer01UsingGamePad && !isPlayer01HaveGamePad)
+            {
+                _player01Input.ChangeToGamepad(connectedGamePad);
+                _player02Input.ChangeToMouse();
+                return;
+            }
+            else if (isPlayer02UsingGamePad && !isPlayer02HaveGamePad)
+            {
+                _player02Input.ChangeToGamepad(connectedGamePad);
+                _player01Input.ChangeToMouse();
+
+                return;
+            }
+
+            // ô_êlìsüìóLégópéËîcÅCóaê›ï™îzãã Player 1
+            _player01Input.ChangeToGamepad(connectedGamePad);
             _player02Input.ChangeToMouse();
             return;
         }
-
-        HashSet<Gamepad> usingGamepads = new();
-
-        if (_player01Input.nowUsingGamepad != null)
-            usingGamepads.Add(_player01Input.nowUsingGamepad);
-
-        if (_player02Input.nowUsingGamepad != null)
-            usingGamepads.Add(_player02Input.nowUsingGamepad);
-
-        foreach (Gamepad gamepad in gamepads)
+        else if(oldConnectingGamePad >= 2)
         {
-            if (usingGamepads.Contains(gamepad))
-                continue;
-
-            if (_player01Input.nowUsingGamepad == null)
+            // Player 1 ìIéËîcñ≥ù¡ÅCùQàÍå¬üìóLîÌ Player 2 égópìIéËîc
+            if (!isPlayer01HaveGamePad)
             {
-                _player01Input.SetUseGamepadType(gamepad);
-                usingGamepads.Add(gamepad);
-                continue;
+                Gamepad player01GamePad = FindUnusedGamePad(
+                    isPlayer02UsingGamePad? _player02Input.nowUsingGamepad: null );
+
+                if (player01GamePad != null) _player01Input.ChangeToGamepad(player01GamePad);
             }
 
-            if (_player02Input.nowUsingGamepad == null)
+            // èdêVéÊìæ Player 1 ìIéËîcÅCîñ∆ô_êlï™îzìûìØàÍå¬
+            Gamepad player01CurrentGamePad = _player01Input.nowUsingGamepad;
+
+            // Player 2 ìIéËîcñ≥ù¡àΩ‰o Player 1 ëäìØ
+            if (!isPlayer02HaveGamePad ||_player02Input.nowUsingGamepad == player01CurrentGamePad)
             {
-                _player02Input.SetUseGamepadType(gamepad);
-                usingGamepads.Add(gamepad);
+                Gamepad player02GamePad = FindUnusedGamePad(player01CurrentGamePad);
+
+                if (player02GamePad != null) _player02Input.ChangeToGamepad(player02GamePad);
             }
         }
 
-        if (_player01Input.nowUsingGamepad == null)
-            _player01Input.ChangeToMouse();
-
-        if (_player02Input.nowUsingGamepad == null)
-            _player02Input.ChangeToMouse();
     }
-
-    private void CurrentGamepadWatcher()
+    private async UniTask GamePadWatcher()
     {
-        if (oldConnectingGamePad == Gamepad.all.Count) return;
-
-        Debug.Log(Gamepad.all.Count);
-        oldConnectingGamePad = Gamepad.all.Count;
-        RecodeGamePad();
-        GamepadDistribute();
-
-    }
-
-    private bool HasAnyButtonPressed(Gamepad gamepad)
-    {
-
-        foreach (var control in gamepad.allControls)
+        while (true)
         {
-            if (control is ButtonControl button && button.isPressed)
-                return true;
+            await UniTask.WaitUntil(() => oldConnectingGamePad != Gamepad.all.Count);
+            RecodeGamePad();
+            GamePadPairProcess();
         }
-        return false;
     }
 
-    public async UniTask<ButtonControl> WaitForGamePadButtonInput()
-    {
-        await UniTask.WaitUntil(() => !HasAnyButtonPressed(Gamepad.current));
-        if (Gamepad.current == null) return null;
-        var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
-        if (control is ButtonControl button && button.device is Gamepad)
-            return button;
-        else return null;
-
-    }
-
-
-
-
-
-
-
-
+    #endregion
 
     public void Init()
     {
         gameBoardLayerMask = LayerMask.GetMask("GameBoard");
         chessLayerMask = LayerMask.GetMask("Chess");
 
+        GamePadWatcher().Forget();
 
-        oldConnectingGamePad = Gamepad.all.Count;
-        RecodeGamePad();
-
-        int gamepadCount = Gamepad.all.Count;
-        if (gamepadCount == 1)
-        {
-            _player01Input.SetUseGamepadType(Gamepad.all[0]);
-        }
-        else if (gamepadCount >= 2)
-        {
-            _player01Input.SetUseGamepadType(Gamepad.all[0]);
-            _player02Input.SetUseGamepadType(Gamepad.all[1]);
-        }
     }
-
-
-    private void Update()
-    {
-        CurrentGamepadWatcher();
-    }
-
-
-
-
 
 
 }

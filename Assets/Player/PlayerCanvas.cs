@@ -1,6 +1,5 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -50,15 +49,18 @@ public class PlayerCanvas : MonoBehaviour
     #endregion
 
     #region Pause
-    [Header("Pause ")]
+    [Header("Pause")]
     public Button[] cards;
+    public List<Action> cardActions;
     private void PauseInit(List<AllBuffCard> choseBuffs)
     {
+
         if (choseBuffs.Count > 3)
         {
             Debug.LogError("Pick over Then 3 Buff");
             return;
         }
+        cardActions.Clear();
 
         for (int i = 0; i < cards.Length; i++)
         {
@@ -67,10 +69,9 @@ public class PlayerCanvas : MonoBehaviour
             if (i < choseBuffs.Count)
             {
                 AllBuffCard targetBuff = choseBuffs[i];
-
-
                 cards[i].image.sprite = GameManager.Instance.resourcesData.cardDataDict[targetBuff].sp_CardCover;
                 cards[i].onClick.AddListener(() => Button_OpenSkillDescriptionPanel(targetBuff));
+                cardActions.Add(() => Button_OpenSkillDescriptionPanel(targetBuff));
             }
             else
                 cards[i].image.sprite = GameManager.Instance.resourcesData.cradDataList.sp_CardBack;

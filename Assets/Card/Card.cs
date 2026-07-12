@@ -40,8 +40,7 @@ public class Card : MonoBehaviour
         float targetY = FinalFaceTo(faceTo);
         float startY = transform.localEulerAngles.y;
 
-        if (Mathf.Abs(Mathf.DeltaAngle(startY, targetY)) < 0.1f)
-            await UniTask.Yield();
+        if (Mathf.Abs(Mathf.DeltaAngle(startY, targetY)) < 0.1f) return;
 
         float elapsedTime = 0f;
 
@@ -59,6 +58,8 @@ public class Card : MonoBehaviour
         }
 
         transform.localEulerAngles = new Vector3(0, targetY, 0);
+
+
     }
 
 

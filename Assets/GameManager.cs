@@ -13,7 +13,6 @@ public enum GameStage
     Loading, 
     GameTitle,
     GameDescription,
-    ControllerChoose,
     GameStart,
     TurnStart,
     SkillChoose,
@@ -105,7 +104,6 @@ public class GameManager : MonoBehaviour
     // ===== Camera Views =====
     private MainCameraView gameTitleCameraView = new(new Vector3(-65, 89.1f, -57), new Vector3(55, 0, 0), 32.0f);
     private MainCameraView gameDescriptionCameraView = new(new Vector3(-242, 70, 80), new Vector3(90, -90, 0),50f);
-    private MainCameraView controllerChooseCameraView = new(new Vector3(-242, 70, -80), new Vector3(90, -90, 0), 50f);
     private MainCameraView turnStartCameraView = new(new Vector3(0, 75, 0), new Vector3(90, 0, 0), 80f);
     private MainCameraView skillChooseCameraView = new(new Vector3(-242, 70, 80), new Vector3(90, -90, 0), 50f);
     private MainCameraView releaseCameraView = new(new Vector3(242, 70, 80), new Vector3(90, 90, 0), 50f);
@@ -136,17 +134,16 @@ public class GameManager : MonoBehaviour
         loading.SetActive(true);
         switch (nowGameStage)
         {
-            case GameStage.Loading:             Loading().Forget();         break;
-            case GameStage.GameTitle:           GameTitle().Forget();       break;
-            case GameStage.GameDescription:     GameDescription().Forget(); break;
-            //case GameStage.ControllerChoose:        ; break;
-            case GameStage.GameStart:           GameStart().Forget();       break;
-            case GameStage.TurnStart:           TurnStart().Forget();       break;
-            case GameStage.SkillChoose:         SkillChoose().Forget();     break;
-            case GameStage.InGame:              InGame().Forget();          break;
-            case GameStage.TurnEnd:             TurnEnd().Forget();         break;
-            case GameStage.GameEnd:             GameEnd().Forget();         break;
-            case GameStage.Release:             Release().Forget();         break;
+            case GameStage.Loading:             Loading().Forget();             break;
+            case GameStage.GameTitle:           GameTitle().Forget();           break;
+            case GameStage.GameDescription:     GameDescription().Forget();     break;
+            case GameStage.GameStart:           GameStart().Forget();           break;
+            case GameStage.TurnStart:           TurnStart().Forget();           break;
+            case GameStage.SkillChoose:         SkillChoose().Forget();         break;
+            case GameStage.InGame:              InGame().Forget();              break;
+            case GameStage.TurnEnd:             TurnEnd().Forget();             break;
+            case GameStage.GameEnd:             GameEnd().Forget();             break;
+            case GameStage.Release:             Release().Forget();             break;
 
             default:
                 Debug.LogError("GameManager.SwitchStage: Invalid game stage.");
@@ -165,8 +162,6 @@ public class GameManager : MonoBehaviour
                 return gameTitleCameraView;
             case GameStage.GameDescription:
                 return gameDescriptionCameraView;
-            case GameStage.ControllerChoose:
-                return controllerChooseCameraView;
             case GameStage.SkillChoose:
                 return skillChooseCameraView;
             case GameStage.TurnStart:
@@ -418,12 +413,12 @@ public class GameManager : MonoBehaviour
         while(nowGameStage == GameStage.GameTitle)
         {
             ButtonControl button =  await inPutManager.WaitForGamePadButtonInput();
-            if (button == null) return;
+            if (button == null) continue;
             switch (button.name)
             {
-                case "buttonWest": Button_BackToGameDescription(); return;
-                case "buttonSouth": Button_BackToGameStart(); return;
-                default: await UniTask.Yield(); continue;
+                case "buttonWest":      Button_BackToGameDescription();     return;
+                case "buttonSouth":     Button_BackToGameStart();           return;
+                default:                await UniTask.Yield();              continue;
             }
         }
     }
@@ -447,30 +442,6 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
-
-    //#region ControllerChoose
-
-    //[Header("ControllerChoose")]
-    //public ControllerChoosePanel controllerChoosePanel;
-
-    //private IEnumerator ControllerChoose()
-    //{
-    //    yield return StartCoroutine(MainCameraTurn(GameStage.ControllerChoose));
-
-    //    controllerChoosePanel.gameObject.SetActive(true);
-    //    controllerChoosePanel.Init();
-    //}
-
-    //public void EndControllerChoose(GamepadType player01pick, GamepadType player02pick)
-    //{
-    //    //TargetPlayer(ChessColor.White).playerInPut.SetUseGamepadType(player01pick);
-    //    //TargetPlayer(ChessColor.Black).playerInPut.SetUseGamepadType(player01pick);
-    //    //controllerChoosePanel.gameObject.SetActive(false);
-    //    //StartCoroutine(SwitchStage(GameStage.GameStart));
-    //}
-
-
-    //#endregion
 
     #region GameStart
 

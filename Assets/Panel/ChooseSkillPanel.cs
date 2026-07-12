@@ -1,23 +1,28 @@
-using System.Collections;
+using Cysharp.Threading.Tasks;
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Cysharp.Threading.Tasks;
 
 public class ChooseSkillPanel : MonoBehaviour
 {
     private GameManager _gameManager => GameManager.Instance;
-
     private ResourcesData _resourcesData => _gameManager.resourcesData;
     private InPutManager _inPutManager => _gameManager.inPutManager;
-
-    private ChessColor chooseSkillPlayerColor = ChessColor.White;
-
+    public ChessColor chooseSkillPlayerColor { get; private set; } = ChessColor.White;
     private Player chooseSkillPlayer => chooseSkillPlayerColor == ChessColor.White ?
         _gameManager.player01 : _gameManager.player02;
 
     private bool isWhiteChessPlayerPick = false;
     private bool isBlackChessPlayerPick = false;
+    private void OffPlayerPick(ChessColor color)
+    {
+        if (color == ChessColor.White) isWhiteChessPlayerPick = true;
+        else if (color == ChessColor.Black) isBlackChessPlayerPick = true;
+        _inPutManager.PlayerInputStage(chooseSkillPlayerColor, InputStage.None);
+
+    }
 
     [Header("Pick Cards")]
     public Card[] canPickCard;
@@ -44,16 +49,87 @@ public class ChooseSkillPanel : MonoBehaviour
     public bool isPicking => picking != AllBuffCard.None;
     private List<AllBuffCard> pickedCards = new();
 
+    [Header("Picking Mark")]
+    public Image pickingMark;
+    private int pickingIndex = 0;
+    private List<Action> cardPikButton = new();
+    private const float posZ = -240.0f;
+    private List<Vector3> cardPosition = new();
+
+    private void PickMarkInit()
+    {
+        cardPosition.Clear();
+        for (int i = 0; i < canPickCard.Length; i++)
+        {
+            Vector3 target = canPickCard[i].transform.localPosition;
+            cardPosition.Add(new Vector3(target.x, target.y, posZ));
+        }
+
+    }
+    public void PickNextCard()
+    {
+        pickingIndex = Mathf.Min(pickingIndex + 1, canPickCard.Length - 1);
+        Debug.Log(pickingIndex);
+        pickingMark.transform.localPosition = cardPosition[pickingIndex];
+    }
+
+    public void PickBackCard()
+    {
+        pickingIndex = Mathf.Max(pickingIndex - 1, 0);
+        Debug.Log(pickingIndex);
+        pickingMark.transform.localPosition = cardPosition[pickingIndex];
+    }
+
+    public void PickThatCard() => cardPikButton[pickingIndex]();
+
     [Header("DrawAgain")]
     private bool canDrawAgain = true;
     public Button drawAgain;
+
     private Image image_drawAgain=> drawAgain.image;
 
-    private readonly Color c_Draw = Color.white;
-    private readonly Color c_Drawed = new Color(0.5f, 0.5f, 0.5f);
+    private Pair<Sprite, Color> pair_CanDraw;
+    private Pair<Sprite, Color> pair_CantDraw;
 
-    private Sprite sp_canDraw => _resourcesData.allSprite.sp_canDraw;
-    private Sprite sp_cantDraw => _resourcesData.allSprite.sp_canDraw;
+    #region Button
+    public void Button_Return()
+    {
+        picking = AllBuffCard.None;
+        showCanPickPanel.gameObject.SetActive(true);
+        skillDescriptionPanel.gameObject.SetActive(false);
+
+    }
+    public void Button_ConFirm()
+    {
+        pickedCards.Add(picking);
+        Button_Return();
+        EndPlayerChooseSkill(chooseSkillPlayerColor);
+    }
+
+    private void SetDrawAgain(bool isUsed)
+    {
+        canDrawAgain = isUsed;
+        Pair<Sprite, Color> target = isUsed ? pair_CanDraw : pair_CantDraw;
+        image_drawAgain.sprite = target.first;
+        image_drawAgain.color = target.second;
+    }
+
+
+    public void Button_DrawAgain()
+    {
+        if (!canDrawAgain) return;
+        SetDrawAgain(false);
+        CardReadyProcess().Forget();
+    }
+    public void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
+    {
+        picking = targetBuff;
+        showCanPickPanel.gameObject.SetActive(false);
+        skillDescriptionPanel.ChangeDescription(targetBuff, 0);
+        skillDescriptionPanel.gameObject.SetActive(true);
+    }
+
+    #endregion
 
     private List<ChessType> PlayerCanPick()
     {
@@ -83,24 +159,29 @@ public class ChooseSkillPanel : MonoBehaviour
     private void PickThreeCard()
     {
         List<ChessType> playerCanPick = PlayerCanPick();
+        cardPikButton.Clear();
         pickedThreeCard.Clear();
         int count = Mathf.Min(3, playerCanPick.Count);
 
         for (int i = 0; i < count; i++)
         {
-            int randomTypeIndex = Random.Range(0, playerCanPick.Count);
+            int randomTypeIndex = UnityEngine.Random.Range(0, playerCanPick.Count);
 
             ChessType chessType = playerCanPick[randomTypeIndex];
 
             AllBuffCard[] buffs = buffChessDict[chessType];
 
-            int buffIndex = Random.Range(0, buffs.Length);
-            canPickCard[i].SetCard(buffs[buffIndex]);
+            int buffIndex = UnityEngine.Random.Range(0, buffs.Length);
+            AllBuffCard pickedBuff = buffs[buffIndex];
+
+
+
+            canPickCard[i].SetCard(pickedBuff);
 
             playerCanPick.RemoveAt(randomTypeIndex);
-            pickCardButton[i].onClick.AddListener(() => Button_OpenSkillDescriptionPanel(buffs[buffIndex]));
-
-            pickedThreeCard.Add(buffs[buffIndex]);
+            pickCardButton[i].onClick.AddListener(() => Button_OpenSkillDescriptionPanel(pickedBuff));
+            cardPikButton.Add(() => Button_OpenSkillDescriptionPanel(pickedBuff));
+            pickedThreeCard.Add(pickedBuff);
         }
     }
 
@@ -124,83 +205,67 @@ public class ChooseSkillPanel : MonoBehaviour
         pickCardButton[1].enabled = true;
         pickCardButton[2].enabled = true;
 
-    }
-
-    public void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
-    {
-        picking = targetBuff;
-        showCanPickPanel.gameObject.SetActive(false);
-        skillDescriptionPanel.ChangeDescription(targetBuff, 0);
-        skillDescriptionPanel.gameObject.SetActive(true);
-    }
-
-    private void StartPlayerTurn(ChessColor color)
-    {
-        chooseSkillPlayerColor = color;
-        _inPutManager.PlayerInputStage(chooseSkillPlayerColor, InputStage.ChooseSkill);
-        playerTag.sprite = _resourcesData.PlayerSprite(color);
-        canDrawAgain = true;
-        image_drawAgain.sprite = sp_canDraw;
-        image_drawAgain.color = c_Draw;
-        CardReadyProcess().Forget();
-    }
-
-    public void Button_Return()
-    {
-        picking = AllBuffCard.None;
-        showCanPickPanel.gameObject.SetActive(true);
-        skillDescriptionPanel.gameObject.SetActive(false);
-
-    }
-    public void Button_ConFirm()
-    {
-        pickedCards.Add(picking);
-        if (chooseSkillPlayerColor == ChessColor.White) isWhiteChessPlayerPick = true;
-        else isBlackChessPlayerPick = true;
-        Button_Return();
-        TurnSwitch();
-    }
-    public void Button_DrawAgain()
-    {
-        if (!canDrawAgain) return;
-        canDrawAgain = false;
-        image_drawAgain.sprite = sp_cantDraw;
-        image_drawAgain.color = c_Drawed;
-        CardReadyProcess().Forget();
-    }
-    private void TurnSwitch()
-    {
-        if (isWhiteChessPlayerPick && !isBlackChessPlayerPick)
+        if (chooseSkillPlayer.playerInPut.nowUsingDevice == CanUseDevice.Gamepad)
         {
-            StartPlayerTurn(ChessColor.Black);
-            return;
-
+            pickingIndex = 0;
+            pickingMark.transform.localPosition = cardPosition[pickingIndex];
+            pickingMark.gameObject.SetActive(true);
         }
-        else if (isWhiteChessPlayerPick && isBlackChessPlayerPick)
-        {
-            EndOfChooseSkill();
-            return;
-        }
-        Debug.LogError("isWhiteChose == flase");
-
     }
     private void EndOfChooseSkill()
     {
-        isWhiteChessPlayerPick = false;
-        isBlackChessPlayerPick = false;
         skillDescriptionPanel.gameObject.SetActive(false);
         showCanPickPanel.gameObject.SetActive(false);
-
 
         _gameManager.EndSkillChoose(pickedCards[0], pickedCards[1]);
     }
 
+
+
+    private void StartChooseSkill(ChessColor color)
+    {
+        chooseSkillPlayerColor = color;
+        _inPutManager.PlayerInputStage(chooseSkillPlayerColor, InputStage.ChooseSkill);
+
+        playerTag.sprite = _resourcesData.PlayerSprite(color);
+        pickingMark.gameObject.SetActive(false);
+
+        SetDrawAgain(true);
+        CardReadyProcess().Forget();
+        chooseSkillPlayer.playerInPut.StartGamepadInput();
+
+    }
+
+
+    public void EndPlayerChooseSkill(ChessColor color)
+    {
+        OffPlayerPick(color);
+        if (isWhiteChessPlayerPick && isBlackChessPlayerPick)
+        {
+            EndOfChooseSkill();
+            return;
+        }
+
+        if (!isWhiteChessPlayerPick) StartChooseSkill(ChessColor.White);
+        else if(!isBlackChessPlayerPick) StartChooseSkill(ChessColor.Black);
+
+    }
+
+
+
+
     public void Init()
     {
+        pickedCards.Clear();
         isWhiteChessPlayerPick = false;
         isBlackChessPlayerPick = false;
+        pair_CanDraw = new(_resourcesData.allSprite.sp_canDraw, Color.white);
+        pair_CantDraw = new(_resourcesData.allSprite.sp_cantDraw, new Color(0.5f, 0.5f, 0.5f));
+
+        PickMarkInit();
         Button_Return();
-        StartPlayerTurn(ChessColor.White);
+
+        StartChooseSkill(ChessColor.White);
     }
 
 

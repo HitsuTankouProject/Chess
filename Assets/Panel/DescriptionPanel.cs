@@ -12,16 +12,17 @@ public class DescriptionPanel : MonoBehaviour
     private GameManager _gameManager => GameManager.Instance;
     private bool isInit = false;
 
-    private int minPage = 1;
-    private int nowPage = 1;
-    private int maxPage = 4;
-
-    private Dictionary<int, Action> buttonActions = new();
-
-    
-
-
-
+    private int minPage = 0;
+    private int nowPage = 0;
+    private int maxPage = 3;
+    private Action[] buttonActions = new Action[4];
+    private void ButtonActionsInit()
+    {
+        buttonActions[0] = Button_OpenRulesDescription;
+        buttonActions[1] = Button_OpenInputDescription;
+        buttonActions[2] = Button_OpenChessAndBoardDescription;
+        buttonActions[3] = Button_OpenBuffDescription;
+    }
     public void Init()
     {
         Button_OpenRulesDescription();
@@ -30,12 +31,7 @@ public class DescriptionPanel : MonoBehaviour
         if (isInit)return;
         isInit = true;
         AllBuffInit();
-        buttonActions.Clear();
-        buttonActions.Add(1, Button_OpenRulesDescription);
-        buttonActions.Add(2, Button_OpenInputDescription);
-        buttonActions.Add(3, Button_OpenChessAndBoardDescription);
-        buttonActions.Add(4, Button_OpenBuffDescription);
-
+        ButtonActionsInit();
     }
 
     private async UniTask WaitGamePadInput_GameDescription()
@@ -43,25 +39,26 @@ public class DescriptionPanel : MonoBehaviour
         while (_gameManager.nowGameStage == GameStage.GameDescription)
         {
             ButtonControl button = await _gameManager.inPutManager.WaitForGamePadButtonInput();
-            if (button == null) return;
+            await UniTask.Yield();
+            if (button == null) continue;
 
             switch (button.name)
             {
-                case "buttonWest":      _gameManager.Button_BackToGameTitle();return;
-                case "buttonNorth":     _gameManager.Button_BackToGameStart(); return;
+                case "buttonWest":      _gameManager.Button_BackToGameTitle();  return;
+                case "buttonNorth":     _gameManager.Button_BackToGameStart();  return;
 
-                case "leftShoulder":    BackPage(); break;
-                case "rightShoulder":   NextPage();  break;
+                case "rightShoulder":   NextPage();                             break;
+                case "leftShoulder":    BackPage();                             break;
 
-                case "up":              SwitchPick(-1); break;
-                case "down":            SwitchPick(1); break;
-                case "left":            SwitchPick(-2); break;
-                case "right":           SwitchPick(2); break;
+                case "up":              SwitchPick(-1);                         break;
+                case "down":            SwitchPick(1);                          break;
+                case "left":            SwitchPick(-2);                         break;
+                case "right":           SwitchPick(2);                          break;
 
-                case "buttonEast":      Button_Return(); break;
-                case "buttonSouth":     cardButton[pickIndex](); break;
+                case "buttonEast":      Button_Return();                        break;
+                case "buttonSouth":     cardButton[pickIndex]();                break;
 
-                default: await UniTask.Yield(); break;
+                default:                await UniTask.Yield();                  break;
             }
         }
     }
@@ -94,7 +91,7 @@ public class DescriptionPanel : MonoBehaviour
     public void Button_OpenRulesDescription()
     {
         CloseAllTheObjectDescription();
-        nowPage = 1;
+        nowPage = 0;
         rules_Description.SetActive(true);
     }
 
@@ -105,7 +102,7 @@ public class DescriptionPanel : MonoBehaviour
     public void Button_OpenInputDescription()
     {
         CloseAllTheObjectDescription();
-        nowPage = 2;
+        nowPage = 1;
         input_Description.SetActive(true);
     }
 
@@ -116,7 +113,7 @@ public class DescriptionPanel : MonoBehaviour
     public void Button_OpenChessAndBoardDescription()
     {
         CloseAllTheObjectDescription();
-        nowPage = 3;
+        nowPage = 2;
         chessAndBoard_Description.SetActive(true);
     }
 
@@ -162,7 +159,7 @@ public class DescriptionPanel : MonoBehaviour
     public void Button_OpenBuffDescription()
     {
         CloseAllTheObjectDescription();
-        nowPage = 4;
+        nowPage = 3;
         pickIndex = 0;
         pickImage.transform.localPosition = cardPositions[pickIndex];
         buff_Description.gameObject.SetActive(true);
