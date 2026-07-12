@@ -444,7 +444,7 @@ public class PlayerInPut : MonoBehaviour
 
             if (inputStage == InputStage.None)
             {
-
+                await NonPlayerTurn(token);
             }
             else if (inputStage == InputStage.Waiting || inputStage == InputStage.Picking)
             {
