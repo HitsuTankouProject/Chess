@@ -8,6 +8,7 @@ public class PlayerCanvas : MonoBehaviour
     public GameObject pausePanel;
 
     private Player _player;
+    private bool isPlayerUseGamePad => _player.playerInPut.nowUsingDevice == CanUseDevice.Gamepad;
     public Camera playerCamera;
 
     public bool isPause {  get; private set; }
@@ -24,6 +25,15 @@ public class PlayerCanvas : MonoBehaviour
         if (GameManager.Instance.nowGameStage != GameStage.InGame) return;
         isPause = !isPause;
         pausePanel.SetActive(isPause);
+        if (isPlayerUseGamePad)
+        {
+            pickCard.gameObject.SetActive(isPause);
+            pickCardIndex = 0;
+            pickCard.transform.localPosition = cardsPos[pickCardIndex];
+
+        }
+        else pickCard.enabled = false;
+
     }
 
     public void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
@@ -50,8 +60,15 @@ public class PlayerCanvas : MonoBehaviour
 
     #region Pause
     [Header("Pause")]
+    public Image pickCard;
+    private int pickCardIndex = 0;
+    private int maxCanPick => _player.choseBuffs.Count - 1;
+
+
     public Button[] cards;
-    public List<Action> cardActions;
+    private List<Vector3> cardsPos = new();
+    public List<Action> cardActions = new();
+
     private void PauseInit(List<AllBuffCard> choseBuffs)
     {
 
@@ -61,6 +78,7 @@ public class PlayerCanvas : MonoBehaviour
             return;
         }
         cardActions.Clear();
+        cardsPos.Clear();
 
         for (int i = 0; i < cards.Length; i++)
         {
@@ -71,12 +89,33 @@ public class PlayerCanvas : MonoBehaviour
                 AllBuffCard targetBuff = choseBuffs[i];
                 cards[i].image.sprite = GameManager.Instance.resourcesData.cardDataDict[targetBuff].sp_CardCover;
                 cards[i].onClick.AddListener(() => Button_OpenSkillDescriptionPanel(targetBuff));
+                cardsPos.Add(cards[i].transform.localPosition);
                 cardActions.Add(() => Button_OpenSkillDescriptionPanel(targetBuff));
             }
             else
                 cards[i].image.sprite = GameManager.Instance.resourcesData.cradDataList.sp_CardBack;
         }
     }
+
+    public void WatchBuffSkillDescription()
+    {
+        if (!isPlayerUseGamePad) return;
+        cardActions[pickCardIndex]();
+    }
+
+    public void NextCard()
+    {
+        if (!isPlayerUseGamePad) return;
+        pickCardIndex = Mathf.Min(pickCardIndex + 1, maxCanPick);
+        pickCard.transform.localPosition = cardsPos[pickCardIndex];
+    }
+    public void BackCard()
+    {
+        if (!isPlayerUseGamePad) return;
+        pickCardIndex = Mathf.Max(pickCardIndex - 1, 0);
+        pickCard.transform.localPosition = cardsPos[pickCardIndex];
+    }
+
 
     #endregion
 

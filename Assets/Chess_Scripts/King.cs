@@ -122,7 +122,7 @@ public class King : ChessBasic
     {
         if (_player.sageKing.nowBuffLevel != 3) return false;
 
-        return _chessBoard.GetKingStartPoint(_enemy.usingChess) != moveTo;
+        return _chessBoard.GetKingStartPoint(_enemy.usingChess) == moveTo;
     }
 
     private bool MadKing_Level2_ThroughAndEatAllChess(Vector2Int nowPosition, Vector2Int moveTo, out Queue<ChessBasic> eatqueue)
@@ -144,7 +144,7 @@ public class King : ChessBasic
     {
         if (!_player.madKing.canMoveItAgain) 
         {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
             return;
         }
 
@@ -156,18 +156,17 @@ public class King : ChessBasic
         else
         {
             isMoveAgain = false;
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
 
         }
 
     }
     private void MadKing_MoveTo(Vector2Int moveTo)
     {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
         if (!CanMoveTo(moveTo, out ChessBasic chess))
         {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
             return;
         }
         bool pathThroughHaveChess = MadKing_Level2_ThroughAndEatAllChess(position, moveTo, out Queue<ChessBasic> eatqueue);
@@ -175,7 +174,7 @@ public class King : ChessBasic
         if(chess == null && !pathThroughHaveChess)
         {
             _chessBoard.MoveTo(this, moveTo);
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
             return;
         }
         else if(chess != null && !pathThroughHaveChess)
@@ -234,7 +233,8 @@ public class King : ChessBasic
 
         if (!_chessBoard.board.TryGetValue(targetSpawn, out ChessBasic chess))
         {
-            _chessBoard.StartGenChessProcess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King));
+            _chessBoard.StartGenChessProcess(targetSpawn, new Pair<ChessColor, ChessType>(color, ChessType.King), _player);
+
             return;
         }
 
@@ -250,7 +250,7 @@ public class King : ChessBasic
 
     public override void GotEaten()
     {
-        if (_player.IsProtectbySubstitute(out ChessBasic pawn)&& pawn != null) 
+        if (_player.IsProtectbySubstitute(out ChessBasic pawn) && pawn != null)
         {
             SwapPosition(pawn);
             pawn.GotEaten();

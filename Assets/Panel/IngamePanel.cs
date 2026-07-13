@@ -21,7 +21,7 @@ public class IngamePanel : MonoBehaviour
     private const float turnChange_time = 1.0f;
     private readonly Pair<int, int> turnChange_word_size = new(0, 250);
     private readonly Pair<int, int> turnChange_panel_open = new(270, 270);
-    private readonly Pair<int, int> turnChange_panel_close = new(1080, 1080);
+    private readonly Pair<int, int> turnChange_panel_close = new(540, 540);
    
 
     public async UniTask TurnChange(ChessColor changeTo)

@@ -69,14 +69,12 @@ public class ChooseSkillPanel : MonoBehaviour
     public void PickNextCard()
     {
         pickingIndex = Mathf.Min(pickingIndex + 1, canPickCard.Length - 1);
-        Debug.Log(pickingIndex);
         pickingMark.transform.localPosition = cardPosition[pickingIndex];
     }
 
     public void PickBackCard()
     {
         pickingIndex = Mathf.Max(pickingIndex - 1, 0);
-        Debug.Log(pickingIndex);
         pickingMark.transform.localPosition = cardPosition[pickingIndex];
     }
 

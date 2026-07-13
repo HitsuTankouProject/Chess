@@ -221,7 +221,6 @@ public abstract class ChessBasic : MonoBehaviour
     public virtual void EatChess(ChessBasic chess)
     {
         if (chess == null) return;
-        _player.nowPlayerStage = PlayerStage.EatingChess;
         _chessBoard.DeadEffect(chess);
         _chessBoard.Swap(this, chess);
         chess.GotEaten();
@@ -229,11 +228,10 @@ public abstract class ChessBasic : MonoBehaviour
 
     public void MoveOnly(Vector2Int moveTo)
     {
-        _player.nowPlayerStage = PlayerStage.MovingChess;
         ReturnPick();
         if (!CanMoveTo(moveTo, out ChessBasic chess))
         {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
             return;
         }
 
@@ -252,7 +250,7 @@ public abstract class ChessBasic : MonoBehaviour
     public virtual void Move(Vector2Int moveTo)
     {
         MoveOnly(moveTo);
-        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+        _player.Player_TurnEnd();
     }
 
     /// <summary>

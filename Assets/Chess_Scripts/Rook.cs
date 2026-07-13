@@ -165,7 +165,7 @@ public class Rook : ChessBasic
 
         if (!canMoveTo)
         {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
             return;
         }
 
@@ -187,7 +187,7 @@ public class Rook : ChessBasic
             chess.GotEaten();
         }
 
-        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+        _player.Player_TurnEnd();
     }
 
 
@@ -206,7 +206,7 @@ public class Rook : ChessBasic
         {
             MoveOnly(moveTo);
             _player.UpdateGuardianProtectArea();
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
             return;
         }
 

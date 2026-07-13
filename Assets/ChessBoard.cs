@@ -157,16 +157,22 @@ public class ChessBoard : MonoBehaviour
     private async UniTask GenChessAtStart(int turn)
     {
         CleanTheBoard();
-        Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap($"BoardInitData_Turn_0{turn}");
+        int index = turn > 3 ? 3 : turn;
+        Dictionary<Vector2Int, Pair<ChessColor, ChessType>> chessStartMap = GetBoardStartMap($"BoardInitData_Turn_0{index}");
+        int error = 0;
         foreach (var entry in chessStartMap)
         {
+            error++;
+            await GenChessProcess(entry.Key, entry.Value);
             if (entry.Value.second == ChessType.King)
             {
                 SetKingStartPoint(entry.Value.first, entry.Key);
             }
-            await GenChessProcess(entry.Key, entry.Value);
         }
 
+        Debug.Log(chessStartMap.Count);
+        Debug.Log(board.Count);
+        Debug.Log(error);
         foreach (Vector2Int pos in board.Keys)
         {
             if (board[pos].chessInfo != chessStartMap[pos])
@@ -185,7 +191,7 @@ public class ChessBoard : MonoBehaviour
 
         for (int x = 0; x < cols.Count; x++) 
         {
-            for (int y = 2; y <= 5; y++)
+            for (int y = 3; y <= 4; y++)
             {
                 ChessBlock block = cols[x].chessBlocks[y];
 
@@ -254,8 +260,9 @@ public class ChessBoard : MonoBehaviour
 
         ChessBasic target = chess.GetComponent<ChessBasic>();
         target.ChangeChessColor(pair.first);
-        MoveTo(target, position);
-
+        board.Add(position, target);
+        target.SetPosition(position);
+        chess.transform.position = ReturnChessBlockPosition(position);
         return target;
     }
 
@@ -317,13 +324,11 @@ public class ChessBoard : MonoBehaviour
 
     public void MoveTo(ChessBasic chess, Vector2Int moveTo)
     {
-        if (chess == null|| moveTo == new Vector2Int(-1, -1))
+        if (chess == null || moveTo == new Vector2Int(-1, -1))
         {
             Debug.LogError(chess.gameObject.name + " : " + moveTo);
             return;
         }
-
-
         board.Remove(chess.position);
         board[moveTo] = chess;
         chess.SetPosition(moveTo);

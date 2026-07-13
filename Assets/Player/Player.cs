@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
+using Unity.VisualScripting;
 
-
-public enum PlayerStage { NoMyTurn,TurnInit,Ready,MovingChess,EatingChess,ReadytoEnd,End }
 
 public class Player : MonoBehaviour
 {
@@ -15,17 +14,15 @@ public class Player : MonoBehaviour
 
     public ChessColor usingChess;
 
-    public PlayerStage nowPlayerStage;
-
     public PlayerInPut playerInPut;
     public PlayerCanvas playerCanvas;
     public bool isPause => playerCanvas.isPause;
 
     public Dictionary<Vector2Int, ChessBasic> allTheChess { get; private set; } = new();
-
     public void AllChessInit(Dictionary<Vector2Int, ChessBasic> targetDict)
     {
-        allTheChess = targetDict;
+        allTheChess.Clear();
+        allTheChess.AddRange(targetDict);
         foreach (ChessBasic chess in allTheChess.Values)
         {
             chess.ChessInit(this);
@@ -127,6 +124,7 @@ public class Player : MonoBehaviour
 
         Player_ChessDictUpdate();
         playerCanvas.Init(this, choseBuffs);
+        Player_InGameStart();
     }
 
     private void EatAllTheCurseChess()
@@ -150,59 +148,24 @@ public class Player : MonoBehaviour
         EatAllTheCurseChess();
     }
 
-    //public Coroutine turnStart;
-    public CancellationTokenSource turnStart;
+    public void Player_StopAllInput() => playerInPut.RejectInput();
 
-
-    private bool turnCanEnd = false;
-
-    private async UniTask TurnStart(CancellationToken token)
+    private void Player_InGameStart()
     {
-        await UniTask.Yield();
-        nowPlayerStage = PlayerStage.Ready;
-        turnCanEnd = false;
-        playerInPut.StartGame();
+        playerInPut.StartInput();
         UpdateGuardianProtectArea();
-
-        while (!turnCanEnd)
-        {
-            switch (nowPlayerStage)
-            {
-                case PlayerStage.ReadytoEnd:
-                    Debug.Log("ReadytoEnd");
-                    turnCanEnd = true;
-                    break;
-                default: break;
-            }
-
-            await UniTask.Yield();
-
-        }
-
-        Player_ChessDictUpdate();
-        nowPlayerStage = PlayerStage.End;
-        _gameManager.EndTurn();
-
-    }
-
-    public void Player_TurnStop()
-    {
-        turnStart?.Cancel();
-        turnStart?.Dispose();
-        turnStart = null;
     }
 
     public void Player_TurnStart()
     {
-        nowPlayerStage = PlayerStage.TurnInit;
         _inPutManager.PlayerInputStage(usingChess, InputStage.Waiting);
-
-        turnStart = new CancellationTokenSource();
-        TurnStart(turnStart.Token).Forget();
-
-
-        //turnStart = StartCoroutine(TurnStart());
-        playerInPut.StartInput();
+        UpdateGuardianProtectArea();
     }
+    public void Player_TurnEnd()
+    {
+        Player_ChessDictUpdate();
+        _gameManager.EndTurn();
+    }
+
 
 }

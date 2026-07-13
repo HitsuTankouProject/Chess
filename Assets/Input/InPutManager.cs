@@ -43,12 +43,19 @@ public class InPutManager : MonoBehaviour
     private bool HasAnyButtonPressed(Gamepad gamepad)
     {
         if (gamepad == null) return false;
-        foreach (var control in gamepad.allControls)
-        {
-            if (control is ButtonControl button && button.isPressed)
-                return true;
-        }
-        return false;
+        return
+               gamepad.buttonSouth.wasPressedThisFrame ||
+               gamepad.buttonNorth.wasPressedThisFrame ||
+               gamepad.buttonEast.wasPressedThisFrame ||
+               gamepad.buttonWest.wasPressedThisFrame ||
+               gamepad.leftShoulder.wasPressedThisFrame ||
+               gamepad.rightShoulder.wasPressedThisFrame ||
+               gamepad.leftTrigger.wasPressedThisFrame ||
+               gamepad.rightTrigger.wasPressedThisFrame ||
+               gamepad.startButton.wasPressedThisFrame ||
+               gamepad.selectButton.wasPressedThisFrame ||
+               gamepad.leftStickButton.wasPressedThisFrame ||
+               gamepad.rightStickButton.wasPressedThisFrame;
     }
     public async UniTask<ButtonControl> WaitForGamePadButtonInput()
     {

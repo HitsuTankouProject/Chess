@@ -224,7 +224,7 @@ public class Pawn : ChessBasic
         if (isFirstMove) isFirstMove = false;
         MoveOnly(moveTo);
         Promotion();
-        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+        _player.Player_TurnEnd();
 
     }
 

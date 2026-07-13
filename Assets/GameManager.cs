@@ -225,7 +225,7 @@ public class GameManager : MonoBehaviour
     private const float playerCameraOpenTime = 0.5f;
 
     private const float openRectX = 0.5f;
-    private const float closeRectX = 0.001f;
+    private const float closeRectX = -1f;
     private async UniTask TargetPlayerCameraOpen(Camera playerCamera, bool isOpen)
     {
         bool isWhite = playerCamera == player01Camera;
@@ -332,7 +332,6 @@ public class GameManager : MonoBehaviour
     {
         Camera camera = TargetCamera(playerCameraStagePair.first);
         PlayerCameraTurn(camera, playerCameraStagePair).Forget();
-        //StartCoroutine(PlayerCameraTurn(camera, playerCameraStagePair));
     }
 
 
@@ -448,7 +447,7 @@ public class GameManager : MonoBehaviour
     private async UniTask GameStart()
     {
         await MainCameraTurn(GameStage.TurnStart);
-        await PlayerCameraOpen(true);
+        //await PlayerCameraOpen(true);
         nowTurnCount = 1;
         turnResult.Clear();
         await SwitchStage(GameStage.TurnStart);
@@ -514,9 +513,6 @@ public class GameManager : MonoBehaviour
         player01.ChooseBuff(player01Pick);
         player02.ChooseBuff(player02Pick);
 
-        Debug.Log(player01Pick.ToString());
-        Debug.Log(player02Pick.ToString());
-
         ReadyForInGame().Forget();
 
     }
@@ -537,34 +533,20 @@ public class GameManager : MonoBehaviour
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
 
         await inGamePanel.TurnChange(nowTurn);
+
         TargetPlayer(nowTurn).Player_TurnStart();
         nowGameStage = GameStage.InGame;
     }
 
-    private void StopPlayerTurn(ChessColor chessColor)
-    {
-        TargetPlayer(chessColor).nowPlayerStage = PlayerStage.NoMyTurn;
-        TargetPlayer(chessColor).Player_TurnStop();
-    }
     public void EndTurn()
     {
-        EndTurnProcess().Forget();
-    }
-
-    private async UniTask EndTurnProcess()
-    {
-        await UniTask.Yield();
-
         chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
 
-        StopPlayerTurn(ChessColor.White);
-        StopPlayerTurn(ChessColor.Black);
+        inPutManager.PlayerInputStage(nowTurn, InputStage.None);
 
         if (!player01.haveKing || !player02.haveKing) EndInGame(nowTurn);
-        else if(chessBoard.board.Count<=2) EndInGame(ChessColor.None);
+        else if (chessBoard.board.Count <= 2) EndInGame(ChessColor.None);
         else TurnChange().Forget();
-
-
     }
 
     private async UniTask InGame()
@@ -574,11 +556,16 @@ public class GameManager : MonoBehaviour
         Dictionary<Vector2Int, ChessBasic> whiteChess = new Dictionary<Vector2Int, ChessBasic>();
         Dictionary<Vector2Int, ChessBasic> blackChess = new Dictionary<Vector2Int, ChessBasic>();
 
+        //Debug.Log(chessBoard.board.Count);
+
         foreach (Vector2Int chessPos in chessBoard.board.Keys)
         {
+            //Debug.Log($"{chessBoard.board[chessPos].color.ToString()} : {chessBoard.board[chessPos].type.ToString()} + {chessPos}");
+
             if (chessBoard.board[chessPos].color == ChessColor.White)
                 whiteChess[chessPos] = chessBoard.board[chessPos];
-            else blackChess[chessPos] = chessBoard.board[chessPos];
+            else if (chessBoard.board[chessPos].color == ChessColor.Black)
+                blackChess[chessPos] = chessBoard.board[chessPos];
         }
         player01.Player_ChessInit(whiteChess);
         player02.Player_ChessInit(blackChess);
@@ -635,14 +622,14 @@ public class GameManager : MonoBehaviour
         AllPanelClose();
         if (IsGameEnd())
         {
-            Debug.Log("Real GameSet");
+            //Debug.Log("Real GameSet");
             DetermineWinner();
             SwitchStage(GameStage.GameEnd).Forget();
             return;
 
         }
 
-        Debug.Log("GameSet!!");
+        //Debug.Log("GameSet!!");
         nowTurnCount++;
         player01.AllBuffLevelUp();
         player02.AllBuffLevelUp();

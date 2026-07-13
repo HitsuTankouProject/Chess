@@ -171,9 +171,8 @@ public class AllTheBuff
         if (substitute == null|| !substitute.cantKillKingWhenPawnExist
             || pawnList == null || pawnList.Count == 0)
             return false;
-
         chess = pawnList[Random.Range(0, pawnList.Count)];
-        return true;
+        return chess != null;
     }
 
 
@@ -248,7 +247,7 @@ public class AllTheBuff
         {
             if (buff == null) continue;
             buff.LevelUp(out bool success);
-            Debug.Log(buff.buffName + "'s Level :" + buff.nowBuffLevel);
+            //Debug.Log(buff.buffName + "'s Level :" + buff.nowBuffLevel);
             if (!success)
             {
                 Debug.LogWarning($"{buff.buffName} already at max level.");

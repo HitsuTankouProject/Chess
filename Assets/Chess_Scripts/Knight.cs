@@ -173,7 +173,7 @@ public class Knight : ChessBasic
     {
         if (!moveAgain || !_player.charger.canMoveItAgain)
         {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
             return;
         }
 
@@ -185,7 +185,7 @@ public class Knight : ChessBasic
         else
         {
             isMoveAgain = false;
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
 
         }
 
@@ -195,7 +195,7 @@ public class Knight : ChessBasic
     {
         if (_player.skirmisher.nowBuffLevel != 3)
         {
-            _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+            _player.Player_TurnEnd();
             return;
         }
 
@@ -218,7 +218,7 @@ public class Knight : ChessBasic
             chess.GotEaten();
         }
 
-        _player.nowPlayerStage = PlayerStage.ReadytoEnd;
+        _player.Player_TurnEnd();
     }
 
 }
