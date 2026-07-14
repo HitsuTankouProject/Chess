@@ -59,7 +59,7 @@ public class AudioManager : MonoBehaviour
     /// BGM / SFX をそれぞれ再生するための AudioSource
     /// </summary>
     public AudioSource musicSource;
-    public AudioSource[] trapSfxSources;
+    public AudioSource[] sfxSources;
 
     /// <summary>
     /// 現在 BGM（musicSource）が再生中かどうかを返す
@@ -293,21 +293,18 @@ public class AudioManager : MonoBehaviour
             Debug.LogWarning("Not TrapSfxDate or Clip");
             return;
         }
-        else if (trapSfxSources == null || trapSfxSources.Length == 0)
+        else if (sfxSources == null || sfxSources.Length == 0)
         {
             Debug.LogWarning("AudioSource が設定されていません");
             return;
         }
 
         // 現在のAudioSourceで効果音を再生
-        trapSfxSources[index].PlayOneShot(targetSfxData.clip, targetSfxData.volume / 100); // 0～1に変換
+       sfxSources[index].PlayOneShot(targetSfxData.clip, targetSfxData.volume / 100); // 0～1に変換
 
         // 次のAudioSourceへ（ループ）
-        index = (index + 1) % trapSfxSources.Length;
+        index = (index + 1) % sfxSources.Length;
     }
-
-
-
     //[SerializeField] private float musicLength;
     //[SerializeField] private int targetSample;
     //[SerializeField] private int startSample;

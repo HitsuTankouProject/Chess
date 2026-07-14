@@ -214,8 +214,11 @@ public class InPutManager : MonoBehaviour
         while (true)
         {
             await UniTask.WaitUntil(() => oldConnectingGamePad != Gamepad.all.Count);
+            Debug.Log("oldConnectingGamePad != Gamepad.all.Count");
             RecodeGamePad();
             GamePadPairProcess();
+            Debug.Log($"P1 Using:{_player01Input.nowUsingDevice.ToString()} Have:{_player01Input.nowUsingGamepad != null}");
+            Debug.Log($"P2 Using:{_player02Input.nowUsingDevice.ToString()} Have:{_player02Input.nowUsingGamepad != null}");
         }
     }
 

@@ -238,6 +238,24 @@ public class ResourcesData : MonoBehaviour
 
     #endregion
 
+    #region Adudio Data
+    [Header("Bgm Data")]
+    public BgmData GameTitleBgm;
+    public BgmData inGameBgm;
+    public BgmData releaseBgm;
+
+    [Header("Bgm Data")]
+
+    public SfxData pressButtonSfx;
+
+    public SfxData gameStartSfx;
+    public SfxData turnChangeSfx;
+
+    public SfxData pickChessSfx;
+    public SfxData putChessSfx;
+
+    #endregion
+
     public void ResourcesInit()
     {
         CardDataInit();
