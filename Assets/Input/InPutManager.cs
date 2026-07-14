@@ -5,6 +5,7 @@ using UniRx;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using static UnityEngine.GraphicsBuffer;
 
 
 public enum GamepadType { None = 0, PlayStation, Xbox, Switch, }
@@ -101,12 +102,23 @@ public class InPutManager : MonoBehaviour
 
         return GamepadType.None;
     }
-    private Gamepad FindUnusedGamePad(Gamepad usedGamePad)
+    private Gamepad FindUnusedGamePad()
     {
         foreach (Gamepad gamePad in Gamepad.all)
-            if (gamePad != usedGamePad) return gamePad;
+        {
+            if (!IsGamepadUsing(gamePad))
+                return gamePad;
+        }
+
         return null;
     }
+
+    private bool IsGamepadUsing(Gamepad gamePad)
+    {
+        return _player01Input.nowUsingGamepad == gamePad
+            || _player02Input.nowUsingGamepad == gamePad;
+    }
+
     private void RecodeGamePad()
     {
         recodingGamePads.Clear();
@@ -122,7 +134,7 @@ public class InPutManager : MonoBehaviour
 
         bool isPlayer01UsingGamePad = _player01Input.nowUsingDevice == CanUseDevice.Gamepad;
         bool isPlayer01HaveGamePad = _player01Input.nowUsingGamepad != null 
-                                    &&Gamepad.all.Contains(_player01Input.nowUsingGamepad);
+                                    && Gamepad.all.Contains(_player01Input.nowUsingGamepad);
 
         bool isPlayer02UsingGamePad = _player02Input.nowUsingDevice == CanUseDevice.Gamepad;
         bool isPlayer02HaveGamePad = _player02Input.nowUsingGamepad != null
@@ -134,65 +146,70 @@ public class InPutManager : MonoBehaviour
             _player01Input.ChangeToMouse();
             _player02Input.ChangeToMouse();
         }
-        else if (oldConnectingGamePad == 1)
+        else if(oldConnectingGamePad == 1)
         {
             Gamepad connectedGamePad = Gamepad.all[0];
-
-            // Player 1 已經正常使用這個手把，不需要處理
-            if (isPlayer01UsingGamePad && isPlayer01HaveGamePad)
+            bool onlyOnePlayerUsingGamepad = isPlayer01UsingGamePad ^ isPlayer02UsingGamePad;
+            if (onlyOnePlayerUsingGamepad)
             {
-                if (isPlayer02UsingGamePad) _player02Input.ChangeToMouse();
+                if (IsGamepadUsing(connectedGamePad)) return;
+
+                if (isPlayer01UsingGamePad) _player01Input.ChangeToGamepad(connectedGamePad);
+                else _player02Input.ChangeToGamepad(connectedGamePad);
                 return;
             }
-
-            // Player 2 已經正常使用這個手把，不需要處理
-            else if (isPlayer02UsingGamePad && isPlayer02HaveGamePad)
+            else
             {
-                if (isPlayer01UsingGamePad)
-                    _player01Input.ChangeToMouse();
-                return;
+                if (!isPlayer01UsingGamePad && !isPlayer02UsingGamePad)
+                {
+                    _player01Input.ChangeToGamepad(connectedGamePad);
+                    _player02Input.ChangeToMouse();
+                    return;
+                }
+                else
+                {
+                    if (!IsGamepadUsing(connectedGamePad))
+                    {
+                        _player01Input.ChangeToGamepad(connectedGamePad);
+                        _player02Input.ChangeToMouse();
+                        return;
+                    }
+
+                    if(isPlayer01HaveGamePad) _player02Input.ChangeToMouse();
+                    else if(isPlayer02HaveGamePad) _player01Input.ChangeToMouse();
+
+
+                    return;
+                }
+
             }
 
-            // 有人設定為 Gamepad，但原本的手把已斷線
-            if (isPlayer01UsingGamePad && !isPlayer01HaveGamePad)
-            {
-                _player01Input.ChangeToGamepad(connectedGamePad);
-                _player02Input.ChangeToMouse();
-                return;
-            }
-            else if (isPlayer02UsingGamePad && !isPlayer02HaveGamePad)
-            {
-                _player02Input.ChangeToGamepad(connectedGamePad);
-                _player01Input.ChangeToMouse();
 
-                return;
-            }
 
-            // 兩人都沒有使用手把，預設分配給 Player 1
-            _player01Input.ChangeToGamepad(connectedGamePad);
-            _player02Input.ChangeToMouse();
-            return;
         }
-        else if(oldConnectingGamePad >= 2)
+        else if (oldConnectingGamePad >= 2)
         {
-            // Player 1 的手把無效，找一個沒有被 Player 2 使用的手把
-            if (!isPlayer01HaveGamePad)
+            if ((isPlayer01UsingGamePad && isPlayer01HaveGamePad) && (isPlayer02UsingGamePad && isPlayer02HaveGamePad)) return;
+            else if (!isPlayer01UsingGamePad && !isPlayer02UsingGamePad)
             {
-                Gamepad player01GamePad = FindUnusedGamePad(
-                    isPlayer02UsingGamePad? _player02Input.nowUsingGamepad: null );
-
-                if (player01GamePad != null) _player01Input.ChangeToGamepad(player01GamePad);
+                _player01Input.ChangeToGamepad(Gamepad.all[0]);
+                _player02Input.ChangeToGamepad(Gamepad.all[1]);
+                return;
             }
 
-            // 重新取得 Player 1 的手把，避免兩人分配到同一個
-            Gamepad player01CurrentGamePad = _player01Input.nowUsingGamepad;
+            bool isPlayer01NeedToReConnect = !(isPlayer01UsingGamePad && isPlayer01HaveGamePad);
+            bool isPlayer02NeedToReConnect = !(isPlayer02UsingGamePad && isPlayer02HaveGamePad);
 
-            // Player 2 的手把無效或與 Player 1 相同
-            if (!isPlayer02HaveGamePad ||_player02Input.nowUsingGamepad == player01CurrentGamePad)
+            if (isPlayer01NeedToReConnect)
             {
-                Gamepad player02GamePad = FindUnusedGamePad(player01CurrentGamePad);
+                Gamepad connectedGamePad = FindUnusedGamePad();
+                _player01Input.ChangeToGamepad(connectedGamePad);
+            }
 
-                if (player02GamePad != null) _player02Input.ChangeToGamepad(player02GamePad);
+            if (isPlayer02NeedToReConnect)
+            {
+                Gamepad connectedGamePad = FindUnusedGamePad();
+                _player02Input.ChangeToGamepad(connectedGamePad);
             }
         }
 

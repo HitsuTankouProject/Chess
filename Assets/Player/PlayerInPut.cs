@@ -47,21 +47,25 @@ public class PlayerInPut : MonoBehaviour
 
     public void ChangeToGamepad(Gamepad gamepad = null)
     {
-        nowUsingDevice = CanUseDevice.Gamepad;
-        if (nowUsingGamepad != null)
-        {
-            ChangeInput(CanUseDevice.Gamepad);
-            return;
-        }
-
         if (gamepad == null)
         {
             ChangeToMouse();
             return;
         }
+
+        nowUsingDevice = CanUseDevice.Gamepad;
+
+        if (nowUsingGamepad == gamepad)
+        {
+            ChangeInput(CanUseDevice.Gamepad);
+            return;
+        }
+
         nowUsingGamepad = gamepad;
         ChangeInput(CanUseDevice.Gamepad);
     }
+
+
     public void ChangeToMouse()
     {
         nowUsingDevice = CanUseDevice.Mouse;
