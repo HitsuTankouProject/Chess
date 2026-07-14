@@ -54,14 +54,8 @@ public class PlayerInPut : MonoBehaviour
         }
 
         nowUsingDevice = CanUseDevice.Gamepad;
-
-        if (nowUsingGamepad == gamepad)
-        {
-            ChangeInput(CanUseDevice.Gamepad);
-            return;
-        }
-
         nowUsingGamepad = gamepad;
+        Debug.Log(nowUsingGamepad.name);
         ChangeInput(CanUseDevice.Gamepad);
     }
 

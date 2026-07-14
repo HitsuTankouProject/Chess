@@ -23,6 +23,13 @@ public class IngamePanel : MonoBehaviour
     private readonly Pair<int, int> turnChange_panel_open = new(270, 270);
     private readonly Pair<int, int> turnChange_panel_close = new(540, 540);
    
+    public void Init()
+    {
+        whiteActionTag.enabled = true;
+        blackActionTag.enabled = false;
+        nowTurnTag.sprite = _resourcesData.PlayerSprite(ChessColor.White);
+
+    }
 
     public async UniTask TurnChange(ChessColor changeTo)
     {

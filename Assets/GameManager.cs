@@ -572,7 +572,9 @@ public class GameManager : MonoBehaviour
 
         nowTurn = ChessColor.White;
         TargetPlayer(nowTurn).Player_TurnStart();
+
         inGamePanel.gameObject.SetActive(true);
+        inGamePanel.Init();
     }
 
 
@@ -580,7 +582,6 @@ public class GameManager : MonoBehaviour
     {
         turnResult[nowTurnCount] = chessColor;
         SwitchStage(GameStage.TurnEnd).Forget();
-        //StartCoroutine(SwitchStage(GameStage.TurnEnd));
     }
 
     #endregion

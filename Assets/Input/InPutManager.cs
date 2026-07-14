@@ -71,14 +71,19 @@ public class InPutManager : MonoBehaviour
     public async UniTask<ButtonControl> WaitForGamePadButtonInput(Gamepad gamepad)
     {
         await UniTask.WaitUntil(() => !HasAnyButtonPressed(gamepad));
-        if (gamepad == null) return null;
-        var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
-        if (control is ButtonControl button && button.device is Gamepad)
+
+        while (gamepad != null)
+        {
+            var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
+
+            if (control is ButtonControl button && button.device == gamepad)
+            {
             return button;
-        else return null;
+            }
+        }
 
+        return null;
     }
-
     #endregion
 
     #region Gamepad Connect Watcher
@@ -125,7 +130,7 @@ public class InPutManager : MonoBehaviour
         foreach (Gamepad gamepad in Gamepad.all)
         {
             GamepadType controllerType = GetControllerType(gamepad);
-            recodingGamePads[gamepad] = controllerType;
+            recodingGamePads.Add(gamepad, controllerType);
         }
     }
     private void GamePadPairProcess()
@@ -149,16 +154,32 @@ public class InPutManager : MonoBehaviour
         else if(oldConnectingGamePad == 1)
         {
             Gamepad connectedGamePad = Gamepad.all[0];
+<<<<<<< .merge_file_CeCLe8
             bool onlyOnePlayerUsingGamepad = isPlayer01UsingGamePad ^ isPlayer02UsingGamePad;
             if (onlyOnePlayerUsingGamepad)
+=======
+
+            if (isPlayer01UsingGamePad && isPlayer01HaveGamePad)
+>>>>>>> .merge_file_v6WJSB
             {
                 if (IsGamepadUsing(connectedGamePad)) return;
 
+<<<<<<< .merge_file_CeCLe8
                 if (isPlayer01UsingGamePad) _player01Input.ChangeToGamepad(connectedGamePad);
                 else _player02Input.ChangeToGamepad(connectedGamePad);
                 return;
             }
             else
+=======
+            else if (isPlayer02UsingGamePad && isPlayer02HaveGamePad)
+            {
+                if (isPlayer01UsingGamePad)
+                    _player01Input.ChangeToMouse();
+                return;
+            }
+
+            if (isPlayer01UsingGamePad && !isPlayer01HaveGamePad)
+>>>>>>> .merge_file_v6WJSB
             {
                 if (!isPlayer01UsingGamePad && !isPlayer02UsingGamePad)
                 {
@@ -184,11 +205,18 @@ public class InPutManager : MonoBehaviour
 
             }
 
+<<<<<<< .merge_file_CeCLe8
 
 
+=======
+            _player01Input.ChangeToGamepad(connectedGamePad);
+            _player02Input.ChangeToMouse();
+            return;
+>>>>>>> .merge_file_v6WJSB
         }
         else if (oldConnectingGamePad >= 2)
         {
+<<<<<<< .merge_file_CeCLe8
             if ((isPlayer01UsingGamePad && isPlayer01HaveGamePad) && (isPlayer02UsingGamePad && isPlayer02HaveGamePad)) return;
             else if (!isPlayer01UsingGamePad && !isPlayer02UsingGamePad)
             {
@@ -201,15 +229,41 @@ public class InPutManager : MonoBehaviour
             bool isPlayer02NeedToReConnect = !(isPlayer02UsingGamePad && isPlayer02HaveGamePad);
 
             if (isPlayer01NeedToReConnect)
+=======
+            if (!isPlayer01HaveGamePad)
+            {
+                Gamepad player01GamePad = FindUnusedGamePad(
+                    isPlayer02UsingGamePad? _player02Input.nowUsingGamepad: null );
+
+                if (player01GamePad != null)
+                {
+                    Debug.Log(recodingGamePads[player01GamePad].ToString());
+                    _player01Input.ChangeToGamepad(player01GamePad);
+                }
+            }
+
+            Gamepad player01CurrentGamePad = _player01Input.nowUsingGamepad;
+
+            if (!isPlayer02HaveGamePad ||_player02Input.nowUsingGamepad == player01CurrentGamePad)
+>>>>>>> .merge_file_v6WJSB
             {
                 Gamepad connectedGamePad = FindUnusedGamePad();
                 _player01Input.ChangeToGamepad(connectedGamePad);
             }
 
+<<<<<<< .merge_file_CeCLe8
             if (isPlayer02NeedToReConnect)
             {
                 Gamepad connectedGamePad = FindUnusedGamePad();
                 _player02Input.ChangeToGamepad(connectedGamePad);
+=======
+                if (player02GamePad != null) 
+                {
+                    Debug.Log(recodingGamePads[player02GamePad].ToString());
+                    _player02Input.ChangeToGamepad(player02GamePad);
+
+                }
+>>>>>>> .merge_file_v6WJSB
             }
         }
 

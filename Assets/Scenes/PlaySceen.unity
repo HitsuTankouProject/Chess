@@ -5628,7 +5628,6 @@ MonoBehaviour:
   usingChess: 0
   playerInPut: {fileID: 593378779}
   playerCanvas: {fileID: 1969220423}
-  allTheChessPoss: []
   haveKing: 1
   allTheBuff:
     kingBuffType: 0
@@ -7429,7 +7428,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &759881835
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10822,7 +10821,6 @@ MonoBehaviour:
   usingChess: 1
   playerInPut: {fileID: 1059311081}
   playerCanvas: {fileID: 177612103}
-  allTheChessPoss: []
   haveKing: 1
   allTheBuff:
     kingBuffType: 0
@@ -15565,7 +15563,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1405297242
 RectTransform:
   m_ObjectHideFlags: 0

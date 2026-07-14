@@ -275,7 +275,7 @@ public class King : ChessBasic
         SageKing_Level2_AddBarrier();
         base.Move(moveTo);
         if (SageKing_Level3_WonByGoToEnemyKingStart(moveTo))
-            GameManager.Instance.EndInGame(_enemy.usingChess);
+            GameManager.Instance.EndInGame(_player.usingChess);
 
     }
 
