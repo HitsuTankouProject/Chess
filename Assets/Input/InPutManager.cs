@@ -70,14 +70,19 @@ public class InPutManager : MonoBehaviour
     public async UniTask<ButtonControl> WaitForGamePadButtonInput(Gamepad gamepad)
     {
         await UniTask.WaitUntil(() => !HasAnyButtonPressed(gamepad));
-        if (gamepad == null) return null;
-        var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
-        if (control is ButtonControl button && button.device is Gamepad)
+
+        while (gamepad != null)
+        {
+            var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
+
+            if (control is ButtonControl button && button.device == gamepad)
+            {
             return button;
-        else return null;
+            }
+        }
 
+        return null;
     }
-
     #endregion
 
     #region Gamepad Connect Watcher
@@ -113,7 +118,7 @@ public class InPutManager : MonoBehaviour
         foreach (Gamepad gamepad in Gamepad.all)
         {
             GamepadType controllerType = GetControllerType(gamepad);
-            recodingGamePads[gamepad] = controllerType;
+            recodingGamePads.Add(gamepad, controllerType);
         }
     }
     private void GamePadPairProcess()
@@ -138,14 +143,12 @@ public class InPutManager : MonoBehaviour
         {
             Gamepad connectedGamePad = Gamepad.all[0];
 
-            // Player 1 已經正常使用這個手把，不需要處理
             if (isPlayer01UsingGamePad && isPlayer01HaveGamePad)
             {
                 if (isPlayer02UsingGamePad) _player02Input.ChangeToMouse();
                 return;
             }
 
-            // Player 2 已經正常使用這個手把，不需要處理
             else if (isPlayer02UsingGamePad && isPlayer02HaveGamePad)
             {
                 if (isPlayer01UsingGamePad)
@@ -153,7 +156,6 @@ public class InPutManager : MonoBehaviour
                 return;
             }
 
-            // 有人設定為 Gamepad，但原本的手把已斷線
             if (isPlayer01UsingGamePad && !isPlayer01HaveGamePad)
             {
                 _player01Input.ChangeToGamepad(connectedGamePad);
@@ -168,31 +170,36 @@ public class InPutManager : MonoBehaviour
                 return;
             }
 
-            // 兩人都沒有使用手把，預設分配給 Player 1
             _player01Input.ChangeToGamepad(connectedGamePad);
             _player02Input.ChangeToMouse();
             return;
         }
         else if(oldConnectingGamePad >= 2)
         {
-            // Player 1 的手把無效，找一個沒有被 Player 2 使用的手把
             if (!isPlayer01HaveGamePad)
             {
                 Gamepad player01GamePad = FindUnusedGamePad(
                     isPlayer02UsingGamePad? _player02Input.nowUsingGamepad: null );
 
-                if (player01GamePad != null) _player01Input.ChangeToGamepad(player01GamePad);
+                if (player01GamePad != null)
+                {
+                    Debug.Log(recodingGamePads[player01GamePad].ToString());
+                    _player01Input.ChangeToGamepad(player01GamePad);
+                }
             }
 
-            // 重新取得 Player 1 的手把，避免兩人分配到同一個
             Gamepad player01CurrentGamePad = _player01Input.nowUsingGamepad;
 
-            // Player 2 的手把無效或與 Player 1 相同
             if (!isPlayer02HaveGamePad ||_player02Input.nowUsingGamepad == player01CurrentGamePad)
             {
                 Gamepad player02GamePad = FindUnusedGamePad(player01CurrentGamePad);
 
-                if (player02GamePad != null) _player02Input.ChangeToGamepad(player02GamePad);
+                if (player02GamePad != null) 
+                {
+                    Debug.Log(recodingGamePads[player02GamePad].ToString());
+                    _player02Input.ChangeToGamepad(player02GamePad);
+
+                }
             }
         }
 

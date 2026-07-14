@@ -50,6 +50,7 @@ public class PlayerInPut : MonoBehaviour
         nowUsingDevice = CanUseDevice.Gamepad;
         if (nowUsingGamepad != null)
         {
+            Debug.Log(nowUsingGamepad.name);
             ChangeInput(CanUseDevice.Gamepad);
             return;
         }
@@ -60,6 +61,8 @@ public class PlayerInPut : MonoBehaviour
             return;
         }
         nowUsingGamepad = gamepad;
+        Debug.Log(nowUsingGamepad.name);
+
         ChangeInput(CanUseDevice.Gamepad);
     }
     public void ChangeToMouse()

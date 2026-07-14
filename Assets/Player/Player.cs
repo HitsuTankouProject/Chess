@@ -143,9 +143,11 @@ public class Player : MonoBehaviour
 
     private void Player_ChessDictUpdate()
     {
-        allTheChess = _chessBoard.ColorChessDict(usingChess);
+        allTheChess.Clear();
+        allTheChess.AddRange(_chessBoard.ColorChessDict(usingChess));
+
+
         UpdateGuardianProtectArea();
-        EatAllTheCurseChess();
     }
 
     public void Player_StopAllInput() => playerInPut.RejectInput();
@@ -159,10 +161,11 @@ public class Player : MonoBehaviour
     public void Player_TurnStart()
     {
         _inPutManager.PlayerInputStage(usingChess, InputStage.Waiting);
-        UpdateGuardianProtectArea();
+        Player_ChessDictUpdate();
     }
     public void Player_TurnEnd()
     {
+        EatAllTheCurseChess();
         Player_ChessDictUpdate();
         _gameManager.EndTurn();
     }
