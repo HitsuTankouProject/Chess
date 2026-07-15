@@ -173,4 +173,21 @@ namespace Data
 
     }
 
+    [System.Serializable]
+    public struct AllSfxData
+    {
+
+        public SfxData sfx_PressButton;
+
+        public SfxData sfx_GameStart;
+
+        public SfxData sfx_PickChess;
+        public SfxData sfx_PutChess;
+
+        public SfxData sfx_TurnChange;
+
+        public SfxData sfx_Release;
+    }
+
+
 }

@@ -242,18 +242,19 @@ public class ResourcesData : MonoBehaviour
     [Header("Bgm Data")]
     public BgmData bgm_game;
 
-    [Header("Bgm Data")]
+    [Header("Sfx Data")]
+    public AllSfxData allSfxData;
 
-    public SfxData sfx_PressButton;
+    public SfxData sfx_PressButton => allSfxData.sfx_PressButton;
 
-    public SfxData sfx_GameStart;
+    public SfxData sfx_GameStart => allSfxData.sfx_GameStart;
 
-    public SfxData sfx_PickChess;
-    public SfxData sfx_PutChess;
+    public SfxData sfx_PickChess => allSfxData.sfx_PickChess;
+    public SfxData sfx_PutChess => allSfxData.sfx_PutChess;
 
-    public SfxData sfx_TurnChange;
+    public SfxData sfx_TurnChange => allSfxData.sfx_TurnChange;
 
-    public SfxData sfx_Release;
+    public SfxData sfx_Release => allSfxData.sfx_Release;
 
 
     #endregion

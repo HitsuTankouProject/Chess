@@ -12,4 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e1ce3a8909ca11498f3f6ef8aea76bd, type: 3}
   m_Name: English
   m_EditorClassIdentifier: Assembly-CSharp::LanguageData
+  language: 1
   sp_Button_GameTitle: {fileID: 0}
+  sp_Button_GameStart: {fileID: 0}
+  sp_Button_Description: {fileID: 0}
+  sp_Button_CanDrawAgain: {fileID: 0}
+  sp_Button_CannotDrawAgain: {fileID: 0}
+  sp_Button_Return: {fileID: 0}
+  sp_Button_Confirm: {fileID: 0}
+  sp_Button_Pause: {fileID: 0}
+  sp_Button_PauseReturn: {fileID: 0}
+  sp_Button_Yes: {fileID: 0}
+  sp_Button_No: {fileID: 0}
+  sp_Button_Surrender: {fileID: 0}
+  sp_Button_Restart: {fileID: 0}
+  sp_Button_Quit: {fileID: 0}

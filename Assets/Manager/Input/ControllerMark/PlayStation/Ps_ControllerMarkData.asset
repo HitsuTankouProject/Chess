@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0252fa7db77641b4cbfe9423efd81628, type: 3}
+  m_Name: Ps_ControllerMarkData
+  m_EditorClassIdentifier: Assembly-CSharp::ControllerMarkData
+  gamepadType: 1
+  sp_start: {fileID: 0}
+  sp_up: {fileID: 0}
+  sp_down: {fileID: 0}
+  sp_right: {fileID: 0}
+  sp_left: {fileID: 0}
+  sp_buttonEast: {fileID: 0}
+  sp_buttonSouth: {fileID: 0}
+  sp_buttonWest: {fileID: 0}
+  buttonNorth: {fileID: 0}

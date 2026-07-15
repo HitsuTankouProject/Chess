@@ -718,7 +718,25 @@ public class GameManager : MonoBehaviour
 
     }
 
+    private async UniTask WaitGamePadInput_Release()
+    {
+        while (nowGameStage == GameStage.Release)
+        {
+            ButtonControl button = await inPutManager.WaitForGamePadButtonInput();
+            await UniTask.Yield();
+            if (button == null) continue;
 
+            switch (button.name)
+            {
+                case "buttonWest": ; return;
+                case "buttonNorth": ; return;
+                case "buttonEast": ; break;
+                case "buttonSouth": ; break;
+
+                default: await UniTask.Yield(); break;
+            }
+        }
+    }
 
 
 
