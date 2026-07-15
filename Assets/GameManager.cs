@@ -94,6 +94,10 @@ public class GameManager : MonoBehaviour
     public ResourcesData resourcesData;
     public InPutManager inPutManager;
     public ChessBoard chessBoard;
+    public AudioManager audioManager;
+
+    Pair<ChessBasic, List<int>> aaa = new();
+
 
 
 
@@ -130,6 +134,7 @@ public class GameManager : MonoBehaviour
 
     private async UniTask SwitchStage(GameStage targetStage)
     {
+        await UniTask.Yield();
         nowGameStage = targetStage;
         loading.SetActive(true);
         switch (nowGameStage)
@@ -349,22 +354,26 @@ public class GameManager : MonoBehaviour
     }
     public void Button_BackToGameTitle()
     {
+        audioManager.PlaySfx(resourcesData.sfx_PressButton);
         AllPanelClose();
         SwitchStage(GameStage.GameTitle).Forget();
     }
     public void Button_BackToGameDescription()
     {
+        audioManager.PlaySfx(resourcesData.sfx_PressButton);
         AllPanelClose();
         SwitchStage(GameStage.GameDescription).Forget();
 
     }
     public void Button_BackToGameStart()
     {
+        audioManager.PlaySfx(resourcesData.sfx_PressButton);
         AllPanelClose();
         SwitchStage(GameStage.GameStart).Forget();
     }
     public void Button_BackToRelease()
     {
+        audioManager.PlaySfx(resourcesData.sfx_PressButton);
         AllPanelClose();
         SwitchStage(GameStage.Release).Forget();
     }
@@ -402,6 +411,10 @@ public class GameManager : MonoBehaviour
     {
         await UniTask.Yield();
         await MainCameraTurn(GameStage.GameTitle);
+        if (!audioManager.IsBgmPlaying())
+        {
+            audioManager.PlayMusic(resourcesData.bgm_game);
+        }
         gameTitlePanel.SetActive(true);
         WaitGamePadInput_GameTitle().Forget();
 
@@ -446,6 +459,8 @@ public class GameManager : MonoBehaviour
 
     private async UniTask GameStart()
     {
+        audioManager.PlaySfx(resourcesData.sfx_GameStart);
+
         await MainCameraTurn(GameStage.TurnStart);
         //await PlayerCameraOpen(true);
         nowTurnCount = 1;
@@ -529,9 +544,11 @@ public class GameManager : MonoBehaviour
 
     private async UniTask TurnChange()
     {
+
         nowGameStage = GameStage.TurnChange;
         nowTurn = nowTurn == ChessColor.White ? ChessColor.Black : ChessColor.White;
 
+        audioManager.PlaySfx(resourcesData.sfx_GameStart);
         await inGamePanel.TurnChange(nowTurn);
 
         TargetPlayer(nowTurn).Player_TurnStart();
@@ -658,6 +675,7 @@ public class GameManager : MonoBehaviour
         await MainCameraTurn(GameStage.Release);
         chessBoard.CleanTheBoard();
         SwitchStage(GameStage.Release).Forget();
+
     }
 
 
@@ -694,6 +712,7 @@ public class GameManager : MonoBehaviour
     private async UniTask Release()
     {
         await UniTask.Yield();
+        audioManager.PlaySfx(resourcesData.sfx_PressButton);
         ShowGameResult();
         gameReleasePanel.SetActive(true);
 

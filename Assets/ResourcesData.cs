@@ -240,19 +240,21 @@ public class ResourcesData : MonoBehaviour
 
     #region Adudio Data
     [Header("Bgm Data")]
-    public BgmData GameTitleBgm;
-    public BgmData inGameBgm;
-    public BgmData releaseBgm;
+    public BgmData bgm_game;
 
     [Header("Bgm Data")]
 
-    public SfxData pressButtonSfx;
+    public SfxData sfx_PressButton;
 
-    public SfxData gameStartSfx;
-    public SfxData turnChangeSfx;
+    public SfxData sfx_GameStart;
 
-    public SfxData pickChessSfx;
-    public SfxData putChessSfx;
+    public SfxData sfx_PickChess;
+    public SfxData sfx_PutChess;
+
+    public SfxData sfx_TurnChange;
+
+    public SfxData sfx_Release;
+
 
     #endregion
 

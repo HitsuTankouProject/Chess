@@ -52,6 +52,9 @@ public class PlayerCanvas : MonoBehaviour
     }
     public void Button_BackToGameTitle()
     {
+        isPause = false;
+        pausePanel.SetActive(isPause);
+        skillDescriptionPanel.gameObject.SetActive(false);
         GameManager.Instance.Button_BackToGameTitle();
     }
 

@@ -3296,7 +3296,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -4873,7 +4873,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -6278,6 +6278,7 @@ MonoBehaviour:
   resourcesData: {fileID: 949150466}
   inPutManager: {fileID: 557996639}
   chessBoard: {fileID: 1566016410}
+  audioManager: {fileID: 2003938017}
   mainCamera: {fileID: 1268383752}
   player01Camera: {fileID: 330585545}
   player02Camera: {fileID: 974589750}
@@ -7483,7 +7484,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -9586,7 +9587,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -10210,12 +10211,10 @@ MonoBehaviour:
   allSprite:
     sp_WhiteColor: {fileID: 21300000, guid: c099f84caa1ddcf44ae026975dde26d5, type: 3}
     sp_BlackColor: {fileID: 21300000, guid: f5ce7c574a484764a954befa761f9e84, type: 3}
-    sp_Confirm: {fileID: 21300000, guid: 571b47191f1a93e419f2f587df29a70b, type: 3}
-    sp_Return: {fileID: 21300000, guid: 9e4345b2340c9a54ca11cbf729eb94a0, type: 3}
-    sp_canDraw: {fileID: 21300000, guid: 5d2fb7e31a5cb6343a72daab3a4cacb6, type: 3}
-    sp_cantDraw: {fileID: 21300000, guid: 048a3792557a3f949a2fe143b6ebfb83, type: 3}
-    sp_Ready: {fileID: 21300000, guid: aca1cddb7b79f8240adfa6f44b94fa67, type: 3}
-    sp_NonReady: {fileID: 21300000, guid: dcc4629dbf4f97945a37de4587445c2f, type: 3}
+    sp_Confirm: {fileID: 21300000, guid: 35bb2bea2d2e1cc48aceabee39be3808, type: 3}
+    sp_Return: {fileID: 21300000, guid: 94d9f3424e435c14a9a8afdc6ed1c6c8, type: 3}
+    sp_canDraw: {fileID: 21300000, guid: 74c4d8cf1dcbdf347a85f1c6e7a20344, type: 3}
+    sp_cantDraw: {fileID: 21300000, guid: 3eb1d24aab4c7df418cbf71067f19e19, type: 3}
     sp_NumberSprites:
     - {fileID: 21300000, guid: 1c899676a4b91fd42a936d969c558e35, type: 3}
     - {fileID: 21300000, guid: a78357b2c7aba00439ef47edb2c40582, type: 3}
@@ -10237,35 +10236,33 @@ MonoBehaviour:
     m_White: {fileID: 2100000, guid: 4e1b89e8dc9cc0b45a3cd18bf99372d2, type: 2}
     m_Black: {fileID: 2100000, guid: f2cca522b95dcaf438baef65bc6d7d3e, type: 2}
     m_GotCurse: {fileID: 2100000, guid: c357f8115a3bc694eb5903016f2345a9, type: 2}
-  GameTitleBgm:
-    clip: {fileID: 0}
-    volume: 0
-  inGameBgm:
-    clip: {fileID: 0}
-    volume: 0
-  releaseBgm:
-    clip: {fileID: 0}
-    volume: 0
-  pressButtonSfx:
+  bgm_game:
+    clip: {fileID: 8300000, guid: ee1ad95a19e0e5b43943d55725926df4, type: 3}
+    volume: 40
+  sfx_PressButton:
     sfxName: 
-    clip: {fileID: 0}
-    volume: 0
-  gameStartSfx:
+    clip: {fileID: 8300000, guid: 7dcd28bce2eb34646853ffc406fa3960, type: 3}
+    volume: 100
+  sfx_GameStart:
     sfxName: 
-    clip: {fileID: 0}
-    volume: 0
-  turnChangeSfx:
+    clip: {fileID: 8300000, guid: 40536010a36baf04d9207e12436a5311, type: 3}
+    volume: 80
+  sfx_PickChess:
     sfxName: 
-    clip: {fileID: 0}
-    volume: 0
-  pickChessSfx:
+    clip: {fileID: 8300000, guid: 7cbd449f11fbc1f4f8ed4863aa489a53, type: 3}
+    volume: 80
+  sfx_PutChess:
     sfxName: 
-    clip: {fileID: 0}
-    volume: 0
-  putChessSfx:
+    clip: {fileID: 8300000, guid: ca2212862d8d79946ae22ec3f35f7e5d, type: 3}
+    volume: 80
+  sfx_TurnChange:
     sfxName: 
-    clip: {fileID: 0}
-    volume: 0
+    clip: {fileID: 8300000, guid: 9ef69d0377b7c2a46be38c7ee7302476, type: 3}
+    volume: 80
+  sfx_Release:
+    sfxName: 
+    clip: {fileID: 8300000, guid: 44ee24fb862677148b9539250ff55874, type: 3}
+    volume: 80
 --- !u!1 &956571830
 GameObject:
   m_ObjectHideFlags: 0
@@ -15096,7 +15093,7 @@ GameObject:
   - component: {fileID: 1365390499}
   - component: {fileID: 1365390498}
   m_Layer: 0
-  m_Name: ChessAndBlock
+  m_Name: ChessAndBoard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15197,7 +15194,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6ecc3152722bd6b48aa804a5e05ecbe4, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 779e57d0310cad6499a1f564f8b35362, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -15259,7 +15256,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 0
@@ -18228,7 +18225,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 571b47191f1a93e419f2f587df29a70b, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 35bb2bea2d2e1cc48aceabee39be3808, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -19061,7 +19058,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 9e4345b2340c9a54ca11cbf729eb94a0, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 94d9f3424e435c14a9a8afdc6ed1c6c8, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -23293,10 +23290,10 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0

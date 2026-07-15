@@ -64,7 +64,7 @@ public class AudioManager : MonoBehaviour
     /// <summary>
     /// 現在 BGM（musicSource）が再生中かどうかを返す
     /// </summary>
-    public bool IsPlaying() {  return musicSource.isPlaying; }
+    public bool IsBgmPlaying() {  return musicSource.isPlaying; }
 
     /// <summary>
     /// シングルトンをセットし、シーンを跨いで破棄されないよう設定する

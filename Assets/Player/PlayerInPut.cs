@@ -18,6 +18,10 @@ public class PlayerInPut : MonoBehaviour
     private ChessBoard _chessBoard => _gameManager.chessBoard;
 
     private InPutManager _inPutManager => _gameManager.inPutManager;
+    private AudioManager _audioManager => _gameManager.audioManager;
+    private ResourcesData _resourcesData => _gameManager.resourcesData;
+
+
 
     private int gameBoardLayerMask;
 
@@ -91,7 +95,7 @@ public class PlayerInPut : MonoBehaviour
         if (!haveChess) return;
         if (chess.color != _gameManager.nowTurn) return;
         //Debug.Log(chess.name);
-
+        _audioManager.PlaySfx(_resourcesData.sfx_PickChess);
         _player.TurnCamera(PlayerCameraStage.Pick);
 
         pickIngChess = chess;
@@ -102,7 +106,8 @@ public class PlayerInPut : MonoBehaviour
     private bool PutChess(Vector2Int boardPos)
     {
         if (pickIngChess == null) return false;
-        
+        _audioManager.PlaySfx(_resourcesData.sfx_PutChess);
+
         bool canMove = pickIngChess.possibleMoveList.Contains(boardPos);
         _chessBoard.ReSetActive();
         _player.TurnCamera(PlayerCameraStage.Normal);
@@ -297,11 +302,11 @@ public class PlayerInPut : MonoBehaviour
 
     private async UniTask WaitGamePadInput_GameSkillChoose(CancellationToken token)
     {
+
         while (IsNowPickTurn())
         {
-            ButtonControl button = await _inPutManager.WaitForGamePadButtonInput(nowUsingGamepad);
             await UniTask.Yield(token);
-
+            ButtonControl button = await _inPutManager.WaitForGamePadButtonInput(nowUsingGamepad);
             if (button == null) continue;
 
             switch (button.name)
@@ -524,7 +529,7 @@ public class PlayerInPut : MonoBehaviour
 
             switch (button.name)
             {
-                case "start":     Pause();                break;
+                case "start":           Pause();                break;
 
                 case "up":              Dpad_Up();              break;
                 case "down":            Dpad_Down();            break;
@@ -539,7 +544,7 @@ public class PlayerInPut : MonoBehaviour
                 case "buttonNorth":     ButtonNorth();          break;
 
 
-                default:                await UniTask.Yield();  break;
+                default:                await UniTask.Yield(token);  break;
             }
 
 

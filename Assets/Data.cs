@@ -168,8 +168,6 @@ namespace Data
         public Sprite sp_Return;
         public Sprite sp_canDraw;
         public Sprite sp_cantDraw;
-        public Sprite sp_Ready;
-        public Sprite sp_NonReady;
         [Header("Number Sprite")]
         public List<Sprite> sp_NumberSprites;
 
