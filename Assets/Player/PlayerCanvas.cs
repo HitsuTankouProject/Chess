@@ -1,17 +1,21 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using Cysharp.Threading.Tasks;
 
 public class PlayerCanvas : MonoBehaviour
 {
-    public GameObject pausePanel;
 
+    private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
+    public GameObject pausePanel;
     private Player _player;
     private bool isPlayerUseGamePad => _player.playerInPut.nowUsingDevice == CanUseDevice.Gamepad;
     public Camera playerCamera;
 
-    public bool isPause {  get; private set; }
+    public bool isPause { get; private set; }
 
     public void Init(Player player, List<AllBuffCard> choseBuffs)
     {
@@ -22,7 +26,7 @@ public class PlayerCanvas : MonoBehaviour
     #region Button
     public void Button_Pause()
     {
-        if (GameManager.Instance.nowGameStage != GameStage.InGame) return;
+        if (GameManager.Instance.nowGameStage != GameStage.InGame || isConfirming) return;
         isPause = !isPause;
         pausePanel.SetActive(isPause);
         if (isPlayerUseGamePad)
@@ -48,13 +52,30 @@ public class PlayerCanvas : MonoBehaviour
         => skillDescriptionPanel.gameObject.SetActive(false);
     public void Button_Surrender()
     {
-        GameManager.Instance.Surrender(_player.usingChess);
+        if (GameManager.Instance.nowGameStage != GameStage.InGame || isConfirming) return;
+        OpenConfirmPanel(ConfirmStage.Surrender);
     }
     public void Button_BackToGameTitle()
     {
-        GameManager.Instance.Button_BackToGameTitle();
+        if (GameManager.Instance.nowGameStage != GameStage.InGame || isConfirming) return;
+        OpenConfirmPanel(ConfirmStage.BackToGameTitle);
     }
 
+    public void Button_Return()
+    {
+        confirmStage = ConfirmStage.None;
+        confirmPanel.SetActive(false);
+    }
+    public void Button_Confirm()
+    {
+        switch (confirmStage)
+        {
+            case ConfirmStage.Surrender: GameManager.Instance.Surrender(_player.usingChess); break;
+            case ConfirmStage.BackToGameTitle: GameManager.Instance.Button_BackToGameTitle(); break;
+            default: return;
+        }
+        Button_Return();
+    }
 
     #endregion
 
@@ -115,6 +136,36 @@ public class PlayerCanvas : MonoBehaviour
         pickCardIndex = Mathf.Max(pickCardIndex - 1, 0);
         pickCard.transform.localPosition = cardsPos[pickCardIndex];
     }
+
+
+    #endregion
+
+    #region Confirm
+    [Header("Confirm Panel")]
+    public GameObject confirmPanel;
+    public Image confirmImage;
+    private bool isConfirming => confirmPanel.activeSelf;
+    private enum ConfirmStage {None, Surrender, BackToGameTitle}
+    private ConfirmStage confirmStage;
+    private Sprite Sp_Confirm()
+    {
+        switch (confirmStage)
+        {
+            case ConfirmStage.None: return null;
+            case ConfirmStage.Surrender: return _resourcesData.allSprite.sp_Confirm_Surrender;
+            case ConfirmStage.BackToGameTitle: return _resourcesData.allSprite.sp_Confirm_Surrender;
+            default: return null;
+        }
+    }
+
+    private void OpenConfirmPanel(ConfirmStage stage)
+    {
+        confirmStage = stage;
+        confirmImage.sprite = Sp_Confirm();
+        confirmPanel.SetActive(true);
+    }
+
+    
 
 
     #endregion

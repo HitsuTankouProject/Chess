@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
-using System.Linq;
-using UniRx;
-
 public enum GameStage
 { 
     Loading, 
@@ -267,7 +263,7 @@ public class GameManager : MonoBehaviour
 
         playerCamera.rect = target;
     }
-    private async UniTask PlayerCameraOpen(bool isOpen)
+    public async UniTask PlayerCameraOpen(bool isOpen)
     {
         await TargetPlayerCameraOpen(player01Camera, isOpen);
         await TargetPlayerCameraOpen(player02Camera, isOpen);
@@ -398,9 +394,11 @@ public class GameManager : MonoBehaviour
     [Header("GameTitle")]
     public GameObject gameTitlePanel;
 
+
     private async UniTask GameTitle()
     {
         await UniTask.Yield();
+        await PlayerCameraOpen(false);
         await MainCameraTurn(GameStage.GameTitle);
         gameTitlePanel.SetActive(true);
         WaitGamePadInput_GameTitle().Forget();

@@ -218,8 +218,6 @@ public class ChooseSkillPanel : MonoBehaviour
         _gameManager.EndSkillChoose(pickedCards[0], pickedCards[1]);
     }
 
-
-
     private void StartChooseSkill(ChessColor color)
     {
         chooseSkillPlayerColor = color;
@@ -248,10 +246,6 @@ public class ChooseSkillPanel : MonoBehaviour
         else if(!isBlackChessPlayerPick) StartChooseSkill(ChessColor.Black);
 
     }
-
-
-
-
     public void Init()
     {
         pickedCards.Clear();

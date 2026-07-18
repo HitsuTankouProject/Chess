@@ -170,6 +170,11 @@ namespace Data
         public Sprite sp_cantDraw;
         public Sprite sp_Ready;
         public Sprite sp_NonReady;
+        [Header("Description Sprite")]
+        public Sprite sp_Confirm_Surrender;
+        public Sprite sp_Confirm_BackToGameTitle;
+
+
         [Header("Number Sprite")]
         public List<Sprite> sp_NumberSprites;
 
