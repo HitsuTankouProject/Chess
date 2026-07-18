@@ -59,6 +59,7 @@ public class PlayerCanvas : MonoBehaviour
     {
         if (GameManager.Instance.nowGameStage != GameStage.InGame || isConfirming) return;
         OpenConfirmPanel(ConfirmStage.BackToGameTitle);
+
     }
 
     public void Button_Return()
@@ -74,6 +75,9 @@ public class PlayerCanvas : MonoBehaviour
             case ConfirmStage.BackToGameTitle: GameManager.Instance.Button_BackToGameTitle(); break;
             default: return;
         }
+        isPause = false;
+        pausePanel.SetActive(isPause);
+        skillDescriptionPanel.gameObject.SetActive(false);
         Button_Return();
     }
 
