@@ -188,12 +188,12 @@ public class AllTheBuff
         }
         switch (chessType)
         {
-            case ChessType.King: kingBuffType = KingBuff.None; break;
-            case ChessType.Queen: queenBuffType = QueenBuff.None; break;
-            case ChessType.Knight: knightBuffType = KnightBuff.None; break;
-            case ChessType.Bishop: bishopBuffType = BishopBuff.None; break;
-            case ChessType.Rook: rookBuffType = RookBuff.None; break;
-            case ChessType.Pawn: pawnBuffType = PawnBuff.None; break;
+            case ChessType.King:    kingBuffType    = KingBuff.None;        break;
+            case ChessType.Queen:   queenBuffType   = QueenBuff.None;       break;
+            case ChessType.Knight:  knightBuffType  = KnightBuff.None;      break;
+            case ChessType.Bishop:  bishopBuffType  = BishopBuff.None;      break;
+            case ChessType.Rook:    rookBuffType    = RookBuff.None;        break;
+            case ChessType.Pawn:    pawnBuffType    = PawnBuff.None;        break;
         }
         buffBasic1.BuffInit(player);
         buffBasic2.BuffInit(player);
@@ -227,6 +227,7 @@ public class AllTheBuff
             { AllBuffCard.Scout, scout },
             { AllBuffCard.Substitute, substitute },
         };
+        choseBuffs.Clear();
     }
 
     public void AllBuffLevelUp()

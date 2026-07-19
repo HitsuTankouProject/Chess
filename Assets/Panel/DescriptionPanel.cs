@@ -131,7 +131,7 @@ public class DescriptionPanel : MonoBehaviour
         rules_intro.sprite = _languageManager.sp_Rules_Intro;
 
         button_Control.sprite = _languageManager.sp_Control;
-        //control_intro.sprite = _languageManager.sp_Control_Intro;
+        control_intro.sprite = _languageManager.sp_Control_Intro;
 
         button_ChessAndBoard.sprite = _languageManager.sp_ChessAndBoard;
         chessAndBoard_intro.sprite = _languageManager.sp_ChessAndBoard_Intro;

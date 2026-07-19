@@ -436,6 +436,9 @@ public class GameManager : MonoBehaviour
     private async UniTask GameStart()
     {
         audioManager.PlaySfx(resourcesData.sfx_GameStart);
+        player01.AllTheBuffInit();
+        player02.AllTheBuffInit();
+
 
         await MainCameraTurn(GameStage.TurnStart);
         //await PlayerCameraOpen(true);
@@ -632,7 +635,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-
     public void Surrender(ChessColor surrender)
     {
         Debug.Log("Real GameSet");
@@ -646,7 +648,9 @@ public class GameManager : MonoBehaviour
     #region GameEnd
     private async UniTask GameEnd()
     {
+
         await UniTask.Yield();
+        inGamePanel.gameObject.SetActive(false);
         await PlayerCameraOpen(false);
         await MainCameraTurn(GameStage.Release);
         chessBoard.CleanTheBoard();

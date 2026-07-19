@@ -121,6 +121,7 @@ public class ChooseSkillPanel : MonoBehaviour
     public void Button_DrawAgain()
     {
         if (!canDrawAgain) return;
+        _gameManager.PlayButtonSfx();
         SetDrawAgain(false);
         CardReadyProcess().Forget();
     }

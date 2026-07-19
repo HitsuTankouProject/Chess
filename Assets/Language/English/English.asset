@@ -21,7 +21,7 @@ MonoBehaviour:
   sp_Rules: {fileID: 21300000, guid: 8978583aed6671e498112b893eb05d4d, type: 3}
   sp_Rules_Intro: {fileID: 21300000, guid: f7d1cbd0f44ff16438252c43ef67eb3a, type: 3}
   sp_Control: {fileID: 21300000, guid: 7b2ab6c36c407974295bddebec6504c9, type: 3}
-  sp_Control_Intro: {fileID: 0}
+  sp_Control_Intro: {fileID: 21300000, guid: 7a442a58507ec234093a1857561751cc, type: 3}
   sp_ChessAndBoard: {fileID: 21300000, guid: cfefd56ffc1d14a4597d557f29ed06fb, type: 3}
   sp_ChessAndBoard_Intro: {fileID: 21300000, guid: c63b6fd7338b4a54d896f9a13b175152, type: 3}
   sp_Buffs: {fileID: 21300000, guid: 188d8de77884f974cb9aada21a03764c, type: 3}

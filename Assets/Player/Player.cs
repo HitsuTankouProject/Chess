@@ -44,6 +44,10 @@ public class Player : MonoBehaviour
     public bool haveKing = true;
     #region Chess Buff
     public AllTheBuff allTheBuff = new();
+    public void AllTheBuffInit() => allTheBuff.AllTheBuffInit(this);
+
+
+
     #region King
     public KingBuff kingBuffType => allTheBuff.kingBuffType;
     public MadKing madKing => allTheBuff.madKing;
@@ -106,7 +110,6 @@ public class Player : MonoBehaviour
     public void Player_Init(ChessColor targetChess)
     {
         usingChess = targetChess;
-        allTheBuff.AllTheBuffInit(this);
         playerInPut.Init(this);
         playerInPut.StartInput();
     }
