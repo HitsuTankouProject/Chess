@@ -19,45 +19,6 @@ public enum GameStage
     Release,
     Error
 }
-
-[System.Serializable]
-public struct Pair<F, S>
-{
-    //public Pair()
-    //{ }
-    public Pair(F f, S s)
-    {
-        this.first = f;
-        this.second = s;
-    }
-    public F first;
-    public S second;
-
-    public override bool Equals(object obj)
-    {
-        if (obj is Pair<F, S> other)
-        {
-            return EqualityComparer<F>.Default.Equals(first, other.first)
-                && EqualityComparer<S>.Default.Equals(second, other.second);
-        }
-        return false;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(first, second);
-    }
-
-    public static bool operator ==(Pair<F, S> a, Pair<F, S> b)
-    {
-        return a.first.Equals(b.first) && a.second.Equals(b.second);
-    }
-    public static bool operator !=(Pair<F, S> a, Pair<F, S> b)
-    {
-        return !a.first.Equals(b.first) || !a.second.Equals(b.second);
-    }
-
-}
 public struct MainCameraView
 {
     public Vector3 position { get; private set; }
@@ -91,10 +52,9 @@ public class GameManager : MonoBehaviour
     public InPutManager inPutManager;
     public ChessBoard chessBoard;
     public AudioManager audioManager;
+    public LanguageManager languageManager;
 
     Pair<ChessBasic, List<int>> aaa = new();
-
-
 
 
     [Header("Cameras")]
@@ -132,7 +92,6 @@ public class GameManager : MonoBehaviour
     {
         await UniTask.Yield();
         nowGameStage = targetStage;
-        loading.SetActive(true);
         switch (nowGameStage)
         {
             case GameStage.Loading:             Loading().Forget();             break;
@@ -150,9 +109,7 @@ public class GameManager : MonoBehaviour
                 Debug.LogError("GameManager.SwitchStage: Invalid game stage.");
                 return;
         }
-        loading.SetActive(false);
     }
-
 
     #region MainCameraView
     private MainCameraView TargetMainCameraView(GameStage gameStage)
@@ -224,49 +181,42 @@ public class GameManager : MonoBehaviour
     #region PlayerCameraView 
 
     private const float playerCameraOpenTime = 0.5f;
-
-    private const float openRectX = 0.5f;
-    private const float closeRectX = -1f;
     private async UniTask TargetPlayerCameraOpen(Camera playerCamera, bool isOpen)
     {
         bool isWhite = playerCamera == player01Camera;
 
-        Rect start = playerCamera.rect;
-        Rect target = start;
+        float openedX = isWhite ? 0f : 0.5f;
+        float closedX = isWhite ? -0.5f : 1f;
 
-        if (isWhite)
-        {
-            target.width = isOpen ? openRectX : closeRectX;
-        }
-        else
-        {
-            target.x = isOpen ? openRectX : 1f;
-        }
+        bool isAlreadyOpen = playerCamera.enabled 
+            && Mathf.Approximately(playerCamera.rect.x, openedX);
+        if (isOpen && isAlreadyOpen) return;
+
+        bool isAlreadyClosed = !playerCamera.enabled
+            && Mathf.Approximately(playerCamera.rect.x, closedX);
+        if (!isOpen && isAlreadyClosed) return;
+
+
+        if (isOpen) playerCamera.enabled = true;
+
+        Rect start = playerCamera.rect;
+
+        Rect target = new Rect(isOpen ? openedX : closedX, 0f, 0.5f, 1f);
 
         float timer = 0f;
 
         while (timer < playerCameraOpenTime)
         {
             timer += Time.deltaTime;
-            float t = Mathf.Clamp01(timer / playerCameraOpenTime);
-
-            Rect rect = start;
-
-            if (isWhite)
-            {
-                rect.width = Mathf.Lerp(start.width, target.width, t);
-            }
-            else
-            {
-                rect.x = Mathf.Lerp(start.x, target.x, t);
-            }
-
-            playerCamera.rect = rect;
-
+            float progress = Mathf.Clamp01(timer / playerCameraOpenTime);
+            float x = Mathf.Lerp(start.x, target.x, progress);
+            playerCamera.rect = new Rect(x, 0f, 0.5f, 1f);
             await UniTask.Yield();
         }
 
         playerCamera.rect = target;
+
+        if (!isOpen) playerCamera.enabled = false;
     }
     public async UniTask PlayerCameraOpen(bool isOpen)
     {
@@ -327,8 +277,6 @@ public class GameManager : MonoBehaviour
         playerCamera.transform.position = targetView.position;
         playerCamera.transform.rotation = Quaternion.Euler(targetView.angle);
     }
-
-
     public void PlayerCameraTurn(Pair<ChessColor, PlayerCameraStage> playerCameraStagePair)
     {
         Camera camera = TargetCamera(playerCameraStagePair.first);
@@ -339,8 +287,7 @@ public class GameManager : MonoBehaviour
     #endregion
 
     #region Button
-
-
+    public void PlayButtonSfx() => audioManager.PlaySfx(resourcesData.sfx_PressButton);
     private void AllPanelClose()
     {
         gameTitlePanel.SetActive(false);
@@ -350,52 +297,83 @@ public class GameManager : MonoBehaviour
     }
     public void Button_BackToGameTitle()
     {
-        audioManager.PlaySfx(resourcesData.sfx_PressButton);
+        PlayButtonSfx();
         AllPanelClose();
         SwitchStage(GameStage.GameTitle).Forget();
     }
     public void Button_BackToGameDescription()
     {
-        audioManager.PlaySfx(resourcesData.sfx_PressButton);
+        PlayButtonSfx();
         AllPanelClose();
         SwitchStage(GameStage.GameDescription).Forget();
 
     }
     public void Button_BackToGameStart()
     {
-        audioManager.PlaySfx(resourcesData.sfx_PressButton);
+        PlayButtonSfx();
         AllPanelClose();
         SwitchStage(GameStage.GameStart).Forget();
     }
     public void Button_BackToRelease()
     {
-        audioManager.PlaySfx(resourcesData.sfx_PressButton);
+        PlayButtonSfx();
         AllPanelClose();
         SwitchStage(GameStage.Release).Forget();
     }
     public void Button_Exit() => Application.Quit();
 
-
+    public void Button_ChangeToJapanese()
+    {
+        audioManager.PlaySfx(resourcesData.sfx_ChangeLanguage);
+        languageManager.ChangeLanguage(Language.Japanese);
+        ChangeLanguage();
+    }
+    public void Button_ChangeToEnglish()
+    {
+        audioManager.PlaySfx(resourcesData.sfx_ChangeLanguage);
+        languageManager.ChangeLanguage(Language.English);
+        ChangeLanguage();
+    }
 
     #endregion
 
     #region Loading
     [Header("Loading")]
     public GameObject loading;
+    public Image button_GameStart;
+    public Image button_GameDescription;
+
+    public Image button_WinnerLogo;
+    public Image button_GameTitle;
+    public Image button_Resume;
+    public Image button_Quit;
+
 
     private async UniTask Loading()
     {
         await UniTask.Yield();
         resourcesData.ResourcesInit();
+
+        languageManager.Init();
         inPutManager.Init();
 
         chessBoard.ChessBoard_Init();
+
         TargetPlayer(ChessColor.White).Player_Init(ChessColor.White);
         TargetPlayer(ChessColor.Black).Player_Init(ChessColor.Black);
 
         SwitchStage(GameStage.GameTitle).Forget();
     }
 
+    private void ChangeLanguage()
+    {
+        button_GameStart.sprite = languageManager.sp_GameStart;
+        button_GameDescription.sprite = languageManager.sp_Description;
+        button_WinnerLogo.sprite = languageManager.sp_Release_Winner;
+        button_GameTitle.sprite = languageManager.sp_GameTitle;
+        button_Resume.sprite = languageManager.sp_Button_Resume;
+        button_Quit.sprite = languageManager.sp_Button_Quit;
+    }
 
     #endregion
 
@@ -403,11 +381,11 @@ public class GameManager : MonoBehaviour
     [Header("GameTitle")]
     public GameObject gameTitlePanel;
 
-
     private async UniTask GameTitle()
     {
         await UniTask.Yield();
         await PlayerCameraOpen(false);
+        ChangeLanguage();
         await MainCameraTurn(GameStage.GameTitle);
         if (!audioManager.IsBgmPlaying())
         {
@@ -682,10 +660,11 @@ public class GameManager : MonoBehaviour
     #region Release
     [Header("Release")]
     public GameObject gameReleasePanel;
-
     public Image winnerTag;
     public Image whiteChessResult;
     public Image blackChessResult;
+
+    
 
 
     private Dictionary<int, ChessColor> turnResult = new();
@@ -705,7 +684,6 @@ public class GameManager : MonoBehaviour
         winnerTag.sprite = resourcesData.PlayerSprite(winner);
 
     }
-
 
     private async UniTask Release()
     {

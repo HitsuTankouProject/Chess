@@ -13,11 +13,9 @@ public enum AllBuffCard
     Rusher, Guardian,
     Charger, Skirmisher,
     Scout, Substitute,
-
-
+    AllBuffCount,
     None = -1
 }
-public enum Language { Japanese, English }
 
 public class ResourcesData : MonoBehaviour
 {
@@ -78,80 +76,6 @@ public class ResourcesData : MonoBehaviour
     {
         if (color == ChessColor.White) return allMaterial.m_White;
         else return allMaterial.m_Black;
-    }
-
-    #endregion
-
-    #region Card Data
-    [Header("Buff Card Data")]
-    public AllCradData cradDataList;
-    public Dictionary<AllBuffCard, CardData> cardDataDict => cradDataList.cardDataDict;
-    public void CardDataDictInit()=> cradDataList.CardDataDictInit();
-    private AllBoardInitData allBoardInitData = new();
-    private Dictionary<Language, string[]> allDescriptionCsvLines => allBoardInitData.allDescriptionCsvLines;
-
-    private const int dataIndexMax = 4;
-
-    private string[] LanguageCsv(Language language) => allDescriptionCsvLines[language];
-    private string DescriptionPath(Language language)
-        => $"Csvs/Card_Description/Card_Description_{language.ToString()}";
-
-    public void CardDataUpdate(Language language)
-    {
-        string[] languageFile = LanguageCsv(language);
-
-        if (languageFile == null || languageFile.Length < 1)
-        {
-            Debug.LogError("CSV is Null");
-            return;
-        }
-        foreach (AllBuffCard buffCardName in Enum.GetValues(typeof(AllBuffCard)))
-        {
-            if (buffCardName == AllBuffCard.None) continue;
-            int index = (int)buffCardName + 1;
-            if (index >= languageFile.Length)
-            {
-                Debug.LogWarning($"CSV missing data for {buffCardName}");
-                continue;
-            }
-
-            string[] values = languageFile[index].Split(',');
-
-            if (values.Length < dataIndexMax)
-            {
-                Debug.LogWarning($"{buffCardName} CSV format error");
-                continue;
-            }
-            if (values[0].Trim() != null) cardDataDict[buffCardName].name = values[0].Trim();
-            if (values[1].Trim() != null) cardDataDict[buffCardName].buffLevel01Description = values[1].Trim();
-            if (values[2].Trim() != null) cardDataDict[buffCardName].buffLevel02Description = values[2].Trim();
-            if (values[3].Trim() != null) cardDataDict[buffCardName].buffLevel03Description = values[3].Trim();
-
-        }
-    }
-
-    private void LanguageDataInit()
-    {
-        foreach (Language language in Enum.GetValues(typeof(Language)))
-        {
-            bool haveLanguage = LoadCSV(DescriptionPath(language), out string[] descriptionCsvLines);
-            if (!haveLanguage)
-            {
-                Debug.LogError($"{language.ToString()} Failed");
-                return;
-            }
-            else allBoardInitData.AddToDescriptionCsvLines(language, descriptionCsvLines);
-
-
-        }
-
-    }
-
-    private void CardDataInit()
-    {
-        CardDataDictInit();
-        LanguageDataInit();
-        CardDataUpdate(Language.Japanese);
     }
 
     #endregion
@@ -244,7 +168,6 @@ public class ResourcesData : MonoBehaviour
 
     [Header("Sfx Data")]
     public AllSfxData allSfxData;
-
     public SfxData sfx_PressButton => allSfxData.sfx_PressButton;
 
     public SfxData sfx_GameStart => allSfxData.sfx_GameStart;
@@ -255,13 +178,13 @@ public class ResourcesData : MonoBehaviour
     public SfxData sfx_TurnChange => allSfxData.sfx_TurnChange;
 
     public SfxData sfx_Release => allSfxData.sfx_Release;
-
+    public SfxData sfx_ChangeLanguage => allSfxData.sfx_ChangeLanguage;
+    public SfxData sfx_ChessSwapn => allSfxData.sfx_ChessSwapn;
 
     #endregion
 
     public void ResourcesInit()
     {
-        CardDataInit();
         BoardDataInit();
         ChessDataInit();
     }

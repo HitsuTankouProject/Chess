@@ -1,6 +1,8 @@
 using Cysharp.Threading.Tasks;
+using Data;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem.Controls;
 using UnityEngine.UI;
@@ -8,6 +10,7 @@ using UnityEngine.UI;
 public class DescriptionPanel : MonoBehaviour
 {
     private GameManager _gameManager => GameManager.Instance;
+    private LanguageManager _languageManager => GameManager.Instance.languageManager;
     private bool isInit = false;
 
     private int minPage = 0;
@@ -26,10 +29,13 @@ public class DescriptionPanel : MonoBehaviour
         Button_OpenRulesDescription();
         nowPage = 1;
         WaitGamePadInput_GameDescription().Forget();
+        LanguageChange();
+
         if (isInit)return;
         isInit = true;
         AllBuffInit();
         ButtonActionsInit();
+
     }
 
     private async UniTask WaitGamePadInput_GameDescription()
@@ -63,6 +69,7 @@ public class DescriptionPanel : MonoBehaviour
 
     private void NextPage()
     {
+        _gameManager.PlayButtonSfx();
         nowPage = Mathf.Min(nowPage + 1, maxPage);
         Debug.Log(nowPage);
         buttonActions[nowPage]();
@@ -70,6 +77,7 @@ public class DescriptionPanel : MonoBehaviour
 
     private void BackPage()
     {
+        _gameManager.PlayButtonSfx();
         nowPage = Mathf.Max(nowPage - 1, minPage);
         Debug.Log(nowPage);
         buttonActions[nowPage]();
@@ -84,10 +92,66 @@ public class DescriptionPanel : MonoBehaviour
         buff_Description.SetActive(false );
     }
 
+    #region Language Change
+
+    [Header("Language Change")]
+    public Image button_GameTitle;
+    public Image button_GameStart;
+
+    public Image button_Rules;
+    public Image rules_intro;
+
+    public Image button_Control;
+    public Image control_intro;
+
+    public Image button_ChessAndBoard;
+    public Image chessAndBoard_intro;
+
+    public Image button_Buffs;
+    public TMP_Text[] buffNames;
+
+    private void LanguageUpdate_GameDescription()
+    {
+        LanguageData target = _languageManager.NowUsingLanguageData();
+        if (buffNames.Length > (int)AllBuffCard.AllBuffCount)
+            Debug.LogError("gameDescription_BuffsName > AllBuffCount");
+        for (int i = 0; i < (int)AllBuffCard.AllBuffCount; i++)
+        {
+            CardData targetBuffData = _languageManager.cardDataDict[(AllBuffCard)i];
+            buffNames[i].text = targetBuffData.name;
+        }
+    }
+
+    public void LanguageChange()
+    {
+        button_GameTitle.sprite = _languageManager.sp_GameTitle;
+        button_GameStart.sprite = _languageManager.sp_GameStart;
+
+        button_Rules.sprite = _languageManager.sp_Rules;
+        rules_intro.sprite = _languageManager.sp_Rules_Intro;
+
+        button_Control.sprite = _languageManager.sp_Control;
+        //control_intro.sprite = _languageManager.sp_Control_Intro;
+
+        button_ChessAndBoard.sprite = _languageManager.sp_ChessAndBoard;
+        chessAndBoard_intro.sprite = _languageManager.sp_ChessAndBoard_Intro;
+
+        button_Buffs.sprite = _languageManager.sp_Buffs;
+
+        LanguageUpdate_GameDescription();
+    }
+
+
+
+    #endregion
+
+
+
     [Header("Rules Description")]
     public GameObject rules_Description;
     public void Button_OpenRulesDescription()
     {
+        _gameManager.PlayButtonSfx();
         CloseAllTheObjectDescription();
         nowPage = 0;
         rules_Description.SetActive(true);
@@ -99,17 +163,17 @@ public class DescriptionPanel : MonoBehaviour
     public GameObject input_Description;
     public void Button_OpenInputDescription()
     {
+        _gameManager.PlayButtonSfx();
         CloseAllTheObjectDescription();
         nowPage = 1;
         input_Description.SetActive(true);
     }
 
-
-
     [Header("ChessAndBoard Description")]
     public GameObject chessAndBoard_Description;
     public void Button_OpenChessAndBoardDescription()
     {
+        _gameManager.PlayButtonSfx();
         CloseAllTheObjectDescription();
         nowPage = 2;
         chessAndBoard_Description.SetActive(true);
@@ -132,7 +196,7 @@ public class DescriptionPanel : MonoBehaviour
 
         foreach (AllBuffCard buffCardName in Enum.GetValues(typeof(AllBuffCard)))
         {
-            if (buffCardName == AllBuffCard.None) continue;
+            if (buffCardName == AllBuffCard.None || buffCardName == AllBuffCard.AllBuffCount) continue;
             int index = (int)buffCardName;
             buffs[index].onClick.RemoveAllListeners();
             buffs[index].onClick.AddListener(() => Button_OpenSkillDescriptionPanel(buffCardName));
@@ -144,6 +208,7 @@ public class DescriptionPanel : MonoBehaviour
     private void SwitchPick(int value)
     {
         if (!buff_Description.activeSelf) return;
+        _gameManager.PlayButtonSfx();
         pickIndex += value;
         if (pickIndex < 0) pickIndex = 0;
         if (pickIndex > buffs.Length) pickIndex = buffs.Length;
@@ -152,10 +217,9 @@ public class DescriptionPanel : MonoBehaviour
 
     }
 
-
-
     public void Button_OpenBuffDescription()
     {
+        _gameManager.PlayButtonSfx();
         CloseAllTheObjectDescription();
         nowPage = 3;
         pickIndex = 0;
@@ -167,6 +231,7 @@ public class DescriptionPanel : MonoBehaviour
     public void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
     {
         if (!buff_Description.activeSelf) return;
+        _gameManager.PlayButtonSfx();
         buff_Description.gameObject.SetActive(false);
         skillDescriptionPanel.ChangeDescription(targetBuff, 0);
         skillDescriptionPanel.gameObject.SetActive(true);
@@ -174,6 +239,7 @@ public class DescriptionPanel : MonoBehaviour
     public void Button_Return()
     {
         if (!skillDescriptionPanel.gameObject.activeSelf) return ;
+        _gameManager.PlayButtonSfx();
 
         skillDescriptionPanel.gameObject.SetActive(false);
         buff_Description.gameObject.SetActive(true);

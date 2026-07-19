@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using Data;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -9,7 +10,9 @@ public class ChooseSkillPanel : MonoBehaviour
 {
     private GameManager _gameManager => GameManager.Instance;
     private ResourcesData _resourcesData => _gameManager.resourcesData;
+    private LanguageManager _languageManager => _gameManager.languageManager;
     private InPutManager _inPutManager => _gameManager.inPutManager;
+
     public ChessColor chooseSkillPlayerColor { get; private set; } = ChessColor.White;
     private Player chooseSkillPlayer => chooseSkillPlayerColor == ChessColor.White ?
         _gameManager.player01 : _gameManager.player02;
@@ -92,6 +95,7 @@ public class ChooseSkillPanel : MonoBehaviour
     #region Button
     public void Button_Return()
     {
+        _gameManager.PlayButtonSfx();
         picking = AllBuffCard.None;
         showCanPickPanel.gameObject.SetActive(true);
         skillDescriptionPanel.gameObject.SetActive(false);
@@ -99,6 +103,7 @@ public class ChooseSkillPanel : MonoBehaviour
     }
     public void Button_ConFirm()
     {
+        _gameManager.PlayButtonSfx();
         pickedCards.Add(picking);
         Button_Return();
         EndPlayerChooseSkill(chooseSkillPlayerColor);
@@ -121,6 +126,7 @@ public class ChooseSkillPanel : MonoBehaviour
     }
     public void Button_OpenSkillDescriptionPanel(AllBuffCard targetBuff)
     {
+        _gameManager.PlayButtonSfx();
         picking = targetBuff;
         showCanPickPanel.gameObject.SetActive(false);
         skillDescriptionPanel.ChangeDescription(targetBuff, 0);
@@ -153,7 +159,6 @@ public class ChooseSkillPanel : MonoBehaviour
 
         return playerCanPick;
     }
-
     private void PickThreeCard()
     {
         List<ChessType> playerCanPick = PlayerCanPick();
@@ -182,7 +187,6 @@ public class ChooseSkillPanel : MonoBehaviour
             pickedThreeCard.Add(pickedBuff);
         }
     }
-
     private async UniTask CardReadyProcess()
     {
         await UniTask.Yield();
@@ -217,7 +221,6 @@ public class ChooseSkillPanel : MonoBehaviour
 
         _gameManager.EndSkillChoose(pickedCards[0], pickedCards[1]);
     }
-
     private void StartChooseSkill(ChessColor color)
     {
         chooseSkillPlayerColor = color;
@@ -231,8 +234,6 @@ public class ChooseSkillPanel : MonoBehaviour
         chooseSkillPlayer.playerInPut.StartGamepadInput();
 
     }
-
-
     public void EndPlayerChooseSkill(ChessColor color)
     {
         OffPlayerPick(color);
@@ -246,13 +247,31 @@ public class ChooseSkillPanel : MonoBehaviour
         else if(!isBlackChessPlayerPick) StartChooseSkill(ChessColor.Black);
 
     }
+
+
+
+
+    #region Language Change
+
+    [Header("Language Change")]
+    public Image logo;
+    private void LanguageChange()
+    {
+        logo.sprite = _languageManager.sp_ChooseSkills_Logo;
+    }
+
+    #endregion
+
+
+
     public void Init()
     {
         pickedCards.Clear();
         isWhiteChessPlayerPick = false;
         isBlackChessPlayerPick = false;
-        pair_CanDraw = new(_resourcesData.allSprite.sp_canDraw, Color.white);
-        pair_CantDraw = new(_resourcesData.allSprite.sp_cantDraw, new Color(0.5f, 0.5f, 0.5f));
+        pair_CanDraw = new(_languageManager.sp_Button_CanDrawAgain, Color.white);
+        pair_CantDraw = new(_languageManager.sp_Button_CannotDrawAgain, new Color(0.5f, 0.5f, 0.5f));
+        LanguageChange();
 
         PickMarkInit();
         Button_Return();

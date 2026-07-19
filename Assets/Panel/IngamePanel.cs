@@ -35,8 +35,8 @@ public class IngamePanel : MonoBehaviour
     {
         whiteActionTag.enabled = false;
         blackActionTag.enabled = false;
-        await TurnChangeAnimation(true);
-        await TurnChangeAnimation(false);
+        //await TurnChangeAnimation(true);
+        //await TurnChangeAnimation(false);
 
         nowTurnTag.sprite = _resourcesData.PlayerSprite(changeTo);
 

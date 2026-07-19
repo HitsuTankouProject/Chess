@@ -58,32 +58,24 @@ namespace Data
         public Dictionary<AllBuffCard, CardData> cardDataDict = new();
         public void CardDataDictInit()
         {
-            cardDataDict = new Dictionary<AllBuffCard, CardData>()
-            {
-                // King
-                { AllBuffCard.SageKing, sageKing },
-                { AllBuffCard.MadKing, madKing },
+            cardDataDict.Clear();
+            cardDataDict.Add(AllBuffCard.SageKing, sageKing);
+            cardDataDict.Add(AllBuffCard.MadKing, madKing);
 
-                // Queen
-                { AllBuffCard.Witcher, witcher },
-                { AllBuffCard.Beauty, beauty },
+            cardDataDict.Add(AllBuffCard.Witcher, witcher);
+            cardDataDict.Add(AllBuffCard.Beauty, beauty);
 
-                // Bishop
-                { AllBuffCard.Sorcerer, sorcerer },
-                { AllBuffCard.Monk, monk },
+            cardDataDict.Add(AllBuffCard.Sorcerer, sorcerer);
+            cardDataDict.Add(AllBuffCard.Monk, monk);
 
-                // Rook
-                { AllBuffCard.Rusher, rusher },
-                { AllBuffCard.Guardian, guardian },
+            cardDataDict.Add(AllBuffCard.Rusher, rusher);
+            cardDataDict.Add(AllBuffCard.Guardian, guardian);
 
-                // Knight
-                { AllBuffCard.Charger, charger },
-                { AllBuffCard.Skirmisher, skirmisher },
+            cardDataDict.Add(AllBuffCard.Charger, charger);
+            cardDataDict.Add(AllBuffCard.Skirmisher, skirmisher);
 
-                // Pawn
-                { AllBuffCard.Scout, scout },
-                { AllBuffCard.Substitute, substitute },
-            };
+            cardDataDict.Add(AllBuffCard.Scout, scout);
+            cardDataDict.Add(AllBuffCard.Substitute, substitute);
         }
 
     }
@@ -163,20 +155,8 @@ namespace Data
         [Header("Player Name Sprite")]
         public Sprite sp_WhiteColor;
         public Sprite sp_BlackColor;
-        [Header("Button Sprite")]
-        public Sprite sp_Confirm;
-        public Sprite sp_Return;
-        public Sprite sp_canDraw;
-        public Sprite sp_cantDraw;
-        public Sprite sp_Ready;
-        public Sprite sp_NonReady;
-        [Header("Description Sprite")]
-        public Sprite sp_Confirm_Surrender;
-        public Sprite sp_Confirm_BackToGameTitle;
-
         [Header("Number Sprite")]
         public List<Sprite> sp_NumberSprites;
-
     }
 
     [System.Serializable]
@@ -193,6 +173,10 @@ namespace Data
         public SfxData sfx_TurnChange;
 
         public SfxData sfx_Release;
+
+        public SfxData sfx_ChangeLanguage;
+
+        public SfxData sfx_ChessSwapn;
     }
 
 

@@ -20,7 +20,8 @@ public class Card : MonoBehaviour
     public void SetCard(AllBuffCard card, bool isOpenEffect = false, uint effectLevel = 0)
     {
         buffCard = card;
-        card_Front.material = _resourcesData.cardDataDict[buffCard].m_CardCover;
+        //card_Front.material = _resourcesData.cardDataDict[buffCard].m_CardCover;
+        card_Front.material = LanguageManager.Instance.cardDataDict[buffCard].m_CardCover;
         if (!isOpenEffect) card_effectPrt.enabled = false;
         else
         {

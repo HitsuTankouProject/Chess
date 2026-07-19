@@ -16,7 +16,7 @@ public class Col
 public class ChessBoard : MonoBehaviour
 {
     public static ChessBoard Instance { get; private set; }
-    private GameManager _gameManager => GameManager.Instance;
+    private AudioManager _audioManager => GameManager.Instance.audioManager;
 
     private PoolManager _poolManager => PoolManager.Instance;
     private ResourcesData _resourcesData => GameManager.Instance.resourcesData;
@@ -251,6 +251,7 @@ public class ChessBoard : MonoBehaviour
         if (color == ChessColor.Black) angle = new Vector3(0, 180, 0);
         return Quaternion.Euler(angle); 
     }
+    private void PlaySwapnSfx()=> _audioManager.PlaySfx(_resourcesData.sfx_ChessSwapn);
 
     private ChessBasic GenChess(Vector2Int position, Pair<ChessColor, ChessType> pair)
     {
@@ -272,9 +273,11 @@ public class ChessBoard : MonoBehaviour
         GameObject chess = _poolManager.Release(_resourcesData.chessModelDict[pair.second].chessEffect, boardPosition);
         ChessEffect chessEffect = chess.gameObject.GetComponent<ChessEffect>();
         chessEffect.PlayEffect(EffectType.Swapn, _resourcesData.allMaterial.m_ChessHaveExtraLife);
+        PlaySwapnSfx();
         while (!chessEffect.isEffectFinish) await UniTask.Yield();
 
         ChessBasic chessBasic = GenChess(position, pair);
+        
 
         if (player != null) chessBasic.ChessInit(player);
     }

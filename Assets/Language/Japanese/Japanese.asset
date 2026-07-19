@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e1ce3a8909ca11498f3f6ef8aea76bd, type: 3}
+  m_Name: Japanese
+  m_EditorClassIdentifier: Assembly-CSharp::LanguageData
+  csvFile: {fileID: 4900000, guid: 0231cee02c44d1d408d187f4020d2a31, type: 3}
+  sp_GameTitle: {fileID: 21300000, guid: 46be37c45c1bbbf4faeaea3f79245deb, type: 3}
+  sp_GameStart: {fileID: 21300000, guid: d3a08bf6d7af6d248b588e5302961c37, type: 3}
+  sp_Description: {fileID: 21300000, guid: 7aed6bfc937977f4097d02d3023ce627, type: 3}
+  sp_Button_Return: {fileID: 21300000, guid: 94d9f3424e435c14a9a8afdc6ed1c6c8, type: 3}
+  sp_Button_Confirm: {fileID: 21300000, guid: 35bb2bea2d2e1cc48aceabee39be3808, type: 3}
+  sp_Rules: {fileID: 21300000, guid: 687feaeac2ac77e4ca1cfca69177d0b4, type: 3}
+  sp_Rules_Intro: {fileID: 21300000, guid: af61b586eca48814b91994087d5f4d1f, type: 3}
+  sp_Control: {fileID: 21300000, guid: e5c4aecc2f0b9464c8fcc74e2b6a1b91, type: 3}
+  sp_Control_Intro: {fileID: 0}
+  sp_ChessAndBoard: {fileID: 21300000, guid: 779e57d0310cad6499a1f564f8b35362, type: 3}
+  sp_ChessAndBoard_Intro: {fileID: 21300000, guid: e39994e971a26d0489343eb9cb72182b, type: 3}
+  sp_Buffs: {fileID: 21300000, guid: 813e29f835182f940bcc3d0e2e436791, type: 3}
+  sp_ChooseSkills_Logo: {fileID: 21300000, guid: d59fc61fd386ed646acfc272414ae802, type: 3}
+  sp_Button_CanDrawAgain: {fileID: 21300000, guid: 74c4d8cf1dcbdf347a85f1c6e7a20344, type: 3}
+  sp_Button_CannotDrawAgain: {fileID: 21300000, guid: 3eb1d24aab4c7df418cbf71067f19e19, type: 3}
+  sp_ActionMark: {fileID: 21300000, guid: fdb0197cc9de3a8448afe9c98fcccf52, type: 3}
+  sp_Button_Pause: {fileID: 21300000, guid: 1244d697eaf37d14a943bb83117f2aaa, type: 3}
+  sp_Button_Surrender: {fileID: 21300000, guid: 70673cc9875923f4fa760c4534d07801, type: 3}
+  sp_Confirm_Surrender: {fileID: 21300000, guid: c375e1b0a99a55241bdd353e4ee594a5, type: 3}
+  sp_Confirm_BackToGameTitle: {fileID: 21300000, guid: 11f4ce29375332f478eed7000e5d7b7e, type: 3}
+  sp_Release_Winner: {fileID: 21300000, guid: d3da8243c82ddf04a9e636ef3358b8a6, type: 3}
+  sp_Button_Resume: {fileID: 21300000, guid: e384a98b4665aac49808380a90063e92, type: 3}
+  sp_Button_Quit: {fileID: 21300000, guid: d4bad76f4f0340d40a8ed21b5b167feb, type: 3}
