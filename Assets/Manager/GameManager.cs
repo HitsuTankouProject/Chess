@@ -692,7 +692,7 @@ public class GameManager : MonoBehaviour
     private async UniTask Release()
     {
         await UniTask.Yield();
-        audioManager.PlaySfx(resourcesData.sfx_PressButton);
+        audioManager.PlaySfx(resourcesData.sfx_Release);
         ShowGameResult();
         gameReleasePanel.SetActive(true);
 
