@@ -245,6 +245,15 @@ public class ResourcesData : MonoBehaviour
     public SfxData sfx_ChessSwapn => allSfxData.sfx_ChessSwapn;
 
     #endregion
+    
+    [Header("Controller Mark Data")]
+    public ControllerMarkData ps_ControllerMark;
+    public ControllerMarkData xbox_ControllerMark;
+    public ControllerMarkData switch_ControllerMark;
+    
+    
+    
+    
     /// <summary>
     /// 盤面開始配置と駒モデル・バフ対応データを初期化します。
     /// </summary>

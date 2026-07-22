@@ -153,6 +153,11 @@ public class PlayerCanvas : MonoBehaviour
         Button_Return();
     }
 
+    public ControllerMarkPrinter  controllerMarkPrinter;
+
+
+
+
     #endregion
 
     #region Pause
@@ -248,7 +253,7 @@ public class PlayerCanvas : MonoBehaviour
     /// 投了またはタイトル復帰の確認パネルを現在表示しているか取得します。
     /// 確認中は、ポーズ切り替えや別の確認画面を開く操作を受け付けません。
     /// </summary>
-    private bool isConfirming => confirmPanel.activeSelf;
+    public bool isConfirming => confirmPanel.activeSelf;
     /// <summary>確認パネルでユーザーへ確認している操作の種類を表します。</summary>
     private enum ConfirmStage 
     {

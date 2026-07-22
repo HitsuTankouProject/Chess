@@ -446,6 +446,7 @@ public class GameManager : MonoBehaviour
         ChangeLanguage();
     }
 
+
     #endregion
 
     #region Loading
@@ -530,8 +531,13 @@ public class GameManager : MonoBehaviour
             if (button == null) continue;
             switch (button.name)
             {
-                case "buttonWest":      Button_BackToGameDescription();     return;
+                case "start":           Button_BackToGameDescription();     return;
                 case "buttonSouth":     Button_BackToGameStart();           return;
+
+                case "rightShoulder":   Button_ChangeToEnglish();           continue;
+                case "leftShoulder":   Button_ChangeToJapanese();           continue;
+
+
                 default:                await UniTask.Yield();              continue;
             }
         }
@@ -817,6 +823,8 @@ public class GameManager : MonoBehaviour
 
         await UniTask.Yield();
         inGamePanel.gameObject.SetActive(false);
+        player01.Player_StopAllInput();
+        player02.Player_StopAllInput();
         await PlayerCameraOpen(false);
         await MainCameraTurn(GameStage.Release);
         chessBoard.CleanTheBoard();
@@ -870,6 +878,7 @@ public class GameManager : MonoBehaviour
         audioManager.PlaySfx(resourcesData.sfx_Release);
         ShowGameResult();
         gameReleasePanel.SetActive(true);
+        WaitGamePadInput_Release().Forget();
 
     }
     /// <summary>
@@ -885,12 +894,11 @@ public class GameManager : MonoBehaviour
 
             switch (button.name)
             {
-                case "buttonWest": ; return;
-                case "buttonNorth": ; return;
-                case "buttonEast": ; break;
-                case "buttonSouth": ; break;
+                case "leftShoulder":    Button_BackToGameTitle();   return;
+                //case "start":           Button_BackToGameStart();   return;
+                case "rightShoulder":   Button_Exit();              return;
 
-                default: await UniTask.Yield(); break;
+                default: await UniTask.Yield(); continue;
             }
         }
     }

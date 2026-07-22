@@ -77,7 +77,7 @@ public class InPutManager : MonoBehaviour
                gamepad.buttonEast.wasPressedThisFrame ||
                gamepad.buttonWest.wasPressedThisFrame ||
                gamepad.leftShoulder.wasPressedThisFrame ||
-               gamepad.rightShoulder.wasPressedThisFrame ||
+               gamepad.rightShoulder.wasPressedThisFrame || 
                gamepad.leftTrigger.wasPressedThisFrame ||
                gamepad.rightTrigger.wasPressedThisFrame ||
                gamepad.startButton.wasPressedThisFrame ||
@@ -90,10 +90,12 @@ public class InPutManager : MonoBehaviour
     public async UniTask<ButtonControl> WaitForGamePadButtonInput()
     {
         // 前回の押下状態が解除されるまで待ち、同じ入力の連続検出を防ぎます。
-        await UniTask.WaitUntil(() => !HasAnyButtonPressed(Gamepad.current));
+        await UniTask.WaitUntil(() => !HasAnyButtonPressed(Gamepad.current != null? Gamepad.all[0]:null));
+
         if (Gamepad.current == null) return null;
+
         var control = await InputSystem.onAnyButtonPress.First().ToUniTask();
-        if (control is ButtonControl button && button.device is Gamepad)
+        if (control is ButtonControl button && button.device == Gamepad.all[0])
             return button;
         else return null;
 
@@ -125,7 +127,7 @@ public class InPutManager : MonoBehaviour
     /// <summary>デバイス情報からゲームパッドの種類を判定します。</summary>
     /// <param name="gamepad">種類を判定するゲームパッドです。</param>
     /// <returns>識別されたゲームパッドの種類です。</returns>
-    private GamepadType GetControllerType(Gamepad gamepad)
+    public GamepadType GetControllerType(Gamepad gamepad)
     {
         if (gamepad == null) return GamepadType.None;
 

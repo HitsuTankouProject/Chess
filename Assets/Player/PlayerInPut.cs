@@ -127,8 +127,11 @@ public class PlayerInPut : MonoBehaviour
 
         nowUsingDevice = CanUseDevice.Gamepad;
         nowUsingGamepad = gamepad;
-        Debug.Log(nowUsingGamepad.name);
+        //Debug.Log(nowUsingGamepad.name);
         ChangeInput(CanUseDevice.Gamepad);
+        _player.playerCanvas.controllerMarkPrinter.ChangeMark(_inPutManager.GetControllerType(nowUsingGamepad));
+
+
     }
     /// <summary>
     /// ゲームパッドの割り当てを解除し、現在のマウスによる入力へ切り替えます。
@@ -137,6 +140,7 @@ public class PlayerInPut : MonoBehaviour
     public void ChangeToMouse()
     {
         nowUsingGamepad = null;
+        _player.playerCanvas.controllerMarkPrinter.ChangeMark(_inPutManager.GetControllerType(null));
 
         nowUsingDevice = CanUseDevice.Mouse;
         ChangeInput(CanUseDevice.Mouse);
@@ -145,6 +149,7 @@ public class PlayerInPut : MonoBehaviour
     /// <param name="usingDevice">新しく使用する入力デバイスの種類です。</param>
     private void ChangeInput(CanUseDevice usingDevice)
     {
+
         switch (usingDevice)
         {
             case CanUseDevice.Mouse:StartMouseInput();break;
@@ -546,8 +551,14 @@ public class PlayerInPut : MonoBehaviour
     /// <summary>説明画面を閉じるか、選択中の駒をキャンセルします。</summary>
     private void ButtonEast()
     {
-        if (isPause && isCardDescriptionOpen)
-            skillDescriptionPanel.Button_Return(); 
+        if (isPause)
+        {
+            if (_player.playerCanvas.isConfirming)
+            {
+                _player.playerCanvas.Button_Return();
+            }
+            else if(!isCardDescriptionOpen)_player.playerCanvas.WatchBuffSkillDescription();
+        }
         else
         {
             if(inputStage == InputStage.Picking)
@@ -563,8 +574,14 @@ public class PlayerInPut : MonoBehaviour
     /// <summary>スキル説明を開くか、駒の選択・移動を決定します。</summary>
     private void ButtonSouth()
     {
-        if (isPause&& !isCardDescriptionOpen)
-            _player.playerCanvas.WatchBuffSkillDescription();
+        if (isPause)
+        {
+            if (_player.playerCanvas.isConfirming)
+            {
+                _player.playerCanvas.Button_Confirm();
+            }
+            else if(!isCardDescriptionOpen)_player.playerCanvas.WatchBuffSkillDescription();
+        }
         else
         {
             if (inputStage == InputStage.Waiting)

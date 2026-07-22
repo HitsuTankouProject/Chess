@@ -12,13 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0252fa7db77641b4cbfe9423efd81628, type: 3}
   m_Name: Ps_ControllerMarkData
   m_EditorClassIdentifier: Assembly-CSharp::ControllerMarkData
-  gamepadType: 1
-  sp_start: {fileID: 0}
-  sp_up: {fileID: 0}
-  sp_down: {fileID: 0}
-  sp_right: {fileID: 0}
-  sp_left: {fileID: 0}
-  sp_buttonEast: {fileID: 0}
-  sp_buttonSouth: {fileID: 0}
-  sp_buttonWest: {fileID: 0}
-  buttonNorth: {fileID: 0}
+  sp_ButtonEast: {fileID: 21300000, guid: 0f95df0f97aa51949aef221d5cb8768b, type: 3}
+  sp_ButtonSouth: {fileID: 21300000, guid: a4a2d9887b9e2a943b11a21e1678f62b, type: 3}
+  sp_ButtonWest: {fileID: 21300000, guid: ee9f1645a2cfa3f4ebeb225e6974a293, type: 3}
+  sp_ButtonNorth: {fileID: 21300000, guid: 784a88b11ddda464ea3d71761527656b, type: 3}
