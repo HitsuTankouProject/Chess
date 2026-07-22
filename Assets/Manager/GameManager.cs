@@ -472,6 +472,7 @@ public class GameManager : MonoBehaviour
     private async UniTask Loading()
     {
         await UniTask.Yield();
+        loading.SetActive(true);
         resourcesData.ResourcesInit();
 
         languageManager.Init();
@@ -482,7 +483,8 @@ public class GameManager : MonoBehaviour
         TargetPlayer(ChessColor.White).Player_Init(ChessColor.White);
         TargetPlayer(ChessColor.Black).Player_Init(ChessColor.Black);
 
-        SwitchStage(GameStage.GameTitle).Forget();
+        await SwitchStage(GameStage.GameTitle);
+
     }
     /// <summary>
     /// Œ»İ‚ÌŒ¾Œêİ’è‚É‡‚í‚¹‚Ä UI ‰æ‘œ‚ğXV‚µ‚Ü‚·B
@@ -516,7 +518,9 @@ public class GameManager : MonoBehaviour
         {
             audioManager.PlayMusic(resourcesData.bgm_game);
         }
+        loading.SetActive(false);
         gameTitlePanel.SetActive(true);
+
         WaitGamePadInput_GameTitle().Forget();
 
     }

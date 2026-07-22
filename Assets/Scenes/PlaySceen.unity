@@ -6422,7 +6422,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b47bac56c8486634d84f48a1edc22548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InPutManager
-  oldConnectingGamePad: 0
+  oldConnectingGamePad: 999
 --- !u!1 &563309406
 GameObject:
   m_ObjectHideFlags: 0
@@ -13735,7 +13735,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1184193342
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14818,7 +14818,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1258815548
 RectTransform:
   m_ObjectHideFlags: 0

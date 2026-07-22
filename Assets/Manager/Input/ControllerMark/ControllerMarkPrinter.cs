@@ -28,32 +28,33 @@ public class ControllerMarkPrinter
 
     public void ChangeMark(GamepadType target)
     {
-        ControllerMarkData targetData = MarkData(target);
+        bool isShow = target != GamepadType.None;
 
-        if (targetData == null)
-        {
+        SetMarksActive(eastMarks, isShow);
+        SetMarksActive(southMarks, isShow);
+        SetMarksActive(westMarks, isShow);
+        SetMarksActive(northMarks, isShow);
 
-            foreach (var mark in eastMarks)
-                mark.enabled = false;
-            foreach (var mark in southMarks)
-                mark.enabled = false;
-            foreach (var mark in westMarks)
-                mark.enabled = false;
-            foreach (var mark in northMarks)
-                mark.enabled = false;
-
+        if (!isShow)
             return;
-        }
 
-        foreach (var mark in eastMarks)
-            mark.sprite = targetData.sp_ButtonEast;
-        foreach (var mark in southMarks)
-            mark.sprite = targetData.sp_ButtonSouth;
-        foreach (var mark in westMarks)
-            mark.sprite = targetData.sp_ButtonWest;
-        foreach (var mark in northMarks)
-            mark.sprite = targetData.sp_ButtonNorth;
+        ControllerMarkData data = MarkData(target);
+
+        SetMarksSprite(eastMarks, data.sp_ButtonEast);
+        SetMarksSprite(southMarks, data.sp_ButtonSouth);
+        SetMarksSprite(westMarks, data.sp_ButtonWest);
+        SetMarksSprite(northMarks, data.sp_ButtonNorth);
     }
 
+    private void SetMarksActive(Image[] marks, bool active)
+    {
+        foreach (Image mark in marks)
+            mark.gameObject.SetActive(active);
+    }
 
+    private void SetMarksSprite(Image[] marks, Sprite sprite)
+    {
+        foreach (Image mark in marks)
+            mark.sprite = sprite;
+    }
 }

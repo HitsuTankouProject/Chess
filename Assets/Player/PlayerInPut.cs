@@ -129,7 +129,6 @@ public class PlayerInPut : MonoBehaviour
         nowUsingGamepad = gamepad;
         //Debug.Log(nowUsingGamepad.name);
         ChangeInput(CanUseDevice.Gamepad);
-        _player.playerCanvas.controllerMarkPrinter.ChangeMark(_inPutManager.GetControllerType(nowUsingGamepad));
 
 
     }
@@ -140,7 +139,6 @@ public class PlayerInPut : MonoBehaviour
     public void ChangeToMouse()
     {
         nowUsingGamepad = null;
-        _player.playerCanvas.controllerMarkPrinter.ChangeMark(_inPutManager.GetControllerType(null));
 
         nowUsingDevice = CanUseDevice.Mouse;
         ChangeInput(CanUseDevice.Mouse);
@@ -149,6 +147,7 @@ public class PlayerInPut : MonoBehaviour
     /// <param name="usingDevice">新しく使用する入力デバイスの種類です。</param>
     private void ChangeInput(CanUseDevice usingDevice)
     {
+        _player.playerCanvas.controllerMarkPrinter.ChangeMark(_inPutManager.GetControllerType(nowUsingGamepad == null ? null : nowUsingGamepad));
 
         switch (usingDevice)
         {
@@ -156,7 +155,6 @@ public class PlayerInPut : MonoBehaviour
             case CanUseDevice.Gamepad:StartGamepadInput();break;
         }
     }
-
     #endregion
 
     /// <summary>対局中の自分の駒を選択できる待機状態へ切り替えます。</summary>
@@ -557,7 +555,8 @@ public class PlayerInPut : MonoBehaviour
             {
                 _player.playerCanvas.Button_Return();
             }
-            else if(!isCardDescriptionOpen)_player.playerCanvas.WatchBuffSkillDescription();
+            else if(isCardDescriptionOpen) ; _player.playerCanvas.skillDescriptionPanel.Button_Return();
+
         }
         else
         {

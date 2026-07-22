@@ -43,7 +43,7 @@ public class InPutManager : MonoBehaviour
     /// <summary>接続解除されたゲームパッドの種類を保持します。</summary>
     private HashSet<GamepadType> removedGamepad = new();
     /// <summary>前回確認時に接続されていたゲームパッド数です。</summary>
-    public int oldConnectingGamePad = 0;
+    [SerializeField] private int oldConnectingGamePad = 999;
     /// <summary>指定プレイヤーだけを対象の入力ステージへ切り替えます。</summary>
     /// <param name="player">入力を有効化するプレイヤーの駒色です。</param>
     /// <param name="stage">対象プレイヤーへ設定する入力ステージです。</param>

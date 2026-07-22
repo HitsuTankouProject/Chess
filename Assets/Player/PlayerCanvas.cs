@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
@@ -278,7 +277,7 @@ public class PlayerCanvas : MonoBehaviour
         {
             case ConfirmStage.None: return null;
             case ConfirmStage.Surrender: return _languageManager.sp_Confirm_Surrender;
-            case ConfirmStage.BackToGameTitle: return _languageManager.sp_Confirm_Surrender;
+            case ConfirmStage.BackToGameTitle: return _languageManager.sp_Confirm_BackToGameTitle;
             default: return null;
         }
     }
