@@ -156,7 +156,6 @@ public class Player : MonoBehaviour
     {
         usingChess = targetChess;
         playerInPut.Init(this);
-        playerInPut.StartInput();
     }
     /// <summary>
     /// 対局開始時の所有駒、UI、入力、バフ関連状態を準備します。

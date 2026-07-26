@@ -476,13 +476,14 @@ public class GameManager : MonoBehaviour
         resourcesData.ResourcesInit();
 
         languageManager.Init();
-        inPutManager.Init();
+
 
         chessBoard.ChessBoard_Init();
 
         TargetPlayer(ChessColor.White).Player_Init(ChessColor.White);
         TargetPlayer(ChessColor.Black).Player_Init(ChessColor.Black);
 
+        inPutManager.Init();
         await SwitchStage(GameStage.GameTitle);
 
     }
@@ -615,6 +616,8 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private async UniTask TurnStart()
     {
+        await PlayerCameraOpen(false);
+
         await TurnInit();
 
         if (!IsMaxBuffCount()) 
@@ -635,7 +638,6 @@ public class GameManager : MonoBehaviour
     /// <summary>
     private async UniTask SkillChoose()
     {
-        await PlayerCameraOpen(false);
         await MainCameraTurn(GameStage.SkillChoose);
         chooseSkillPanel.gameObject.SetActive(true);
         chooseSkillPanel.Init();
@@ -740,6 +742,7 @@ public class GameManager : MonoBehaviour
     /// </summary
     public void EndInGame(ChessColor chessColor)
     {
+        chessBoard.UpdatePlayerChose(new Vector2Int(-1, -1));
         turnResult[nowTurnCount] = chessColor;
         SwitchStage(GameStage.TurnEnd).Forget();
     }
@@ -754,7 +757,7 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private bool IsGameEnd()
     {
-        if (nowTurnCount < maxTurnCount) return false;
+        //if (nowTurnCount < maxTurnCount) return false;
         int whiteWinCount = 0;
         int blackWinCount = 0;
         foreach (var result in turnResult.Values)
@@ -812,7 +815,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Real GameSet");
         winner = surrender == ChessColor.White ? ChessColor.Black : ChessColor.White;
-        SwitchStage(GameStage.GameEnd).Forget();
+        EndInGame(winner);
     }
 
 
@@ -832,6 +835,8 @@ public class GameManager : MonoBehaviour
         await PlayerCameraOpen(false);
         await MainCameraTurn(GameStage.Release);
         chessBoard.CleanTheBoard();
+
+        audioManager.EndMusic(resourcesData.bgm_game);
         SwitchStage(GameStage.Release).Forget();
 
     }

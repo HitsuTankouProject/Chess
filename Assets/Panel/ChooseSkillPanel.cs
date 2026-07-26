@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Data;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -291,6 +292,8 @@ public class ChooseSkillPanel : MonoBehaviour
     /// <param name="color">カードを選択するプ?イ?ーの駒色です。</param>
     private void StartChooseSkill(ChessColor color)
     {
+        pickingMark.gameObject.SetActive(false);
+
         chooseSkillPlayerColor = color;
         _inPutManager.PlayerInputStage(chooseSkillPlayerColor, InputStage.ChooseSkill);
 
@@ -300,7 +303,7 @@ public class ChooseSkillPanel : MonoBehaviour
         SetDrawAgain(true);
         CardReadyProcess().Forget();
         chooseSkillPlayer.playerInPut.StartGamepadInput();
-
+        SwitchMark(color).Forget();
     }
     /// <summary>指定プ?イ?ーの選択を完了し、?のプ?イ?ーまたはゲー?進行へ移ります。</summary>
     /// <param name="color">選択を完了したプ?イ?ーの駒色です。</param>
@@ -357,6 +360,39 @@ public class ChooseSkillPanel : MonoBehaviour
         StartChooseSkill(ChessColor.White);
     }
 
+    private async UniTask SwitchMark(ChessColor color)
+    {
+        CanUseDevice old = chooseSkillPlayer.playerInPut.nowUsingDevice;
+
+        UpdatePickingMark(old);
+
+        while (chooseSkillPlayer.usingChess == color)
+        {
+            await UniTask.WaitUntil(() => chooseSkillPlayer.usingChess != color 
+            ||chooseSkillPlayer.playerInPut.nowUsingDevice != old
+            );
+
+            if (chooseSkillPlayer.usingChess != color) break;
+
+            old = chooseSkillPlayer.playerInPut.nowUsingDevice;
+            UpdatePickingMark(old);
+        }
+
+        pickingMark.gameObject.SetActive(false);
+    }
+
+    private void UpdatePickingMark(CanUseDevice device)
+    {
+        bool useGamepad = device == CanUseDevice.Gamepad;
+
+        if (useGamepad)
+        {
+            pickingIndex = 0;
+            pickingMark.transform.localPosition = cardPosition[pickingIndex];
+        }
+
+        pickingMark.gameObject.SetActive(useGamepad);
+    }
 
 
 

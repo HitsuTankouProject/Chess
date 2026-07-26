@@ -272,7 +272,6 @@ public class AudioManager : MonoBehaviour
         }
         else    // 見つかった場合 → Clip をセットして停止
         {
-           
             musicSource.clip = targetBgm.clip;  // 停止対象となる AudioClip を設定
             musicSource.Stop();         // BGM を完全停止（再生位置は 0 に戻る）
         }

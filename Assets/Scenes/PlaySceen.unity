@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 29512714}
   - component: {fileID: 29512713}
   m_Layer: 5
-  m_Name: Image
+  m_Name: South
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1750,7 +1750,7 @@ GameObject:
   - component: {fileID: 158016349}
   - component: {fileID: 158016348}
   m_Layer: 5
-  m_Name: Image
+  m_Name: South
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1941,11 +1941,11 @@ MonoBehaviour:
   image_Return: {fileID: 1374480381}
   controllerMarkPrinter:
     eastMarks:
-    - {fileID: 816523457}
     - {fileID: 809166190}
+    - {fileID: 816523457}
     southMarks:
-    - {fileID: 29512713}
     - {fileID: 1146567544}
+    - {fileID: 29512713}
     westMarks:
     - {fileID: 1714746393}
     northMarks:
@@ -2259,7 +2259,7 @@ GameObject:
   - component: {fileID: 216857942}
   - component: {fileID: 216857941}
   m_Layer: 5
-  m_Name: Image
+  m_Name: East
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2780,7 +2780,7 @@ GameObject:
   - component: {fileID: 255056787}
   - component: {fileID: 255056786}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: North
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9443,7 +9443,7 @@ GameObject:
   - component: {fileID: 809166189}
   - component: {fileID: 809166190}
   m_Layer: 5
-  m_Name: Image
+  m_Name: East
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9518,7 +9518,7 @@ GameObject:
   - component: {fileID: 816523458}
   - component: {fileID: 816523457}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: East
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11093,7 +11093,7 @@ GameObject:
   - component: {fileID: 942902665}
   - component: {fileID: 942902664}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: North
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11326,7 +11326,7 @@ MonoBehaviour:
     m_GotCurse: {fileID: 2100000, guid: c357f8115a3bc694eb5903016f2345a9, type: 2}
   bgm_game:
     clip: {fileID: 8300000, guid: ee1ad95a19e0e5b43943d55725926df4, type: 3}
-    volume: 60
+    volume: 40
   allSfxData:
     sfx_PressButton:
       sfxName: 
@@ -12234,7 +12234,7 @@ GameObject:
   - component: {fileID: 1014307135}
   - component: {fileID: 1014307134}
   m_Layer: 5
-  m_Name: Image
+  m_Name: West
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -13650,7 +13650,7 @@ GameObject:
   - component: {fileID: 1146567543}
   - component: {fileID: 1146567544}
   m_Layer: 5
-  m_Name: Image
+  m_Name: South
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15375,7 +15375,7 @@ GameObject:
   - component: {fileID: 1292446080}
   - component: {fileID: 1292446079}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: East
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -20895,7 +20895,7 @@ GameObject:
   - component: {fileID: 1714746394}
   - component: {fileID: 1714746393}
   m_Layer: 5
-  m_Name: Image
+  m_Name: West
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23362,7 +23362,7 @@ GameObject:
   - component: {fileID: 1914238577}
   - component: {fileID: 1914238576}
   m_Layer: 5
-  m_Name: Image
+  m_Name: South
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -23810,11 +23810,11 @@ MonoBehaviour:
   image_Return: {fileID: 49660664}
   controllerMarkPrinter:
     eastMarks:
-    - {fileID: 1292446079}
     - {fileID: 216857941}
+    - {fileID: 1292446079}
     southMarks:
-    - {fileID: 1914238576}
     - {fileID: 158016348}
+    - {fileID: 1914238576}
     westMarks:
     - {fileID: 1014307134}
     northMarks:

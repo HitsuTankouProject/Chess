@@ -109,7 +109,7 @@ public class PlayerInPut : MonoBehaviour
     /// このプレイヤーへ現在割り当てられているゲームパッドです。
     /// マウス操作中、またはゲームパッドが切断された場合は <see langword="null" /> です。
     /// </summary>
-    public Gamepad nowUsingGamepad;
+    public Gamepad nowUsingGamepad = null;
     /// <summary>Input Systemで現在有効なマウスを取得します。</summary>
     public Mouse nowUsingMouse => Mouse.current;
     /// <summary>
@@ -138,6 +138,7 @@ public class PlayerInPut : MonoBehaviour
     /// </summary>
     public void ChangeToMouse()
     {
+
         nowUsingGamepad = null;
 
         nowUsingDevice = CanUseDevice.Mouse;
@@ -147,7 +148,12 @@ public class PlayerInPut : MonoBehaviour
     /// <param name="usingDevice">新しく使用する入力デバイスの種類です。</param>
     private void ChangeInput(CanUseDevice usingDevice)
     {
-        _player.playerCanvas.controllerMarkPrinter.ChangeMark(_inPutManager.GetControllerType(nowUsingGamepad == null ? null : nowUsingGamepad));
+        Gamepad gamepad = nowUsingGamepad == null ? null : nowUsingGamepad;
+        Debug.Log(gamepad == null);
+        GamepadType target = _inPutManager.GetControllerType(gamepad);
+        Debug.Log(target.ToString());
+
+        _player.playerCanvas.controllerMarkPrinter.ChangeMark(target);
 
         switch (usingDevice)
         {

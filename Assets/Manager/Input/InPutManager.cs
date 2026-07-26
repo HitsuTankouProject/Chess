@@ -129,6 +129,7 @@ public class InPutManager : MonoBehaviour
     /// <returns>識別されたゲームパッドの種類です。</returns>
     public GamepadType GetControllerType(Gamepad gamepad)
     {
+
         if (gamepad == null) return GamepadType.None;
 
         string name = gamepad.name?.ToLower() ?? "";
@@ -171,6 +172,7 @@ public class InPutManager : MonoBehaviour
     private void RecodeGamePad()
     {
         recodingGamePads.Clear();
+        if (Gamepad.all.Count == 0) return;
         foreach (Gamepad gamepad in Gamepad.all)
         {
             GamepadType controllerType = GetControllerType(gamepad);
@@ -263,6 +265,9 @@ public class InPutManager : MonoBehaviour
     /// </summary>
     private async UniTask GamePadWatcher()
     {
+        _player01Input.ChangeToMouse();
+        _player02Input.ChangeToMouse();
+
         while (true)
         {
             await UniTask.WaitUntil(() => oldConnectingGamePad != Gamepad.all.Count);

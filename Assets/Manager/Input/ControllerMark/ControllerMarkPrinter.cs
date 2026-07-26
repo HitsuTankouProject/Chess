@@ -29,14 +29,14 @@ public class ControllerMarkPrinter
     public void ChangeMark(GamepadType target)
     {
         bool isShow = target != GamepadType.None;
+        Debug.Log("ChangeMark");
 
         SetMarksActive(eastMarks, isShow);
         SetMarksActive(southMarks, isShow);
         SetMarksActive(westMarks, isShow);
         SetMarksActive(northMarks, isShow);
 
-        if (!isShow)
-            return;
+        if (!isShow) return;
 
         ControllerMarkData data = MarkData(target);
 

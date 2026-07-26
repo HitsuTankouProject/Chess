@@ -157,6 +157,9 @@ public class ChessBoard : MonoBehaviour
                 return;
             }
         }
+
+
+       
     }
 
     /// <summary>中央2列から両色のキング再生成地点をランダムに選択します。</summary>
@@ -176,12 +179,6 @@ public class ChessBoard : MonoBehaviour
                 else whiteChessBlocks.Add(block);
             }
         }
-
-        // 前回のキング生成地点表示を解除します。
-        if (black_KingChessSpawn != falseVaule) 
-            ChessBlock(black_KingChessSpawn).ChangeBlockStage(BlockStage.None);
-        if (white_KingChessSpawn != falseVaule)
-            ChessBlock(white_KingChessSpawn).ChangeBlockStage(BlockStage.None);
 
         black_KingChessSpawn = blackChessBlocks[UnityEngine.Random.Range(0, blackChessBlocks.Count)].position;
         ChessBlock(black_KingChessSpawn).ChangeBlockStage(BlockStage.KingSpawn);
@@ -420,8 +417,17 @@ public class ChessBoard : MonoBehaviour
     /// </summary>
     public async UniTask ChessBoard_TurnInit(int turn)
     {
+        // 前回のキング生成地点表示を解除します。
+        if (black_KingChessSpawn != falseVaule)
+            ChessBlock(black_KingChessSpawn).ChangeBlockStage(BlockStage.None);
+        if (white_KingChessSpawn != falseVaule)
+            ChessBlock(white_KingChessSpawn).ChangeBlockStage(BlockStage.None);
+
         await GenChessAtStart(turn);
         FindRandomKingChessSpawn();
+        await UniTask.Delay(1000);
+
+
     }
 
 

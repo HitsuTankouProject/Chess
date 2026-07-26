@@ -155,8 +155,6 @@ public class PlayerCanvas : MonoBehaviour
     public ControllerMarkPrinter  controllerMarkPrinter;
 
 
-
-
     #endregion
 
     #region Pause
